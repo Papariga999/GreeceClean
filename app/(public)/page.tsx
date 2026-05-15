@@ -1,9 +1,54 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { supabaseAdmin, isSupabaseConfigured } from '@/lib/supabase'
 import { SEED_REPORTS } from '@/lib/seed-data'
 import { getLocale, getDictionary } from '@/lib/i18n'
 
 export const dynamic = 'force-dynamic'
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale()
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://greececlean.gr'
+
+  if (locale === 'de') return {
+    title: 'GreeceClean – Müll melden in Griechenland',
+    description: 'Melden Sie illegale Mülldeponien, Straßenmüll und Umweltverstöße an Ihre Gemeinde. Helfen Sie, Griechenland sauber zu halten.',
+    keywords: ['Müll melden Griechenland', 'illegale Deponie Griechenland', 'Umwelt Griechenland', 'Griechenland Umweltverschmutzung melden'],
+    openGraph: {
+      title: 'GreeceClean – Müll melden in Griechenland',
+      description: 'Melden Sie Umweltverstöße an Ihre Gemeinde.',
+      url: appUrl,
+      locale: 'de_DE',
+      type: 'website',
+    },
+  }
+
+  if (locale === 'en') return {
+    title: 'GreeceClean – Report Illegal Dumps & Environmental Violations in Greece',
+    description: 'Report illegal dumps, roadside litter and environmental violations to your municipality. Help keep Greece clean.',
+    keywords: ['environmental reporting Greece', 'illegal dump Greece', 'report trash Greece', 'clean Greece app'],
+    openGraph: {
+      title: 'GreeceClean – Environmental Reporting in Greece',
+      description: 'Report illegal dumps and pollution to your municipality.',
+      url: appUrl,
+      locale: 'en_GB',
+      type: 'website',
+    },
+  }
+
+  return {
+    title: 'GreeceClean – Αναφορά Παράνομων Χωματερών στην Ελλάδα',
+    description: 'Αναφέρετε σκουπίδια, παράνομες χωματερές και περιβαλλοντικές παραβάσεις στον δήμο σας. Βοηθήστε να κρατήσουμε την Ελλάδα καθαρή.',
+    keywords: ['σκουπίδια Ελλάδα', 'παράνομη χωματερή', 'αναφορά δήμος', 'περιβάλλον Ελλάδα', 'καθαριότητα δήμου'],
+    openGraph: {
+      title: 'GreeceClean – Αναφορά Παράνομων Χωματερών',
+      description: 'Αναφέρετε περιβαλλοντικές παραβάσεις στον δήμο σας.',
+      url: appUrl,
+      locale: 'el_GR',
+      type: 'website',
+    },
+  }
+}
 
 // ─── Data fetching ────────────────────────────────────────────────────────────
 

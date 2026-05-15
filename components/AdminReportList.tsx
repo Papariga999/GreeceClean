@@ -271,7 +271,7 @@ export default function AdminReportList({
                             onClick={() => runAction(r.id, 'PATCH', { action: 'approve' })}
                             className="text-xs text-action font-semibold hover:underline"
                           >
-                            Έγκριση
+                            ✓ Επαλήθευση
                           </button>
                           <button
                             onClick={() => runAction(r.id, 'PATCH', { action: 'mark_cleaned' })}

@@ -1,0 +1,39 @@
+{
+  "name": "GreeceClean",
+  "short_name": "GreeceClean",
+  "description": "Report illegal dumps and environmental violations in Greece",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#16a34a",
+  "orientation": "portrait",
+  "categories": ["utilities", "social"],
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Νέα Αναφορά",
+      "short_name": "Αναφορά",
+      "url": "/report",
+      "icons": [{ "src": "/icon.svg", "sizes": "any" }]
+    },
+    {
+      "name": "Χάρτης",
+      "short_name": "Χάρτης",
+      "url": "/map",
+      "icons": [{ "src": "/icon.svg", "sizes": "any" }]
+    }
+  ]
+}
