@@ -11,6 +11,10 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   }
 
   const { id } = await params
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
+    return NextResponse.json({ error: 'Invalid municipality ID' }, { status: 400 })
+  }
+
   const body = (await req.json()) as {
     email_official?: string
     region?: string
@@ -28,11 +32,11 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   }
 
   if ('region' in body) {
-    update.region = (body.region ?? '').trim()
+    update.region = (body.region ?? '').trim().slice(0, 255)
   }
 
   if ('name_en' in body) {
-    update.name_en = (body.name_en ?? '').trim()
+    update.name_en = (body.name_en ?? '').trim().slice(0, 255)
   }
 
   if (Object.keys(update).length === 0) {

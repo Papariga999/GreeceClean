@@ -12,6 +12,11 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   }
 
   const { id } = await params
+  const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+  if (!UUID_RE.test(id)) {
+    return NextResponse.json({ error: 'Invalid report ID' }, { status: 400 })
+  }
+
   let body: {
     action?: string
     category?: string
@@ -26,7 +31,6 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   }
 
   const VALID_STATUSES = ['pending', 'in_review', 'forwarded', 'resolved', 'rejected']
-  const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
   let update: Record<string, unknown>
   if (body.action === 'approve') {
@@ -123,7 +127,7 @@ async function handleForward(id: string): Promise<NextResponse> {
 
   if (emailStatus === 'failed') {
     return NextResponse.json(
-      { ok: true, warning: `Το status άλλαξε σε "forwarded" αλλά το email απέτυχε: ${emailError}` },
+      { ok: true, warning: 'Το status άλλαξε σε "forwarded" αλλά το email απέτυχε.' },
       { status: 207 },
     )
   }
@@ -137,6 +141,9 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
   }
 
   const { id } = await params
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
+    return NextResponse.json({ error: 'Invalid report ID' }, { status: 400 })
+  }
 
   // Fetch public_token first so we can remove the stored image
   const { data: report } = await supabaseAdmin

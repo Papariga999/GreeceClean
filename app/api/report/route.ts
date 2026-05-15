@@ -54,7 +54,7 @@ async function resolveMunicipalityId(name: string): Promise<string | null> {
 
   const { data: created } = await supabaseAdmin
     .from('municipalities')
-    .insert({ name_el: name, name_en: '' })
+    .insert({ name_el: name.slice(0, 255), name_en: '' })
     .select('id')
     .single()
   return created?.id ?? null
@@ -94,6 +94,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
   }
 
+  if (!isFinite(lat) || !isFinite(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+    return NextResponse.json({ error: 'Invalid coordinates' }, { status: 400 })
+  }
+
   for (const f of imageFiles) {
     if (f.size > 10 * 1024 * 1024) {
       return NextResponse.json({ error: 'Image too large (max 10 MB)' }, { status: 413 })
@@ -114,8 +118,8 @@ export async function POST(req: NextRequest) {
       })
     )
   } catch (err) {
-    const msg = err instanceof Error ? err.message : 'Image processing failed'
-    return NextResponse.json({ error: msg }, { status: 422 })
+    console.error('Image processing error:', err)
+    return NextResponse.json({ error: 'Image processing failed' }, { status: 422 })
   }
 
   // ── Token & geocoding ──────────────────────────────────────────────────────
