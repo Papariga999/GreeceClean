@@ -1,6 +1,6 @@
 'use client'
 
-import { Fragment, useState, useMemo } from 'react'
+import { Fragment, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 export type MunicipalityRow = {
@@ -35,32 +35,14 @@ export default function MunicipalityEmailList({
   municipalities: MunicipalityRow[]
 }) {
   const router = useRouter()
-  const [search, setSearch]     = useState('')
-  const [editId, setEditId]     = useState<string | null>(null)
-  const [draft,  setDraft]      = useState<EditDraft>({ name_el: '', name_de: '', email_official: '', region: '' })
-  const [saving, setSaving]     = useState(false)
-  const [error,  setError]      = useState<string | null>(null)
-
-  const filtered = useMemo(() => {
-    const q = search.toLowerCase().trim()
-    if (!q) return municipalities
-    return municipalities.filter(
-      (m) =>
-        m.name_el.toLowerCase().includes(q) ||
-        (m.name_de ?? '').toLowerCase().includes(q) ||
-        (m.region ?? '').toLowerCase().includes(q) ||
-        (m.email_official ?? '').toLowerCase().includes(q),
-    )
-  }, [municipalities, search])
+  const [editId, setEditId] = useState<string | null>(null)
+  const [draft,  setDraft]  = useState<EditDraft>({ name_el: '', name_de: '', email_official: '', region: '' })
+  const [saving, setSaving] = useState(false)
+  const [error,  setError]  = useState<string | null>(null)
 
   function startEdit(m: MunicipalityRow) {
     setEditId(m.id)
-    setDraft({
-      name_el:        m.name_el,
-      name_de:        m.name_de ?? '',
-      email_official: m.email_official ?? '',
-      region:         m.region ?? '',
-    })
+    setDraft({ name_el: m.name_el, name_de: m.name_de ?? '', email_official: m.email_official ?? '', region: m.region ?? '' })
     setError(null)
   }
 
@@ -101,25 +83,15 @@ export default function MunicipalityEmailList({
 
   return (
     <div>
-      {/* Summary + search bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-5">
-        <div className="flex gap-4 text-sm shrink-0">
-          <span className="flex items-center gap-1.5">
-            <span className="inline-block w-2.5 h-2.5 rounded-full bg-action" />
-            <strong>{withEmail}</strong> με email
-          </span>
-          <span className="flex items-center gap-1.5">
-            <span className="inline-block w-2.5 h-2.5 rounded-full bg-gray-300" />
-            <strong>{withoutEmail}</strong> χωρίς email
-          </span>
-        </div>
-        <input
-          type="search"
-          value={search}
-          onChange={(e) => { setSearch(e.target.value); setEditId(null) }}
-          placeholder="Αναζήτηση δήμου, περιφέρειας ή email…"
-          className="sm:ml-auto border border-gray-300 rounded-lg px-3 py-1.5 text-sm w-full sm:max-w-xs focus:outline-none focus:ring-2 focus:ring-primary bg-white"
-        />
+      <div className="flex gap-4 text-sm mb-5">
+        <span className="flex items-center gap-1.5">
+          <span className="inline-block w-2.5 h-2.5 rounded-full bg-action" />
+          <strong>{withEmail}</strong> με email
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="inline-block w-2.5 h-2.5 rounded-full bg-gray-300" />
+          <strong>{withoutEmail}</strong> χωρίς email
+        </span>
       </div>
 
       <div className="card overflow-hidden p-0">
@@ -136,14 +108,14 @@ export default function MunicipalityEmailList({
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {filtered.length === 0 && (
+              {municipalities.length === 0 && (
                 <tr>
                   <td colSpan={6} className="px-4 py-8 text-center text-gray-400 text-sm italic">
                     Δεν βρέθηκαν αποτελέσματα
                   </td>
                 </tr>
               )}
-              {filtered.map((m) => (
+              {municipalities.map((m) => (
                 <Fragment key={m.id}>
                   {/* Main row */}
                   <tr className={`transition-colors ${editId === m.id ? 'bg-blue-50' : 'hover:bg-gray-50'}`}>
@@ -257,11 +229,6 @@ export default function MunicipalityEmailList({
           </table>
         </div>
 
-        {filtered.length > 0 && search && (
-          <p className="px-4 py-2 text-xs text-gray-400 border-t border-gray-100">
-            {filtered.length} από {municipalities.length} δήμοι
-          </p>
-        )}
       </div>
     </div>
   )
