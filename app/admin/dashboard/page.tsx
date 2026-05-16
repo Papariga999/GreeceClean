@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { supabaseAdmin, isSupabaseConfigured } from '@/lib/supabase'
 import AdminReportList, { type AdminReport, type Municipality } from '@/components/AdminReportList'
 import MunicipalityEmailList, { type MunicipalityRow } from '@/components/MunicipalityEmailList'
+import DashboardTabs from '@/components/DashboardTabs'
 
 export const metadata: Metadata = {
   title: 'Admin Dashboard – GreeceClean',
@@ -61,8 +62,45 @@ export default async function AdminDashboard() {
     getMunicipalities(),
   ])
 
-  // Slim version for report dropdowns
   const municipalities: Municipality[] = municipalityRows.map((m) => ({ id: m.id, name_el: m.name_el }))
+
+  const reportsTab = (
+    <>
+      <section className="mb-10">
+        <div className="flex items-center gap-3 mb-4">
+          <h2 className="text-lg font-semibold text-gray-800">Αναμένουν έγκριση</h2>
+          <span className="text-xs text-yellow-800 bg-yellow-100 px-2 py-0.5 rounded-full font-medium">
+            {pending.length}
+          </span>
+        </div>
+        <AdminReportList reports={pending} municipalities={municipalities} mode="pending" />
+      </section>
+
+      <section className="mb-10">
+        <div className="flex items-center gap-3 mb-4">
+          <h2 className="text-lg font-semibold text-gray-800">Εγκεκριμένες</h2>
+          <span className="text-xs text-green-800 bg-green-100 px-2 py-0.5 rounded-full font-medium">
+            {approved.length}
+          </span>
+        </div>
+        <AdminReportList reports={approved} municipalities={municipalities} mode="approved" />
+      </section>
+
+      {rejected.length > 0 && (
+        <section className="mb-10">
+          <div className="flex items-center gap-3 mb-4">
+            <h2 className="text-lg font-semibold text-gray-800">Απορριφθείσες</h2>
+            <span className="text-xs text-red-800 bg-red-100 px-2 py-0.5 rounded-full font-medium">
+              {rejected.length}
+            </span>
+          </div>
+          <AdminReportList reports={rejected} municipalities={municipalities} mode="rejected" />
+        </section>
+      )}
+    </>
+  )
+
+  const municipalitiesTab = <MunicipalityEmailList municipalities={municipalityRows} />
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -83,47 +121,12 @@ export default async function AdminDashboard() {
           </form>
         </div>
 
-        <section className="mb-10">
-          <div className="flex items-center gap-3 mb-4">
-            <h2 className="text-lg font-semibold text-gray-800">Αναμένουν έγκριση</h2>
-            <span className="text-xs text-yellow-800 bg-yellow-100 px-2 py-0.5 rounded-full font-medium">
-              {pending.length}
-            </span>
-          </div>
-          <AdminReportList reports={pending} municipalities={municipalities} mode="pending" />
-        </section>
-
-        <section className="mb-10">
-          <div className="flex items-center gap-3 mb-4">
-            <h2 className="text-lg font-semibold text-gray-800">Εγκεκριμένες</h2>
-            <span className="text-xs text-green-800 bg-green-100 px-2 py-0.5 rounded-full font-medium">
-              {approved.length}
-            </span>
-          </div>
-          <AdminReportList reports={approved} municipalities={municipalities} mode="approved" />
-        </section>
-
-        {rejected.length > 0 && (
-          <section className="mb-10">
-            <div className="flex items-center gap-3 mb-4">
-              <h2 className="text-lg font-semibold text-gray-800">Απορριφθείσες</h2>
-              <span className="text-xs text-red-800 bg-red-100 px-2 py-0.5 rounded-full font-medium">
-                {rejected.length}
-              </span>
-            </div>
-            <AdminReportList reports={rejected} municipalities={municipalities} mode="rejected" />
-          </section>
-        )}
-
-        <section className="mb-10">
-          <div className="flex items-center gap-3 mb-4">
-            <h2 className="text-lg font-semibold text-gray-800">Δήμοι & Email</h2>
-            <span className="text-xs text-blue-800 bg-blue-100 px-2 py-0.5 rounded-full font-medium">
-              {municipalityRows.length}
-            </span>
-          </div>
-          <MunicipalityEmailList municipalities={municipalityRows} />
-        </section>
+        <DashboardTabs
+          reportsTab={reportsTab}
+          municipalitiesTab={municipalitiesTab}
+          pendingCount={pending.length}
+          municipalityCount={municipalityRows.length}
+        />
 
       </div>
     </div>
