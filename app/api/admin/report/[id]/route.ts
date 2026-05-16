@@ -35,6 +35,16 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   let update: Record<string, unknown>
   if (body.action === 'approve') {
     update = { is_approved: true, status: 'in_review' }
+    // After approve: fire-and-forget email to municipality via webhook endpoint
+    const appUrl      = process.env.NEXT_PUBLIC_APP_URL ?? ''
+    const webhookSecret = process.env.WEBHOOK_SECRET
+    if (appUrl && webhookSecret) {
+      fetch(`${appUrl}/api/send-report-email`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${webhookSecret}` },
+        body:    JSON.stringify({ report_id: id }),
+      }).catch((e) => console.error('[auto-email] failed:', e))
+    }
   } else if (body.action === 'mark_cleaned') {
     update = { status: 'resolved' }
   } else if (body.action === 'reject') {
@@ -101,7 +111,7 @@ async function handleForward(id: string): Promise<NextResponse> {
     return NextResponse.json({ error: 'Update failed' }, { status: 500 })
   }
 
-  const { subject, html } = buildMunicipalityReportEmail(
+  const { subject, html } = await buildMunicipalityReportEmail(
     report as unknown as ReportForEmail,
     { id: muni.id, name_el: muni.name_el, email_official: muni.email_official },
   )
