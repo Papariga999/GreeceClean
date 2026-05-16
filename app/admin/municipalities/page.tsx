@@ -12,7 +12,7 @@ async function getMunicipalities(): Promise<MunicipalityRow[]> {
   if (!isSupabaseConfigured) return []
   const { data } = await supabaseAdmin
     .from('municipalities')
-    .select('id, name_el, name_en, email_official, region')
+    .select('id, name_el, name_en, name_de, email_official, region')
     .order('name_el')
   return (data ?? []) as MunicipalityRow[]
 }

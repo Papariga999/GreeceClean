@@ -18,7 +18,9 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   const body = (await req.json()) as {
     email_official?: string
     region?: string
+    name_el?: string
     name_en?: string
+    name_de?: string
   }
 
   const update: Record<string, string> = {}
@@ -35,8 +37,18 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     update.region = (body.region ?? '').trim().slice(0, 255)
   }
 
+  if ('name_el' in body) {
+    const val = (body.name_el ?? '').trim().slice(0, 255)
+    if (!val) return NextResponse.json({ error: 'name_el cannot be empty' }, { status: 400 })
+    update.name_el = val
+  }
+
   if ('name_en' in body) {
     update.name_en = (body.name_en ?? '').trim().slice(0, 255)
+  }
+
+  if ('name_de' in body) {
+    update.name_de = (body.name_de ?? '').trim().slice(0, 255)
   }
 
   if (Object.keys(update).length === 0) {
