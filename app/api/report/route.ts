@@ -54,7 +54,7 @@ async function resolveMunicipalityId(name: string): Promise<string | null> {
 
   const { data: created } = await supabaseAdmin
     .from('municipalities')
-    .insert({ name_el: name.slice(0, 255), name_en: '' })
+    .insert({ name_el: name.slice(0, 255), name_en: '', name_de: '' })
     .select('id')
     .single()
   return created?.id ?? null
@@ -96,6 +96,11 @@ export async function POST(req: NextRequest) {
 
   if (!isFinite(lat) || !isFinite(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
     return NextResponse.json({ error: 'Invalid coordinates' }, { status: 400 })
+  }
+
+  // Greece bounding box — reject coordinates clearly outside the country
+  if (lat < 34.8 || lat > 42.0 || lng < 19.4 || lng > 29.7) {
+    return NextResponse.json({ error: 'Coordinates must be within Greece' }, { status: 422 })
   }
 
   for (const f of imageFiles) {
