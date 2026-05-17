@@ -1,0 +1,172 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "breakdown": "Breakdown",
+    "evidence": "Evidence",
+    "trust": "Trust"
+  },
+  "landing": {
+    "headline": "How much does your employer owe you?",
+    "subheadline": "Find out in 60 seconds.",
+    "cta": "Start now",
+    "howItWorks": "How it works",
+    "step1": "Connect with myErgani",
+    "step2": "Upload your payslips",
+    "step3": "See what you're owed",
+    "trustBadge": "Legal and secure",
+    "heroSubtext": "Instantly discover if your employer owes you money"
+  },
+  "onboarding": {
+    "choosePersona": "Choose a demo profile",
+    "personaDesc": "In demo mode, select one of the profiles below to see how the app works.",
+    "connect": {
+      "title": "Connect with myErgani",
+      "desc": "Tap to connect the app with your ERGANI data.",
+      "privacy": "Your data stays on your device.",
+      "button": "Connect with myErgani",
+      "success": "Successfully connected",
+      "connecting": "Connecting..."
+    },
+    "payslips": {
+      "title": "Upload payslips",
+      "desc": "Upload your payslips from the last 6 months",
+      "dragDrop": "Drag files here or click to upload",
+      "continue": "Continue",
+      "demoToast": "Demo mode — file not stored"
+    },
+    "analyzing": {
+      "step1": "Analyzing ERGANI data...",
+      "step2": "Comparing with contracted hours...",
+      "step3": "Calculating legal claims..."
+    }
+  },
+  "dashboard": {
+    "youAreOwed": "You are owed:",
+    "period": "for the last {months} months of work",
+    "winProbability": "Win probability: {pct}%",
+    "evidenceStrength": "Evidence strength",
+    "strong": "Strong",
+    "moderate": "Moderate",
+    "weak": "Weak",
+    "actionTitle": "What do you want to do?",
+    "path": {
+      "silent": "Silent evidence collection",
+      "notice": "Send formal demand letter",
+      "lawyer": "Find a lawyer — success fee only"
+    },
+    "seeDetails": "See the full breakdown"
+  },
+  "breakdown": {
+    "title": "Detailed breakdown",
+    "category": "Category",
+    "hours": "Hours",
+    "multiplier": "Multiplier",
+    "amount": "Amount",
+    "total": "Total",
+    "mehrarbeit": "Additional work (41st–45th hr/week)",
+    "legaleUeberstunden": "Legal overtime (Νόμιμη υπερωρία)",
+    "illegaleUeberstunden": "Illegal overtime (Παράνομη υπερωρία)",
+    "sechsterTag": "Sixth-day premium (Έκτη ημέρα)",
+    "sonntags": "Sunday / Holiday premium",
+    "nachtarbeit": "Night work (Νυχτερινή εργασία)",
+    "legalBasis": "Legal basis"
+  },
+  "evidence": {
+    "title": "Evidence archive",
+    "created": "Created",
+    "download": "Download",
+    "signed": "Verified",
+    "preview": "Preview",
+    "demoWatermark": "DEMO — In production this would be eIDAS-qualified signed"
+  },
+  "trust": {
+    "title": "Data trustworthiness",
+    "score": "Trust score",
+    "clean": "Your data is trustworthy",
+    "cleanDesc": "We analyzed your stamping patterns. No manipulation detected.",
+    "manipulated": "Manipulation detected",
+    "gpsCheck": "GPS verification",
+    "gpsConsistent": "Consistent",
+    "stampPattern": "Stamp pattern",
+    "stampNatural": "Naturally variable",
+    "stampFlag": "Suspicious pattern",
+    "additionalGrounds": "This opens an additional legal ground: Manipulation of digital work records.",
+    "severity": {
+      "high": "High severity",
+      "medium": "Medium severity",
+      "low": "Low severity"
+    }
+  },
+  "action": {
+    "silent": {
+      "title": "Silent evidence collection",
+      "confirmed": "Your data is archived monthly. You will be notified when new discrepancies are detected.",
+      "premium": "Premium gives you real-time pattern alerts — €4.99/month",
+      "upgradeCta": "Upgrade to Premium"
+    },
+    "notice": {
+      "title": "Formal demand letter (Εξώδικο)",
+      "desc": "A certified lawyer sends a formal demand letter to your employer.",
+      "price": "€99",
+      "cta": "Commission",
+      "disclaimer": "Demo: In production, a certified lawyer would send the formal notice."
+    },
+    "lawyer": {
+      "title": "Lawyer — success fee only",
+      "matchScore": "Match score",
+      "experience": "years experience",
+      "successRate": "Success rate",
+      "rating": "Rating",
+      "sendRequest": "Send request",
+      "sent": "Your case has been sent. We will contact you within 24 hours.",
+      "disclaimer": "Karta-Check is not a law firm. We only facilitate. Lawyer fee = success fee only (max 20% per Greek law 4194/2013)."
+    }
+  },
+  "lawyer": {
+    "dashboard": {
+      "title": "Lawyer Dashboard",
+      "incomingCases": "Incoming cases",
+      "winProb": "Win probability",
+      "compensation": "Compensation",
+      "action": "Action",
+      "accept": "Accept case",
+      "review": "Review"
+    }
+  },
+  "demo": {
+    "banner": "DEMO MODE — Data is fictional",
+    "switchPersona": "Switch profile",
+    "lawyerView": "Lawyer View",
+    "reset": "Reset Demo",
+    "resetDesc": "Demo has been reset to initial state.",
+    "noRealPayment": "Demo: No real payment will be processed.",
+    "stripeTitle": "Payment (Demo)",
+    "confirmPayment": "Confirm (Demo)"
+  },
+  "common": {
+    "back": "Back",
+    "continue": "Continue",
+    "close": "Close",
+    "loading": "Loading...",
+    "months": {
+      "1": "January",
+      "2": "February",
+      "3": "March",
+      "4": "April",
+      "5": "May",
+      "6": "June",
+      "7": "July",
+      "8": "August",
+      "9": "September",
+      "10": "October",
+      "11": "November",
+      "12": "December"
+    }
+  },
+  "sectors": {
+    "tourism_hospitality": "Tourism / Hospitality",
+    "catering": "Catering / Restaurant",
+    "construction": "Construction",
+    "retail": "Retail"
+  }
+}

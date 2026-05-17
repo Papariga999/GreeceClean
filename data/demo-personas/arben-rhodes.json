@@ -1,0 +1,40 @@
+{
+  "id": "arben-rhodes",
+  "displayName": "Arben K.",
+  "age": 42,
+  "location": "Rhodes",
+  "sector": "construction",
+  "employer": "Aegean Construction Ltd",
+  "contractType": "seasonal_full_time",
+  "contractedHoursPerWeek": 40,
+  "contractedHourlyRate": 5.50,
+  "monthsAnalyzed": 4,
+  "actualHoursWorked": 1024,
+  "declaredHoursWorked": 640,
+  "hoursPaid": 640,
+  "totalUnpaidEUR": 2178.55,
+  "breakdown": {
+    "mehrarbeit": { "hours": 156, "rateMultiplier": 1.20, "amount": 1029.60 },
+    "legaleUeberstunden": { "hours": 168, "rateMultiplier": 1.40, "amount": 1293.60 },
+    "illegaleUeberstunden": { "hours": 60, "rateMultiplier": 2.20, "amount": 726.00 }
+  },
+  "trustScore": 28,
+  "manipulationFlags": [
+    {
+      "type": "manager_stamping",
+      "severity": "high",
+      "description": "Stempelungen erfolgen täglich um exakt 16:00:00 Uhr ohne Sekunden-Varianz. Wahrscheinlichkeit: Manager stempelt automatisiert.",
+      "evidenceCount": 48
+    },
+    {
+      "type": "gps_mismatch",
+      "severity": "medium",
+      "description": "An 12 Tagen wurde die Stempelung registriert, während GPS-Daten zeigen, dass User noch auf der Baustelle war.",
+      "evidenceCount": 12
+    }
+  ],
+  "evidenceQuality": "high_with_manipulation",
+  "winProbability": 0.85,
+  "additionalLegalGrounds": "digital_record_manipulation",
+  "avatarSeed": "arben"
+}
