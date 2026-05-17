@@ -1,0 +1,172 @@
+{
+  "nav": {
+    "dashboard": "Paneli",
+    "breakdown": "Detajet",
+    "evidence": "Provat",
+    "trust": "Besueshmëria"
+  },
+  "landing": {
+    "headline": "Sa të detyrohet punëdhënësi juaj?",
+    "subheadline": "Zbuloni brenda 60 sekondave.",
+    "cta": "Filloni tani",
+    "howItWorks": "Si funksionon",
+    "step1": "Lidhuni me myErgani",
+    "step2": "Ngarkoni fletëpagesat",
+    "step3": "Shihni çfarë ju detyrohet",
+    "trustBadge": "Ligjore dhe e sigurt",
+    "heroSubtext": "Zbuloni menjëherë nëse punëdhënësi juaj ju detyron para"
+  },
+  "onboarding": {
+    "choosePersona": "Zgjidhni profilin demo",
+    "personaDesc": "Në modalitetin demo, zgjidhni një nga profilet e mëposhtme.",
+    "connect": {
+      "title": "Lidheni me myErgani",
+      "desc": "Shtypni për të lidhur aplikacionin me të dhënat tuaja ERGANI.",
+      "privacy": "Të dhënat tuaja qëndrojnë në pajisjen tuaj.",
+      "button": "Lidheni me myErgani",
+      "success": "U lidh me sukses",
+      "connecting": "Duke u lidhur..."
+    },
+    "payslips": {
+      "title": "Ngarkoni fletëpagesat",
+      "desc": "Ngarkoni fletëpagesat e 6 muajve të fundit",
+      "dragDrop": "Tërhiqni skedarët këtu ose klikoni",
+      "continue": "Vazhdoni",
+      "demoToast": "Modaliteti demo — skedari nuk ruhet"
+    },
+    "analyzing": {
+      "step1": "Analiza e të dhënave ERGANI...",
+      "step2": "Krahasimi me orët e kontraktuara...",
+      "step3": "Llogaritja e kërkesave ligjore..."
+    }
+  },
+  "dashboard": {
+    "youAreOwed": "Ju detyrohet:",
+    "period": "për {months} muajt e fundit të punës",
+    "winProbability": "Probabiliteti i fitimit: {pct}%",
+    "evidenceStrength": "Forca e provave",
+    "strong": "E fortë",
+    "moderate": "Mesatare",
+    "weak": "E dobët",
+    "actionTitle": "Çfarë dëshironi të bëni?",
+    "path": {
+      "silent": "Mbledhje e heshtur e provave",
+      "notice": "Dërgoni kërkesë formale",
+      "lawyer": "Gjeni avokat — vetëm me sukses"
+    },
+    "seeDetails": "Shihni analizën e plotë"
+  },
+  "breakdown": {
+    "title": "Analiza e detajuar",
+    "category": "Kategoria",
+    "hours": "Orët",
+    "multiplier": "Shumëzuesi",
+    "amount": "Shuma",
+    "total": "Totali",
+    "mehrarbeit": "Punë shtesë (ora 41-45)",
+    "legaleUeberstunden": "Orë jashtë orarit ligjore",
+    "illegaleUeberstunden": "Orë jashtë orarit ilegale",
+    "sechsterTag": "Prima e ditës së gjashtë",
+    "sonntags": "E diel / Festë",
+    "nachtarbeit": "Punë natën",
+    "legalBasis": "Baza ligjore"
+  },
+  "evidence": {
+    "title": "Arkivi i provave",
+    "created": "Krijuar",
+    "download": "Shkarkim",
+    "signed": "Verifikuar",
+    "preview": "Parapamje",
+    "demoWatermark": "DEMO — Në prodhim do të ishte nënshkruar me eIDAS"
+  },
+  "trust": {
+    "title": "Besueshmëria e të dhënave",
+    "score": "Rezultati i besueshmërisë",
+    "clean": "Të dhënat tuaja janë të besueshme",
+    "cleanDesc": "Analizuam modelet e vulosjes suaj. Nuk u zbulua asnjë manipulim.",
+    "manipulated": "U zbulua manipulim",
+    "gpsCheck": "Verifikimi GPS",
+    "gpsConsistent": "Konsistent",
+    "stampPattern": "Modeli i vulosjes",
+    "stampNatural": "Natyrisht i ndryshueshëm",
+    "stampFlag": "Model i dyshimtë",
+    "additionalGrounds": "Kjo hap bazë ligjore shtesë: Manipulimi i të dhënave dixhitale të punës.",
+    "severity": {
+      "high": "Ashpërsi e lartë",
+      "medium": "Ashpërsi mesatare",
+      "low": "Ashpërsi e ulët"
+    }
+  },
+  "action": {
+    "silent": {
+      "title": "Mbledhje e heshtur e provave",
+      "confirmed": "Të dhënat tuaja arkivohen çdo muaj. Do të njoftoheni kur zbulohen mospërputhje të reja.",
+      "premium": "Premium ju jep alarme në kohë reale — €4.99/muaj",
+      "upgradeCta": "Kaloni në Premium"
+    },
+    "notice": {
+      "title": "Kërkesë formale (Εξώδικο)",
+      "desc": "Një avokat i certifikuar dërgon një kërkesë formale te punëdhënësi juaj.",
+      "price": "€99",
+      "cta": "Porosisni",
+      "disclaimer": "Demo: Në prodhim, një avokat i certifikuar do të dërgonte njoftimin."
+    },
+    "lawyer": {
+      "title": "Avokat — vetëm me sukses",
+      "matchScore": "Përputhja",
+      "experience": "vjet përvojë",
+      "successRate": "Shkalla e suksesit",
+      "rating": "Vlerësimi",
+      "sendRequest": "Dërgoni kërkesën",
+      "sent": "Rasti juaj u dërgua. Do t'ju kontaktojmë brenda 24 orëve.",
+      "disclaimer": "Karta-Check nuk është firmë juridike. Vetëm ndërmjetësojmë. Honorari i avokatit = vetëm me sukses (maks 20% sipas ligjit grek 4194/2013)."
+    }
+  },
+  "lawyer": {
+    "dashboard": {
+      "title": "Paneli i Avokatit",
+      "incomingCases": "Rastet hyrëse",
+      "winProb": "Probabiliteti i fitimit",
+      "compensation": "Kompensimi",
+      "action": "Veprim",
+      "accept": "Pranoni rastin",
+      "review": "Rishikim"
+    }
+  },
+  "demo": {
+    "banner": "MODALITETI DEMO — Të dhënat janë fiktive",
+    "switchPersona": "Ndërroni profilin",
+    "lawyerView": "Pamja e Avokatit",
+    "reset": "Rivendosni Demo",
+    "resetDesc": "Demo u rivendos në gjendjen fillestare.",
+    "noRealPayment": "Demo: Nuk do të procestohet pagesa reale.",
+    "stripeTitle": "Pagesa (Demo)",
+    "confirmPayment": "Konfirmoni (Demo)"
+  },
+  "common": {
+    "back": "Kthehu",
+    "continue": "Vazhdoni",
+    "close": "Mbyllni",
+    "loading": "Duke ngarkuar...",
+    "months": {
+      "1": "Janar",
+      "2": "Shkurt",
+      "3": "Mars",
+      "4": "Prill",
+      "5": "Maj",
+      "6": "Qershor",
+      "7": "Korrik",
+      "8": "Gusht",
+      "9": "Shtator",
+      "10": "Tetor",
+      "11": "Nëntor",
+      "12": "Dhjetor"
+    }
+  },
+  "sectors": {
+    "tourism_hospitality": "Turizëm / Hoteleri",
+    "catering": "Hoteleri / Restorant",
+    "construction": "Ndërtim",
+    "retail": "Tregti me pakicë"
+  }
+}

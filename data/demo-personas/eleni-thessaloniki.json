@@ -1,0 +1,24 @@
+{
+  "id": "eleni-thessaloniki",
+  "displayName": "Eleni M.",
+  "age": 31,
+  "location": "Thessaloniki",
+  "sector": "retail",
+  "employer": "Public S.A.",
+  "contractType": "permanent_part_time",
+  "contractedHoursPerWeek": 25,
+  "contractedHourlyRate": 6.80,
+  "monthsAnalyzed": 6,
+  "actualHoursWorked": 654,
+  "declaredHoursWorked": 650,
+  "hoursPaid": 650,
+  "totalUnpaidEUR": 28.40,
+  "breakdown": {
+    "mehrarbeit": { "hours": 4, "rateMultiplier": 1.20, "amount": 28.40 }
+  },
+  "trustScore": 96,
+  "manipulationFlags": [],
+  "evidenceQuality": "high",
+  "winProbability": 0.20,
+  "avatarSeed": "eleni"
+}

@@ -1,50 +1,11 @@
-import type { Metadata, Viewport } from 'next'
-import { Inter } from 'next/font/google'
-import './globals.css'
-import Header from '@/components/Header'
-import Footer from '@/components/Footer'
-import { LocaleProvider } from '@/components/LocaleProvider'
-import { getLocale } from '@/lib/i18n'
-
-const inter = Inter({ subsets: ['latin', 'greek'] })
-
-export const viewport: Viewport = {
-  themeColor: '#16a34a',
-  width: 'device-width',
-  initialScale: 1,
-}
+import type { Metadata } from 'next';
+import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'GreeceClean – Αναφορά Απορριμμάτων',
-  description: 'Βοηθήστε να κρατήσουμε την Ελλάδα καθαρή. Αναφέρετε παράνομες χωματερές και σκουπίδια στον δήμο σας.',
-  keywords: ['ελλάδα', 'καθαριότητα', 'αναφορά', 'δήμος', 'περιβάλλον'],
-  authors: [{ name: 'GreeceClean' }],
-  manifest: '/manifest.json',
-  icons: { icon: '/icon.svg', apple: '/icon.svg' },
-  openGraph: {
-    title: 'GreeceClean',
-    description: 'Κρατήστε την Ελλάδα καθαρή',
-    locale: 'el_GR',
-    type: 'website',
-  },
-}
+  title: 'Karta-Check — Πόσα σου χρωστάει ο εργοδότης σου;',
+  description: 'Ανακάλυψε σε 60 δευτερόλεπτα αν ο εργοδότης σου σου χρωστάει χρήματα.',
+};
 
-export default async function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  const locale = await getLocale()
-
-  return (
-    <html lang={locale}>
-      <body className={inter.className}>
-        <LocaleProvider locale={locale}>
-          <Header />
-          <main>{children}</main>
-          <Footer />
-        </LocaleProvider>
-      </body>
-    </html>
-  )
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return children;
 }

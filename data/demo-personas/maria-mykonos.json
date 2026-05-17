@@ -1,0 +1,29 @@
+{
+  "id": "maria-mykonos",
+  "displayName": "Maria K.",
+  "age": 28,
+  "location": "Mykonos",
+  "sector": "tourism_hospitality",
+  "employer": "Aegean Sunset Hotel",
+  "contractType": "seasonal_full_time",
+  "contractedHoursPerWeek": 40,
+  "contractedHourlyRate": 5.20,
+  "monthsAnalyzed": 6,
+  "actualHoursWorked": 1456,
+  "declaredHoursWorked": 960,
+  "hoursPaid": 960,
+  "totalUnpaidEUR": 2847.30,
+  "breakdown": {
+    "mehrarbeit": { "hours": 142, "rateMultiplier": 1.20, "amount": 886.08 },
+    "legaleUeberstunden": { "hours": 168, "rateMultiplier": 1.40, "amount": 1224.96 },
+    "illegaleUeberstunden": { "hours": 38, "rateMultiplier": 2.20, "amount": 434.72 },
+    "sechsterTag": { "hours": 48, "rateMultiplier": 1.30, "amount": 324.48 },
+    "sonntags": { "hours": 12, "rateMultiplier": 1.75, "amount": 109.20 },
+    "nachtarbeit": { "hours": 64, "rateMultiplier": 1.25, "amount": 80.00 }
+  },
+  "trustScore": 82,
+  "manipulationFlags": [],
+  "evidenceQuality": "high",
+  "winProbability": 0.78,
+  "avatarSeed": "maria"
+}

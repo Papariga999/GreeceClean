@@ -1,0 +1,26 @@
+{
+  "id": "giannis-athens",
+  "displayName": "Giannis P.",
+  "age": 35,
+  "location": "Athens",
+  "sector": "catering",
+  "employer": "Taverna Plaka",
+  "contractType": "permanent_full_time",
+  "contractedHoursPerWeek": 40,
+  "contractedHourlyRate": 6.15,
+  "monthsAnalyzed": 12,
+  "actualHoursWorked": 2384,
+  "declaredHoursWorked": 2080,
+  "hoursPaid": 2080,
+  "totalUnpaidEUR": 1923.45,
+  "breakdown": {
+    "mehrarbeit": { "hours": 208, "rateMultiplier": 1.20, "amount": 1535.04 },
+    "legaleUeberstunden": { "hours": 96, "rateMultiplier": 1.40, "amount": 826.56 },
+    "sonntags": { "hours": 32, "rateMultiplier": 1.75, "amount": 0, "note": "Sonntags-Premium möglicherweise durch Mahlzeit-Kompensation abgedeckt" }
+  },
+  "trustScore": 67,
+  "manipulationFlags": [],
+  "evidenceQuality": "moderate",
+  "winProbability": 0.55,
+  "avatarSeed": "giannis"
+}
