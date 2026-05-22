@@ -4,6 +4,7 @@ import { SEED_REPORTS } from '@/lib/seed-data'
 import { getLocale, getDictionary } from '@/lib/i18n'
 import CopyButton from '@/components/CopyButton'
 import CategoryBadge from '@/components/CategoryBadge'
+import ElapsedTimeBadge from '@/components/reports/ElapsedTimeBadge'
 
 type Report = {
   public_token: string
@@ -14,6 +15,8 @@ type Report = {
   lng: number
   category: string
   created_at: string
+  notified_at?: string | null
+  resolved_at?: string | null
   description?: string | null
   municipality: { name_el: string } | null
 }
@@ -31,7 +34,7 @@ async function getReport(token: string): Promise<Report | null> {
   if (isSupabaseConfigured) {
     const { data } = await supabaseAdmin
       .from('reports')
-      .select('public_token, status, image_url, image_urls, lat, lng, category, created_at, description, municipality:municipality_id(name_el)')
+      .select('public_token, status, image_url, image_urls, lat, lng, category, created_at, notified_at, resolved_at, description, municipality:municipality_id(name_el)')
       .eq('public_token', token)
       .single()
     if (data) return data as unknown as Report
@@ -307,6 +310,15 @@ export default async function TrackingPage({
               })}
             </ol>
           </div>
+        )}
+
+        {/* Elapsed-time pressure badge */}
+        {!isRejected && (
+          <ElapsedTimeBadge
+            report={report}
+            strings={t.elapsed}
+            locale={locale}
+          />
         )}
 
         {/* Share */}

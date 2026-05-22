@@ -5,6 +5,7 @@ import type * as LeafletType from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import type { SeedReport } from '@/lib/seed-data'
 import { useLocale } from './LocaleProvider'
+import { getElapsed, getSeverityTier, formatDuration } from '@/lib/elapsed'
 
 function escHtml(s: string): string {
   return s
@@ -54,22 +55,46 @@ export default function MapClient({ reports }: { reports: SeedReport[] }) {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     }).addTo(map)
 
-    const icon = L.icon({
-      iconUrl:       'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-      iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-      shadowUrl:     'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-      iconSize:    [25, 41],
-      iconAnchor:  [12, 41],
-      popupAnchor: [1, -34],
-    })
+    // Severity colours for circle markers — mirrors tailwind tokens
+    const SEVERITY_COLOR: Record<string, string> = {
+      fresh:   '#6B8E23',
+      waiting: '#d97706',
+      overdue: '#ea580c',
+      ignored: '#dc2626',
+    }
 
     reports.forEach((r) => {
       const municipalityName = r.municipality?.name_el ?? t.map.unknownMunicipality
       const categoryLabel    = t.tracking.categories[r.category as keyof typeof t.tracking.categories] ?? r.category
       const statusKey        = (r.status ?? 'pending') as StatusKey
       const statusLabel      = t.map.statuses[statusKey] ?? r.status
-      const style            = STATUS_STYLE[statusKey] ?? STATUS_STYLE.pending
+      const statusStyle      = STATUS_STYLE[statusKey] ?? STATUS_STYLE.pending
       const date             = formatDate(r.created_at, locale)
+
+      // Elapsed / severity
+      const elapsed    = getElapsed(r)
+      const primaryDays = elapsed.daysSinceNotified ?? elapsed.daysSinceReported
+      const tier       = getSeverityTier(primaryDays)
+      const markerColor = SEVERITY_COLOR[tier]
+
+      // Elapsed block HTML for popup
+      const el = t.elapsed
+      let elapsedHtml: string
+      if (elapsed.daysSinceNotified !== null) {
+        const nDays = elapsed.daysSinceNotified
+        const nStr  = escHtml(formatDuration(nDays, locale))
+        elapsedHtml = `
+          <div style="background:${markerColor}11;border:1px solid ${markerColor}44;border-radius:8px;padding:8px 10px;margin-bottom:10px">
+            <div style="display:flex;align-items:baseline;gap:4px">
+              <span style="font-size:28px;font-weight:900;color:${markerColor};line-height:1;font-variant-numeric:tabular-nums">${nDays}</span>
+              <span style="font-size:11px;font-weight:600;color:${markerColor}">${escHtml(el.daysUnit)}</span>
+            </div>
+            <p style="margin:1px 0 0;font-size:10px;font-weight:500;color:${markerColor}">${escHtml(el.notifiedLabel)}</p>
+          </div>`
+      } else {
+        elapsedHtml = `<p style="font-size:10px;color:#9ca3af;font-style:italic;margin:0 0 8px">${escHtml(el.notNotified)}</p>`
+      }
+      const reportedLine = `<p style="font-size:10px;color:#9ca3af;margin:0 0 10px">${escHtml(el.reportedAgo.replace('{n}', formatDuration(elapsed.daysSinceReported, locale)))}</p>`
 
       const popup = `
         <div style="width:260px;font-family:system-ui,-apple-system,sans-serif;overflow:hidden">
@@ -77,21 +102,22 @@ export default function MapClient({ reports }: { reports: SeedReport[] }) {
             src="${escHtml(r.image_url)}"
             alt="${escHtml(categoryLabel)}"
             loading="lazy"
-            style="width:100%;height:150px;object-fit:cover;display:block;border-radius:6px 6px 0 0;background:#f3f4f6"
-          />` : `<div style="width:100%;height:80px;background:#f3f4f6;border-radius:6px 6px 0 0;display:flex;align-items:center;justify-content:center;font-size:28px">🗑️</div>`}
-          <div style="padding:12px 12px 10px">
-            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:5px">
+            style="width:100%;height:140px;object-fit:cover;display:block;border-radius:6px 6px 0 0;background:#f3f4f6"
+          />` : `<div style="width:100%;height:60px;background:#f3f4f6;border-radius:6px 6px 0 0;display:flex;align-items:center;justify-content:center;font-size:28px">🗑️</div>`}
+          <div style="padding:10px 12px 10px">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px">
               <span style="font-weight:700;font-size:13px;color:#111827;line-height:1.3">
                 ${escHtml(municipalityName)}
               </span>
               <span style="
                 flex-shrink:0;font-size:10px;font-weight:600;white-space:nowrap;
                 padding:2px 8px;border-radius:9999px;
-                background:${style.bg};color:${style.color}
+                background:${statusStyle.bg};color:${statusStyle.color}
               ">${escHtml(statusLabel)}</span>
             </div>
-            <p style="font-size:12px;color:#4b5563;margin:0 0 2px;font-weight:500">${escHtml(categoryLabel)}</p>
-            <p style="font-size:11px;color:#9ca3af;margin:0 0 12px">${escHtml(date)}</p>
+            ${elapsedHtml}
+            ${reportedLine}
+            <p style="font-size:11px;color:#4b5563;margin:0 0 10px;font-weight:500">${escHtml(categoryLabel)} · ${escHtml(date)}</p>
             <a
               href="/r/${escHtml(r.public_token)}"
               style="
@@ -105,7 +131,14 @@ export default function MapClient({ reports }: { reports: SeedReport[] }) {
         </div>
       `
 
-      L.marker([r.lat, r.lng], { icon })
+      L.circleMarker([r.lat, r.lng], {
+        radius: 9,
+        fillColor: markerColor,
+        color: '#ffffff',
+        weight: 2,
+        opacity: 1,
+        fillOpacity: 0.85,
+      })
         .addTo(map)
         .bindPopup(popup, { maxWidth: 280, minWidth: 260 })
     })

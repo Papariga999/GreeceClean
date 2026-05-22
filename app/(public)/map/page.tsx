@@ -15,7 +15,7 @@ async function getReports(): Promise<SeedReport[]> {
 
   const { data } = await supabase
     .from('reports')
-    .select('public_token, image_url, lat, lng, category, status, created_at, municipality:municipality_id(name_el)')
+    .select('public_token, image_url, lat, lng, category, status, created_at, notified_at, resolved_at, municipality:municipality_id(name_el)')
     .eq('is_approved', true)
     .order('created_at', { ascending: false })
 

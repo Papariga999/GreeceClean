@@ -98,4 +98,18 @@ export type Dictionary = {
     viewReport: string
     statuses: { pending: string; in_review: string; forwarded: string; resolved: string; rejected: string }
   }
+
+  elapsed: {
+    reportedAgo: string        // "Reported {n} ago"
+    notifiedAgo: string        // "Municipality notified {n} ago"
+    notifiedLabel: string      // "Municipality notified" — visual label below the big number
+    notNotified: string        // "Not yet forwarded to municipality"
+    daysUnit: string           // "days" / "Tage" / "ημέρες" — shown beside the big number
+    tierFresh: string
+    tierWaiting: string
+    tierOverdue: string
+    tierIgnored: string
+    ariaReported: string       // full sentence for aria-label
+    ariaNotified: string
+  }
 }

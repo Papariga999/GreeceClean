@@ -36,6 +36,22 @@ const config: Config = {
           800: '#2A380E',
           900: '#151C07',
         },
+        // Severity tiers for elapsed-time pressure UI
+        warning: {
+          DEFAULT: '#d97706',
+          light: '#fef3c7',
+          text: '#92400e',
+        },
+        overdue: {
+          DEFAULT: '#ea580c',
+          light: '#fff7ed',
+          text: '#7c2d12',
+        },
+        critical: {
+          DEFAULT: '#dc2626',
+          light: '#fef2f2',
+          text: '#991b1b',
+        },
       },
       borderRadius: {
         DEFAULT: '1rem',

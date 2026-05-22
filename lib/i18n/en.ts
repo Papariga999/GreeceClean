@@ -151,6 +151,20 @@ const en: Dictionary = {
     viewReport: 'View report →',
     statuses: { pending: 'Pending', in_review: 'Under Review', forwarded: 'Sent to Municipality', resolved: 'Cleaned Up', rejected: 'Rejected' },
   },
+
+  elapsed: {
+    reportedAgo:    'Reported {n} ago',
+    notifiedAgo:    'Municipality notified {n} ago',
+    notifiedLabel:  'Municipality notified',
+    notNotified:    'Not yet forwarded to municipality',
+    daysUnit:       'days',
+    tierFresh:      'fresh',
+    tierWaiting:    'waiting',
+    tierOverdue:    'overdue',
+    tierIgnored:    'ignored',
+    ariaReported:   'This report was submitted {n} ago.',
+    ariaNotified:   'The municipality was notified {n} ago.',
+  },
 }
 
 export default en

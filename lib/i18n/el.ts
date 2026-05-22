@@ -151,6 +151,20 @@ const el: Dictionary = {
     viewReport: 'Προβολή αναφοράς →',
     statuses: { pending: 'Εκκρεμεί', in_review: 'Υπό Εξέταση', forwarded: 'Εστάλη στον Δήμο', resolved: 'Καθαρίστηκε', rejected: 'Απορρίφθηκε' },
   },
+
+  elapsed: {
+    reportedAgo:    'Αναφέρθηκε πριν {n}',
+    notifiedAgo:    'Ο δήμος ειδοποιήθηκε πριν {n}',
+    notifiedLabel:  'Ο δήμος ειδοποιήθηκε',
+    notNotified:    'Δεν έχει αποσταλεί στον δήμο ακόμα',
+    daysUnit:       'ημέρες',
+    tierFresh:      'νέο',
+    tierWaiting:    'αναμονή',
+    tierOverdue:    'εκπρόθεσμο',
+    tierIgnored:    'αγνοήθηκε',
+    ariaReported:   'Η αναφορά υποβλήθηκε πριν {n}.',
+    ariaNotified:   'Ο δήμος ειδοποιήθηκε πριν {n}.',
+  },
 }
 
 export default el

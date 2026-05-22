@@ -34,7 +34,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 
   let update: Record<string, unknown>
   if (body.action === 'approve') {
-    update = { is_approved: true, status: 'in_review' }
+    update = { is_approved: true, status: 'in_review', confirmed_at: new Date().toISOString() }
     // After approve: fire-and-forget email to municipality via webhook endpoint
     const appUrl      = process.env.NEXT_PUBLIC_APP_URL ?? ''
     const webhookSecret = process.env.WEBHOOK_SECRET
@@ -46,7 +46,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
       }).catch((e) => console.error('[auto-email] failed:', e))
     }
   } else if (body.action === 'mark_cleaned') {
-    update = { status: 'resolved' }
+    update = { status: 'resolved', resolved_at: new Date().toISOString() }
   } else if (body.action === 'reject') {
     update = { is_approved: false, status: 'rejected' }
   } else if (body.action === 'deactivate') {
@@ -103,7 +103,7 @@ async function handleForward(id: string): Promise<NextResponse> {
 
   const { error: updateError } = await supabaseAdmin
     .from('reports')
-    .update({ status: 'forwarded' })
+    .update({ status: 'forwarded', notified_at: new Date().toISOString() })
     .eq('id', id)
 
   if (updateError) {

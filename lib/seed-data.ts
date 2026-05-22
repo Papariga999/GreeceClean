@@ -10,6 +10,9 @@ export type SeedReport = {
   category: string
   status: string
   created_at: string
+  confirmed_at?: string | null
+  notified_at?: string | null
+  resolved_at?: string | null
   municipality: { name_el: string } | null
 }
 

@@ -151,6 +151,20 @@ const de: Dictionary = {
     viewReport: 'Meldung anzeigen →',
     statuses: { pending: 'Ausstehend', in_review: 'In Prüfung', forwarded: 'An Gemeinde gesendet', resolved: 'Beseitigt', rejected: 'Abgelehnt' },
   },
+
+  elapsed: {
+    reportedAgo:    'Gemeldet vor {n}',
+    notifiedAgo:    'Gemeinde benachrichtigt vor {n}',
+    notifiedLabel:  'Gemeinde benachrichtigt',
+    notNotified:    'Noch nicht an Gemeinde weitergeleitet',
+    daysUnit:       'Tage',
+    tierFresh:      'neu',
+    tierWaiting:    'wartend',
+    tierOverdue:    'überfällig',
+    tierIgnored:    'ignoriert',
+    ariaReported:   'Diese Meldung wurde vor {n} eingereicht.',
+    ariaNotified:   'Die Gemeinde wurde vor {n} benachrichtigt.',
+  },
 }
 
 export default de
