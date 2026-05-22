@@ -39,7 +39,7 @@ export type Dictionary = {
     labelDescription: string
     rejectedMsg: string
     progressTitle: string
-    steps: [string, string, string, string]
+    steps: string[]
     shareTitle: string
     whatsappTemplate: string
     categories: Record<string, string>
