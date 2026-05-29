@@ -82,7 +82,6 @@ export default function MapClient({ reports }: { reports: SeedReport[] }) {
       let elapsedHtml: string
       if (elapsed.daysSinceNotified !== null) {
         const nDays = elapsed.daysSinceNotified
-        const nStr  = escHtml(formatDuration(nDays, locale))
         elapsedHtml = `
           <div style="background:${markerColor}11;border:1px solid ${markerColor}44;border-radius:8px;padding:8px 10px;margin-bottom:10px">
             <div style="display:flex;align-items:baseline;gap:4px">

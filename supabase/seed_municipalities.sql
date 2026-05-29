@@ -1,5 +1,5 @@
 -- GreeceClean — Municipality email seed
--- Run AFTER email_notifications.sql (requires the UNIQUE constraint on name_el).
+-- Run AFTER schema.sql (requires the UNIQUE constraint on name_el).
 --
 -- Column mapping vs. the prompt spec:
 --   prompt `name`   → schema `name_el`

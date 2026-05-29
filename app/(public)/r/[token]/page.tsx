@@ -15,6 +15,7 @@ type Report = {
   lng: number
   category: string
   created_at: string
+  confirmed_at?: string | null
   notified_at?: string | null
   resolved_at?: string | null
   description?: string | null
@@ -34,7 +35,7 @@ async function getReport(token: string): Promise<Report | null> {
   if (isSupabaseConfigured) {
     const { data } = await supabaseAdmin
       .from('reports')
-      .select('public_token, status, image_url, image_urls, lat, lng, category, created_at, notified_at, resolved_at, description, municipality:municipality_id(name_el)')
+      .select('public_token, status, image_url, image_urls, lat, lng, category, created_at, confirmed_at, notified_at, resolved_at, description, municipality:municipality_id(name_el)')
       .eq('public_token', token)
       .single()
     if (data) return data as unknown as Report
@@ -151,8 +152,25 @@ export default async function TrackingPage({
   ].join('%2C')
   const osmSrc = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${report.lat.toFixed(5)}%2C${report.lng.toFixed(5)}`
 
+  const formatMilestoneDate = (value?: string | null) =>
+    value
+      ? new Date(value).toLocaleDateString(locale === 'el' ? 'el-GR' : locale === 'de' ? 'de-DE' : 'en-GB', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric',
+        })
+      : null
+
+  const milestoneDates = [
+    report.created_at,
+    report.confirmed_at,
+    report.notified_at,
+    report.resolved_at,
+  ]
+
   const STEPS = tr.steps.map((label, i) => ({
     label,
+    date: formatMilestoneDate(milestoneDates[i]),
     done: [
       () => true,
       (s: string) => ['in_review', 'forwarded', 'resolved'].includes(s),
@@ -291,7 +309,7 @@ export default async function TrackingPage({
           <div className="card">
             <h2 className="font-semibold text-primary mb-6">{tr.progressTitle}</h2>
             <ol className="relative ml-3 space-y-0">
-              {STEPS.map(({ label, done }, i) => {
+              {STEPS.map(({ label, date, done }, i) => {
                 const isDone = done(report.status)
                 const isLast = i === STEPS.length - 1
                 return (
@@ -302,8 +320,15 @@ export default async function TrackingPage({
                     <span className={`shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-colors ${isDone ? 'bg-action border-action text-white' : 'bg-white border-gray-300 text-gray-400'}`}>
                       {isDone ? '✓' : i + 1}
                     </span>
-                    <span className={`pt-0.5 text-sm font-medium ${isDone ? 'text-gray-800' : 'text-gray-400'}`}>
-                      {label}
+                    <span className="pt-0.5">
+                      <span className={`block text-sm font-medium ${isDone ? 'text-gray-800' : 'text-gray-400'}`}>
+                        {label}
+                      </span>
+                      {isDone && date && (
+                        <time className="block text-xs text-gray-400 mt-0.5" dateTime={milestoneDates[i] ?? undefined}>
+                          {date}
+                        </time>
+                      )}
                     </span>
                   </li>
                 )

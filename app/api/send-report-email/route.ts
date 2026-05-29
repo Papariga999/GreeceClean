@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin, isSupabaseConfigured } from '@/lib/supabase'
 import { sendEmail } from '@/lib/email'
 import { buildMunicipalityReportEmail, type ReportForEmail } from '@/lib/emailTemplates'
+import { notifyReporterStatus } from '@/lib/reporterNotifications'
 import type { Lang } from '@/emails/MunicipalityReport'
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
@@ -86,7 +87,24 @@ export async function POST(req: NextRequest) {
   }
 
   // ── Log to email_logs ──────────────────────────────────────────────────────
-  await supabaseAdmin.from('email_logs').insert({
+  let statusUpdated = false
+  let reporterNotified = false
+  if (emailStatus === 'sent') {
+    const { error: updateErr } = await supabaseAdmin
+      .from('reports')
+      .update({ status: 'forwarded', notified_at: new Date().toISOString() })
+      .eq('id', report_id)
+
+    if (updateErr) {
+      console.error('[send-report-email] report status update failed:', updateErr)
+    } else {
+      statusUpdated = true
+      const reporterNotification = await notifyReporterStatus(report_id, 'forwarded')
+      reporterNotified = reporterNotification.sent
+    }
+  }
+
+  const { error: logErr } = await supabaseAdmin.from('email_logs').insert({
     report_id,
     municipality_id: muni.id,
     recipient_email: muni.email_official,
@@ -94,9 +112,19 @@ export async function POST(req: NextRequest) {
     error_message:   emailError,
   })
 
+  if (logErr) {
+    console.error('[send-report-email] email_logs insert failed:', logErr)
+  }
+
   if (emailStatus === 'failed') {
     return NextResponse.json({ error: 'Email delivery failed' }, { status: 500 })
   }
 
-  return NextResponse.json({ ok: true, recipient: muni.email_official })
+  return NextResponse.json({
+    ok: true,
+    recipient: muni.email_official,
+    statusUpdated,
+    reporterNotified,
+    logRecorded: !logErr,
+  })
 }

@@ -1,9 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createHmac } from 'crypto'
-
-function signToken(password: string, secret: string): string {
-  return createHmac('sha256', secret).update(password).digest('hex')
-}
+import { isValidAdminPassword, signAdminToken } from '@/lib/adminAuth'
 
 export async function POST(req: NextRequest) {
   const formData = await req.formData()
@@ -16,20 +12,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Server not configured' }, { status: 500 })
   }
 
-  const passwordMatch = (() => {
-    try {
-      const { timingSafeEqual } = require('crypto')
-      return password.length === adminPassword.length &&
-        timingSafeEqual(Buffer.from(password), Buffer.from(adminPassword))
-    } catch { return false }
-  })()
-  if (!passwordMatch) {
+  if (!isValidAdminPassword(password)) {
     const loginUrl = new URL('/admin/login', req.url)
     loginUrl.searchParams.set('error', '1')
     return NextResponse.redirect(loginUrl, { status: 303 })
   }
 
-  const token = signToken(adminPassword, cookieSecret)
+  const token = signAdminToken(adminPassword, cookieSecret)
   const dashboardUrl = new URL('/admin/dashboard', req.url)
   const res = NextResponse.redirect(dashboardUrl, { status: 303 })
 

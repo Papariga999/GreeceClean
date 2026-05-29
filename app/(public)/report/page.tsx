@@ -18,7 +18,7 @@ export default async function ReportPage() {
           <h1 className="text-3xl font-extrabold text-primary">{f.pageTitle}</h1>
           <p className="text-gray-500 text-sm mt-1">{f.pageSubtitle}</p>
         </div>
-        <ReportForm translations={f} copyTranslations={c} />
+        <ReportForm translations={f} copyTranslations={c} locale={locale} />
       </div>
     </div>
   )

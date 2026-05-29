@@ -1,11 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
 import sharp from 'sharp'
-import { reverseGeocode } from '@/lib/geocoding'
+import { normalizeGreekName, reverseGeocode } from '@/lib/geocoding'
+import { checkRateLimit, getClientIp } from '@/lib/rateLimit'
 import { supabaseAdmin, isSupabaseConfigured } from '@/lib/supabase'
 import { VALID_CATEGORIES } from '@/lib/categories'
 
 const MAX_BYTES = 500 * 1024 // 500 KB per image
 const STORAGE_BUCKET = 'reports'
+const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+function reportRateLimitPerHour(): number {
+  const parsed = Number.parseInt(process.env.REPORT_RATE_LIMIT_PER_HOUR ?? '10', 10)
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : 10
+}
 
 async function compressImage(raw: Buffer): Promise<Buffer> {
   const attempts = [
@@ -33,31 +41,53 @@ function originOf(req: NextRequest): string {
   return req.nextUrl.origin
 }
 
-// Look up municipality by name; auto-create if not found.
 async function resolveMunicipalityId(name: string): Promise<string | null> {
-  if (!name) return null
+  const normalizedName = normalizeGreekName(name)
+  if (!normalizedName) return null
 
-  const { data: exact } = await supabaseAdmin
+  const { data: municipalities, error } = await supabaseAdmin
     .from('municipalities')
-    .select('id')
-    .ilike('name_el', name)
-    .maybeSingle()
+    .select('id, name_el')
+
+  if (error) {
+    console.warn('Municipality lookup failed:', error)
+    return null
+  }
+
+  const rows = municipalities ?? []
+  const exact = rows.find((m) => normalizeGreekName(m.name_el) === normalizedName)
   if (exact) return exact.id
 
-  const { data: partial } = await supabaseAdmin
-    .from('municipalities')
-    .select('id')
-    .ilike('name_el', `%${name}%`)
-    .limit(1)
-    .maybeSingle()
+  const partial = rows.find((m) => {
+    const candidate = normalizeGreekName(m.name_el)
+    return candidate.includes(normalizedName) || normalizedName.includes(candidate)
+  })
   if (partial) return partial.id
 
-  const { data: created } = await supabaseAdmin
+  const { data: created, error: createError } = await supabaseAdmin
     .from('municipalities')
-    .insert({ name_el: name.slice(0, 255), name_en: '', name_de: '' })
+    .insert({ name_el: name.slice(0, 255), name_en: '', name_de: '', is_auto_created: true })
     .select('id')
     .single()
+
+  if (createError) {
+    const { data: fallback } = await supabaseAdmin
+      .from('municipalities')
+      .select('id')
+      .eq('name_el', name.slice(0, 255))
+      .maybeSingle()
+    return fallback?.id ?? null
+  }
+
   return created?.id ?? null
+}
+
+async function cleanupUploadedImages(paths: string[]): Promise<void> {
+  if (paths.length === 0) return
+  const { error } = await supabaseAdmin.storage.from(STORAGE_BUCKET).remove(paths)
+  if (error) {
+    console.error('Storage cleanup error:', error)
+  }
 }
 
 export async function POST(req: NextRequest) {
@@ -65,7 +95,7 @@ export async function POST(req: NextRequest) {
   try {
     formData = await req.formData()
   } catch {
-    return NextResponse.json({ error: 'Invalid request body' }, { status: 400 })
+    return NextResponse.json({ error: 'Invalid request body', code: 'invalid_request_body' }, { status: 400 })
   }
 
   // ── Honeypot ───────────────────────────────────────────────────────────────
@@ -76,6 +106,24 @@ export async function POST(req: NextRequest) {
       token: fakeToken,
       trackingUrl: `${originOf(req)}/r/${fakeToken}`,
     })
+  }
+
+  const rate = checkRateLimit(`report:${getClientIp(req.headers)}`, {
+    limit: reportRateLimitPerHour(),
+    windowMs: RATE_LIMIT_WINDOW_MS,
+  })
+  if (!rate.allowed) {
+    return NextResponse.json(
+      { error: 'Too many submissions. Please try again later.', code: 'rate_limited' },
+      {
+        status: 429,
+        headers: {
+          'Retry-After': String(rate.retryAfterSeconds),
+          'X-RateLimit-Limit': String(rate.limit),
+          'X-RateLimit-Remaining': String(rate.remaining),
+        },
+      },
+    )
   }
 
   // ── Input validation ───────────────────────────────────────────────────────
@@ -89,28 +137,30 @@ export async function POST(req: NextRequest) {
   const lng      = parseFloat(formData.get('lng')?.toString() ?? '')
   const category = formData.get('category')?.toString() ?? ''
   const description = formData.get('description')?.toString().slice(0, 500) || null
+  const reporterEmail = (formData.get('reporter_email')?.toString() ?? '').trim().toLowerCase()
+  const localeRaw = formData.get('locale')?.toString()
+  const reporterLocale = localeRaw === 'en' || localeRaw === 'de' ? localeRaw : 'el'
 
   if (imageFiles.length === 0 || isNaN(lat) || isNaN(lng) || !category) {
-    return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+    return NextResponse.json({ error: 'Missing required fields', code: 'missing_fields' }, { status: 400 })
   }
 
   if (!isFinite(lat) || !isFinite(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
-    return NextResponse.json({ error: 'Invalid coordinates' }, { status: 400 })
-  }
-
-  // Greece bounding box — reject coordinates clearly outside the country
-  if (lat < 34.8 || lat > 42.0 || lng < 19.4 || lng > 29.7) {
-    return NextResponse.json({ error: 'Coordinates must be within Greece' }, { status: 422 })
+    return NextResponse.json({ error: 'Invalid coordinates', code: 'invalid_coordinates' }, { status: 400 })
   }
 
   for (const f of imageFiles) {
     if (f.size > 10 * 1024 * 1024) {
-      return NextResponse.json({ error: 'Image too large (max 10 MB)' }, { status: 413 })
+      return NextResponse.json({ error: 'Image too large (max 10 MB)', code: 'image_too_large' }, { status: 413 })
     }
   }
 
   if (!VALID_CATEGORIES.includes(category)) {
-    return NextResponse.json({ error: 'Invalid category' }, { status: 422 })
+    return NextResponse.json({ error: 'Invalid category', code: 'invalid_category' }, { status: 422 })
+  }
+
+  if (reporterEmail && !EMAIL_RE.test(reporterEmail)) {
+    return NextResponse.json({ error: 'Invalid reporter email', code: 'invalid_reporter_email' }, { status: 422 })
   }
 
   // ── Compress all images ────────────────────────────────────────────────────
@@ -124,7 +174,7 @@ export async function POST(req: NextRequest) {
     )
   } catch (err) {
     console.error('Image processing error:', err)
-    return NextResponse.json({ error: 'Image processing failed' }, { status: 422 })
+    return NextResponse.json({ error: 'Image processing failed', code: 'image_processing_failed' }, { status: 422 })
   }
 
   // ── Token & geocoding ──────────────────────────────────────────────────────
@@ -146,30 +196,36 @@ export async function POST(req: NextRequest) {
     i === 0 ? `${publicToken}.webp` : `${publicToken}_${i + 1}.webp`
   )
 
-  const [uploadResults, municipalityId] = await Promise.all([
-    Promise.all(
-      compressedImages.map((buf, i) =>
-        supabaseAdmin.storage
-          .from(STORAGE_BUCKET)
-          .upload(storagePaths[i], buf, { contentType: 'image/webp', upsert: false })
-      )
-    ),
-    resolveMunicipalityId(municipalityName),
-  ])
+  const municipalityIdPromise = resolveMunicipalityId(municipalityName)
+  const uploadedPaths: string[] = []
 
-  for (const result of uploadResults) {
-    if (result.error) {
-      console.error('Storage upload error:', result.error)
-      return NextResponse.json({ error: 'Storage error' }, { status: 500 })
+  for (let i = 0; i < compressedImages.length; i++) {
+    try {
+      const result = await supabaseAdmin.storage
+        .from(STORAGE_BUCKET)
+        .upload(storagePaths[i], compressedImages[i], { contentType: 'image/webp', upsert: false })
+
+      if (result.error) {
+        console.error('Storage upload error:', result.error)
+        await cleanupUploadedImages(uploadedPaths)
+        return NextResponse.json({ error: 'Storage error', code: 'storage_error' }, { status: 500 })
+      }
+      uploadedPaths.push(storagePaths[i])
+    } catch (err) {
+      console.error('Storage upload exception:', err)
+      await cleanupUploadedImages(uploadedPaths)
+      return NextResponse.json({ error: 'Storage error', code: 'storage_error' }, { status: 500 })
     }
   }
+
+  const municipalityId = await municipalityIdPromise
 
   const imageUrls = storagePaths.map((path) =>
     supabaseAdmin.storage.from(STORAGE_BUCKET).getPublicUrl(path).data.publicUrl
   )
 
   // ── Insert report ──────────────────────────────────────────────────────────
-  const { error: dbErr } = await supabaseAdmin.from('reports').insert({
+  const { data: insertedReport, error: dbErr } = await supabaseAdmin.from('reports').insert({
     public_token:    publicToken,
     image_url:       imageUrls[0],
     image_urls:      imageUrls,
@@ -180,11 +236,23 @@ export async function POST(req: NextRequest) {
     is_approved:     false,
     municipality_id: municipalityId,
     description,
-  })
+  }).select('id').single()
 
   if (dbErr) {
     console.error('DB insert error:', dbErr)
-    return NextResponse.json({ error: 'Database error' }, { status: 500 })
+    await cleanupUploadedImages(uploadedPaths)
+    return NextResponse.json({ error: 'Database error', code: 'database_error' }, { status: 500 })
+  }
+
+  if (reporterEmail && insertedReport?.id) {
+    const { error: subscriberErr } = await supabaseAdmin.from('report_subscribers').insert({
+      report_id: insertedReport.id,
+      email:     reporterEmail,
+      locale:    reporterLocale,
+    })
+    if (subscriberErr) {
+      console.error('Reporter subscription insert error:', subscriberErr)
+    }
   }
 
   return NextResponse.json({

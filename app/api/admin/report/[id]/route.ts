@@ -2,11 +2,90 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin, isSupabaseConfigured } from '@/lib/supabase'
 import { sendEmail } from '@/lib/email'
 import { buildMunicipalityReportEmail, type ReportForEmail } from '@/lib/emailTemplates'
+import { notifyReporterStatus } from '@/lib/reporterNotifications'
 import { VALID_CATEGORIES } from '@/lib/categories'
+import { isValidAdminSession } from '@/lib/adminAuth'
 
 type Params = { params: Promise<{ id: string }> }
 
+type EmailDispatchResult =
+  | { emailDispatched: true; statusUpdated?: boolean; logRecorded?: boolean; reporterNotified?: boolean }
+  | { emailDispatched: false; reason: string }
+
+function imageStoragePathFromUrl(url: string): string | null {
+  try {
+    const parsed = new URL(url)
+    const marker = '/reports/'
+    const index = parsed.pathname.indexOf(marker)
+    if (index === -1) return null
+    return decodeURIComponent(parsed.pathname.slice(index + marker.length))
+  } catch {
+    return null
+  }
+}
+
+async function dispatchApprovalEmail(reportId: string): Promise<EmailDispatchResult> {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? ''
+  const webhookSecret = process.env.WEBHOOK_SECRET
+
+  if (!appUrl || !webhookSecret) {
+    const reason = 'missing webhook configuration'
+    console.warn('[auto-email] skipped:', reason, {
+      hasAppUrl: Boolean(appUrl),
+      hasWebhookSecret: Boolean(webhookSecret),
+    })
+    return { emailDispatched: false, reason }
+  }
+
+  let endpoint: string
+  try {
+    endpoint = new URL('/api/send-report-email', appUrl).toString()
+  } catch {
+    const reason = 'invalid NEXT_PUBLIC_APP_URL'
+    console.warn('[auto-email] skipped:', reason)
+    return { emailDispatched: false, reason }
+  }
+
+  try {
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${webhookSecret}`,
+      },
+      body: JSON.stringify({ report_id: reportId }),
+    })
+
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({})) as { error?: string }
+      const reason = body.error ?? `email webhook returned HTTP ${res.status}`
+      console.warn('[auto-email] webhook did not dispatch:', reason)
+      return { emailDispatched: false, reason }
+    }
+
+    const body = await res.json().catch(() => ({})) as {
+      statusUpdated?: boolean
+      logRecorded?: boolean
+      reporterNotified?: boolean
+    }
+    return {
+      emailDispatched: true,
+      statusUpdated: body.statusUpdated,
+      logRecorded: body.logRecorded,
+      reporterNotified: body.reporterNotified,
+    }
+  } catch (e) {
+    const reason = e instanceof Error ? e.message : 'email webhook request failed'
+    console.warn('[auto-email] webhook request failed:', reason)
+    return { emailDispatched: false, reason }
+  }
+}
+
 export async function PATCH(req: NextRequest, { params }: Params) {
+  if (!isValidAdminSession(req)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
   if (!isSupabaseConfigured) {
     return NextResponse.json({ error: 'Supabase not configured' }, { status: 503 })
   }
@@ -33,26 +112,23 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   const VALID_STATUSES = ['pending', 'in_review', 'forwarded', 'resolved', 'rejected']
 
   let update: Record<string, unknown>
+  let dispatchEmailAfterUpdate = false
+  let reporterStatusAfterUpdate: 'resolved' | null = null
   if (body.action === 'approve') {
     update = { is_approved: true, status: 'in_review', confirmed_at: new Date().toISOString() }
-    // After approve: fire-and-forget email to municipality via webhook endpoint
-    const appUrl      = process.env.NEXT_PUBLIC_APP_URL ?? ''
-    const webhookSecret = process.env.WEBHOOK_SECRET
-    if (appUrl && webhookSecret) {
-      fetch(`${appUrl}/api/send-report-email`, {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${webhookSecret}` },
-        body:    JSON.stringify({ report_id: id }),
-      }).catch((e) => console.error('[auto-email] failed:', e))
-    }
+    dispatchEmailAfterUpdate = true
   } else if (body.action === 'mark_cleaned') {
     update = { status: 'resolved', resolved_at: new Date().toISOString() }
+    reporterStatusAfterUpdate = 'resolved'
   } else if (body.action === 'reject') {
     update = { is_approved: false, status: 'rejected' }
   } else if (body.action === 'deactivate') {
     update = { is_approved: false, status: 'pending' }
   } else if (body.action === 'forward') {
     return handleForward(id)
+  } else if (body.action === 'resend_email') {
+    const dispatch = await dispatchApprovalEmail(id)
+    return NextResponse.json({ ok: true, ...dispatch })
   } else if (body.action === 'edit') {
     update = {}
     if (body.category && VALID_CATEGORIES.includes(body.category)) update.category = body.category
@@ -76,6 +152,20 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   if (error) {
     console.error('Admin PATCH error:', error)
     return NextResponse.json({ error: 'Update failed' }, { status: 500 })
+  }
+
+  if (dispatchEmailAfterUpdate) {
+    const dispatch = await dispatchApprovalEmail(id)
+    return NextResponse.json({ ok: true, ...dispatch })
+  }
+
+  if (reporterStatusAfterUpdate) {
+    const reporterNotification = await notifyReporterStatus(id, reporterStatusAfterUpdate)
+    return NextResponse.json({
+      ok: true,
+      reporterNotified: reporterNotification.sent,
+      reporterNotificationReason: reporterNotification.sent ? undefined : reporterNotification.reason,
+    })
   }
 
   return NextResponse.json({ ok: true })
@@ -127,7 +217,7 @@ async function handleForward(id: string): Promise<NextResponse> {
     console.error('Forward email error:', emailError)
   }
 
-  await supabaseAdmin.from('email_logs').insert({
+  const { error: logError } = await supabaseAdmin.from('email_logs').insert({
     report_id:        id,
     municipality_id:  muni.id,
     recipient_email:  muni.email_official,
@@ -135,17 +225,30 @@ async function handleForward(id: string): Promise<NextResponse> {
     error_message:    emailError,
   })
 
+  if (logError) {
+    console.error('Forward email log error:', logError)
+  }
+
   if (emailStatus === 'failed') {
     return NextResponse.json(
-      { ok: true, warning: 'Το status άλλαξε σε "forwarded" αλλά το email απέτυχε.' },
+      { ok: true, warning: 'Το status άλλαξε σε "forwarded" αλλά το email απέτυχε.', logRecorded: !logError },
       { status: 207 },
     )
   }
 
-  return NextResponse.json({ ok: true })
+  const reporterNotification = await notifyReporterStatus(id, 'forwarded')
+  return NextResponse.json({
+    ok: true,
+    logRecorded: !logError,
+    reporterNotified: reporterNotification.sent,
+  })
 }
 
-export async function DELETE(_req: NextRequest, { params }: Params) {
+export async function DELETE(req: NextRequest, { params }: Params) {
+  if (!isValidAdminSession(req)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
   if (!isSupabaseConfigured) {
     return NextResponse.json({ error: 'Supabase not configured' }, { status: 503 })
   }
@@ -155,15 +258,32 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
     return NextResponse.json({ error: 'Invalid report ID' }, { status: 400 })
   }
 
-  // Fetch public_token first so we can remove the stored image
+  // Fetch storage identifiers first so we can remove every stored image.
   const { data: report } = await supabaseAdmin
     .from('reports')
-    .select('public_token')
+    .select('public_token, image_urls')
     .eq('id', id)
     .single()
 
+  const paths = new Set<string>()
   if (report?.public_token) {
-    await supabaseAdmin.storage.from('reports').remove([`${report.public_token}.webp`])
+    paths.add(`${report.public_token}.webp`)
+    paths.add(`${report.public_token}_2.webp`)
+    paths.add(`${report.public_token}_3.webp`)
+  }
+  if (Array.isArray(report?.image_urls)) {
+    for (const url of report.image_urls) {
+      if (typeof url !== 'string') continue
+      const path = imageStoragePathFromUrl(url)
+      if (path) paths.add(path)
+    }
+  }
+
+  if (paths.size > 0) {
+    const { error: storageError } = await supabaseAdmin.storage.from('reports').remove([...paths])
+    if (storageError) {
+      console.error('Admin DELETE storage cleanup error:', storageError)
+    }
   }
 
   const { error } = await supabaseAdmin.from('reports').delete().eq('id', id)

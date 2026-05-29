@@ -1,5 +1,6 @@
 -- GreeceClean — Email notifications migration
--- Run in Supabase SQL editor AFTER schema.sql and seed.sql
+-- Kept for compatibility with older setup docs. The authoritative schema.sql
+-- and migrations/004_schema_convergence.sql now create these objects.
 
 -- ─────────────────────────────────────────
 -- municipalities: add region column

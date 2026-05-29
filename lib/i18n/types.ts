@@ -79,6 +79,10 @@ export type Dictionary = {
     descLabel: string
     descOptional: string
     descPlaceholder: string
+    reporterEmailLabel: string
+    reporterEmailOptional: string
+    reporterEmailPlaceholder: string
+    reporterEmailHint: string
     navNext: string
     navBack: string
     submit: string
@@ -88,6 +92,19 @@ export type Dictionary = {
     successLinkLabel: string
     successMapLink: string
     successAnother: string
+    submitErrors: {
+      missingFields: string
+      invalidCoordinates: string
+      outsideGreece: string
+      imageTooLarge: string
+      invalidReporterEmail: string
+      invalidCategory: string
+      rateLimited: string
+      imageProcessing: string
+      storage: string
+      database: string
+      generic: string
+    }
     categories: Array<{ id: string; label: string; icon: string }>
     /** Display labels for all known category IDs (including legacy). */
     categoryLabels: Record<string, string>

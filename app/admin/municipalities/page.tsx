@@ -8,13 +8,35 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic'
 
+async function attachOpenReportCounts(rows: MunicipalityRow[]): Promise<MunicipalityRow[]> {
+  if (rows.length === 0) return rows
+
+  const { data, error } = await supabaseAdmin
+    .from('reports')
+    .select('municipality_id, status')
+    .in('status', ['pending', 'in_review', 'forwarded'])
+
+  if (error) {
+    console.warn('municipality report count lookup failed:', error)
+    return rows.map((m) => ({ ...m, pending_report_count: 0 }))
+  }
+
+  const counts = new Map<string, number>()
+  for (const report of (data ?? []) as { municipality_id: string | null }[]) {
+    if (!report.municipality_id) continue
+    counts.set(report.municipality_id, (counts.get(report.municipality_id) ?? 0) + 1)
+  }
+
+  return rows.map((m) => ({ ...m, pending_report_count: counts.get(m.id) ?? 0 }))
+}
+
 async function getMunicipalities(): Promise<MunicipalityRow[]> {
   if (!isSupabaseConfigured) return []
   const { data } = await supabaseAdmin
     .from('municipalities')
-    .select('id, name_el, name_en, name_de, email_official, region')
+    .select('id, name_el, name_en, name_de, email_official, region, is_auto_created')
     .order('name_el')
-  return (data ?? []) as MunicipalityRow[]
+  return attachOpenReportCounts((data ?? []) as MunicipalityRow[])
 }
 
 export default async function MunicipalitiesAdminPage() {

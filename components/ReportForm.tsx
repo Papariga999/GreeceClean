@@ -3,17 +3,55 @@
 import { useState, useRef, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import exifr from 'exifr'
-import type { Dictionary } from '@/lib/i18n/types'
+import type { Dictionary, Locale } from '@/lib/i18n/types'
 import { CATEGORY_META } from '@/lib/categories'
 
 type FormTranslations = Dictionary['form']
 type CopyTranslations = Dictionary['copy']
 type Step = 'category' | 'photos' | 'location' | 'submit' | 'success'
 const STEPS: Step[] = ['category', 'photos', 'location', 'submit']
+type ReportSubmitErrorBody = { error?: string; code?: string }
+
+function submitErrorMessage(status: number, body: ReportSubmitErrorBody, t: FormTranslations): string {
+  const errors = t.submitErrors
+  switch (body.code) {
+    case 'missing_fields':
+      return errors.missingFields
+    case 'invalid_coordinates':
+      return errors.invalidCoordinates
+    case 'outside_greece':
+      return errors.outsideGreece
+    case 'image_too_large':
+      return errors.imageTooLarge
+    case 'invalid_reporter_email':
+      return errors.invalidReporterEmail
+    case 'invalid_category':
+      return errors.invalidCategory
+    case 'rate_limited':
+      return errors.rateLimited
+    case 'image_processing_failed':
+      return errors.imageProcessing
+    case 'storage_error':
+      return errors.storage
+    case 'database_error':
+      return errors.database
+  }
+
+  if (status === 413) return errors.imageTooLarge
+  if (status === 429) return errors.rateLimited
+  if (status === 422 && body.error?.toLowerCase().includes('greece')) return errors.outsideGreece
+  if (status >= 500) return errors.generic
+  return body.error || errors.generic
+}
 
 // ── LocalStorage draft ────────────────────────────────────────────────────────
 const DRAFT_KEY = 'gc_draft'
-type Draft = { category?: string; coords?: { lat: number; lng: number }; description?: string }
+type Draft = {
+  category?: string
+  coords?: { lat: number; lng: number }
+  description?: string
+  reporterEmail?: string
+}
 
 function saveDraft(updates: Partial<Draft>) {
   try {
@@ -100,9 +138,11 @@ function StepDots({ current, t }: { current: Step; t: FormTranslations }) {
 export default function ReportForm({
   translations: t,
   copyTranslations: ct,
+  locale,
 }: {
   translations: FormTranslations
   copyTranslations: CopyTranslations
+  locale: Locale
 }) {
   const [step,         setStep]        = useState<Step>('category')
   const [category,     setCategory]    = useState<string | null>(null)
@@ -111,6 +151,7 @@ export default function ReportForm({
   const [exifScanning, setExifScanning] = useState(false)
   const [coords,       setCoords]      = useState<{ lat: number; lng: number } | null>(null)
   const [description,  setDescription] = useState('')
+  const [reporterEmail, setReporterEmail] = useState('')
   const [submitting,   setSubmitting]  = useState(false)
   const [submitError,  setSubmitError] = useState<string | null>(null)
   const [trackingUrl,  setTrackingUrl] = useState('')
@@ -143,6 +184,7 @@ export default function ReportForm({
       }
       if (draft.coords) setCoords(draft.coords)
       if (draft.description) setDescription(draft.description)
+      if (draft.reporterEmail) setReporterEmail(draft.reporterEmail)
     } catch { /* ignore */ }
   }, [])
 
@@ -251,13 +293,15 @@ export default function ReportForm({
     fd.append('lng',      String(coords.lng))
     fd.append('category', category)
     fd.append('hp_field', honeyValue)
+    fd.append('locale', locale)
     if (!skipDescription && description.trim()) fd.append('description', description.trim())
+    if (reporterEmail.trim()) fd.append('reporter_email', reporterEmail.trim())
 
     try {
       const res = await fetch('/api/report', { method: 'POST', body: fd })
       if (!res.ok) {
-        const body = await res.json().catch(() => ({}))
-        throw new Error((body as { error?: string }).error ?? `HTTP ${res.status}`)
+        const body = await res.json().catch(() => ({})) as ReportSubmitErrorBody
+        throw new Error(submitErrorMessage(res.status, body, t))
       }
       const data = (await res.json()) as { trackingUrl: string }
       setTrackingUrl(data.trackingUrl)
@@ -309,6 +353,24 @@ export default function ReportForm({
                 </button>
               )
             })}
+          </div>
+
+          <div className="mb-6">
+            <label htmlFor="reporter_email" className="block text-sm font-medium text-gray-700 mb-1.5">
+              {t.reporterEmailLabel} <span className="text-gray-400 font-normal">{t.reporterEmailOptional}</span>
+            </label>
+            <input
+              id="reporter_email"
+              type="email"
+              value={reporterEmail}
+              onChange={(e) => {
+                setReporterEmail(e.target.value)
+                saveDraft({ reporterEmail: e.target.value })
+              }}
+              placeholder={t.reporterEmailPlaceholder}
+              className="w-full border border-gray-300 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            />
+            <p className="text-xs text-gray-400 mt-1.5">{t.reporterEmailHint}</p>
           </div>
         </div>
       )}
@@ -559,6 +621,7 @@ export default function ReportForm({
               setExifCoords(null)
               setCoords(null)
               setDescription('')
+              setReporterEmail('')
               setTrackingUrl('')
               setCopied(false)
             }}

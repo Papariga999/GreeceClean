@@ -17,11 +17,11 @@ const CONTENT = {
       },
       {
         h: 'Ποια δεδομένα συλλέγουμε',
-        p: 'Κατά την υποβολή αναφοράς συλλέγουμε: φωτογραφίες της παράνομης απόρριψης, γεωγραφικές συντεταγμένες (GPS) της τοποθεσίας, την κατηγορία της παράβασης και, προαιρετικά, μια σύντομη περιγραφή. Δεν απαιτείται εγγραφή χρήστη. Δεν συλλέγουμε ονόματα, email ή τηλέφωνα από τους αναφέροντες.',
+        p: 'Κατά την υποβολή αναφοράς συλλέγουμε: φωτογραφίες της παράνομης απόρριψης, γεωγραφικές συντεταγμένες (GPS) της τοποθεσίας, την κατηγορία της παράβασης και, προαιρετικά, μια σύντομη περιγραφή. Αν ζητήσετε ενημερώσεις κατάστασης, συλλέγουμε επίσης προαιρετικά το email σας μόνο για αυτές τις ενημερώσεις. Δεν απαιτείται εγγραφή χρήστη.',
       },
       {
         h: 'Πώς χρησιμοποιούμε τα δεδομένα',
-        p: 'Τα δεδομένα χρησιμοποιούνται αποκλειστικά για: (α) την εμφάνιση των αναφορών στον δημόσιο χάρτη μετά από έλεγχο, (β) την αποστολή ειδοποίησης στον αρμόδιο δήμο, (γ) τη στατιστική ανάλυση για την παρακολούθηση της κατάστασης των δήμων.',
+        p: 'Τα δεδομένα χρησιμοποιούνται αποκλειστικά για: (α) την εμφάνιση των αναφορών στον δημόσιο χάρτη μετά από έλεγχο, (β) την αποστολή ειδοποίησης στον αρμόδιο δήμο, (γ) προαιρετικές ενημερώσεις κατάστασης στον αναφέροντα, (δ) τη στατιστική ανάλυση για την παρακολούθηση της κατάστασης των δήμων.',
       },
       {
         h: 'Αποθήκευση δεδομένων',
@@ -51,11 +51,11 @@ const CONTENT = {
       },
       {
         h: 'What data we collect',
-        p: 'When submitting a report we collect: photos of the illegal dump, GPS coordinates of the location, the category of the violation, and optionally a short description. No user registration is required. We do not collect names, email addresses, or phone numbers from reporters.',
+        p: 'When submitting a report we collect: photos of the illegal dump, GPS coordinates of the location, the category of the violation, and optionally a short description. If you opt into status updates, we also collect your email address only for those updates. No user registration is required.',
       },
       {
         h: 'How we use the data',
-        p: 'Data is used solely to: (a) display verified reports on the public map, (b) notify the responsible municipality, (c) generate statistics for tracking municipal cleanup performance.',
+        p: 'Data is used solely to: (a) display verified reports on the public map, (b) notify the responsible municipality, (c) send optional reporter status updates, (d) generate statistics for tracking municipal cleanup performance.',
       },
       {
         h: 'Data storage',
@@ -85,11 +85,11 @@ const CONTENT = {
       },
       {
         h: 'Welche Daten wir erheben',
-        p: 'Bei der Einreichung einer Meldung erheben wir: Fotos der illegalen Deponie, GPS-Koordinaten des Standorts, die Kategorie des Verstoßes und optional eine kurze Beschreibung. Eine Benutzerregistrierung ist nicht erforderlich. Wir erheben keine Namen, E-Mail-Adressen oder Telefonnummern von Meldern.',
+        p: 'Bei der Einreichung einer Meldung erheben wir: Fotos der illegalen Deponie, GPS-Koordinaten des Standorts, die Kategorie des Verstoßes und optional eine kurze Beschreibung. Wenn Sie Status-Updates aktivieren, erheben wir außerdem optional Ihre E-Mail-Adresse nur für diese Updates. Eine Benutzerregistrierung ist nicht erforderlich.',
       },
       {
         h: 'Wie wir die Daten verwenden',
-        p: 'Daten werden ausschließlich verwendet für: (a) die Anzeige geprüfter Meldungen auf der öffentlichen Karte, (b) die Benachrichtigung der zuständigen Gemeinde, (c) statistische Auswertungen zur Verfolgung der kommunalen Reinigungsleistung.',
+        p: 'Daten werden ausschließlich verwendet für: (a) die Anzeige geprüfter Meldungen auf der öffentlichen Karte, (b) die Benachrichtigung der zuständigen Gemeinde, (c) optionale Status-Updates an den Melder, (d) statistische Auswertungen zur Verfolgung der kommunalen Reinigungsleistung.',
       },
       {
         h: 'Datenspeicherung',
