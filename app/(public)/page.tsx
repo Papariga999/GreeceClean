@@ -3,6 +3,8 @@ import Link from 'next/link'
 import { supabaseAdmin, isSupabaseConfigured } from '@/lib/supabase'
 import { SEED_REPORTS } from '@/lib/seed-data'
 import { getLocale, getDictionary } from '@/lib/i18n'
+import { getSeverityTier } from '@/lib/elapsed'
+import Logo from '@/components/Logo'
 
 export const dynamic = 'force-dynamic'
 
@@ -125,6 +127,32 @@ async function getLeaderboard(): Promise<{ champions: MunicipalityStat[]; needsW
   return { champions, needsWork }
 }
 
+type TopVotedRow = {
+  public_token: string
+  category: string
+  created_at: string
+  votes: number
+  confirmations: number
+  municipality: { name_el: string } | null
+}
+
+async function getTopVoted(): Promise<TopVotedRow[]> {
+  if (!isSupabaseConfigured) return []
+  try {
+    const { data } = await supabaseAdmin
+      .from('reports')
+      .select('public_token, category, created_at, votes, confirmations, municipality:municipality_id(name_el)')
+      .eq('is_approved', true)
+      .not('status', 'eq', 'resolved')
+      .not('status', 'eq', 'rejected')
+      .order('votes', { ascending: false })
+      .limit(5)
+    return (data ?? []) as unknown as TopVotedRow[]
+  } catch {
+    return []
+  }
+}
+
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 function StatCard({ value, label }: { value: string | number; label: string }) {
@@ -134,6 +162,17 @@ function StatCard({ value, label }: { value: string | number; label: string }) {
       <div className="text-sm text-gray-500 mt-1">{label}</div>
     </div>
   )
+}
+
+const SEV_PILL: Record<string, { bg: string; text: string }> = {
+  fresh:   { bg: '#DCFCE7', text: '#15803D' },
+  waiting: { bg: '#FEF3C7', text: '#D97706' },
+  overdue: { bg: '#FFEDD5', text: '#EA580C' },
+  ignored: { bg: '#FEE2E2', text: '#DC2626' },
+}
+
+function daysOpen(createdAt: string) {
+  return Math.floor((Date.now() - new Date(createdAt).getTime()) / 86_400_000)
 }
 
 function MunicipalityRow({
@@ -178,9 +217,10 @@ export default async function LandingPage() {
   const t = getDictionary(locale)
   const l = t.landing
 
-  const [stats, { champions, needsWork }] = await Promise.all([
+  const [stats, { champions, needsWork }, topVoted] = await Promise.all([
     getStats(),
     getLeaderboard(),
+    getTopVoted(),
   ])
 
   return (
@@ -188,6 +228,15 @@ export default async function LandingPage() {
       {/* Hero */}
       <section className="bg-gradient-to-br from-primary to-primary-600 text-white py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
+          <div className="flex flex-col items-center gap-2 mb-8">
+            <div className="flex items-center gap-3">
+              <Logo variant="white" size={44} priority />
+              <span className="text-3xl font-extrabold text-white tracking-tight">
+                Greece<span className="text-action-300">Clean</span>
+              </span>
+            </div>
+            <p className="text-sm text-primary-200 font-medium">Helping keep Greece clean 🌿</p>
+          </div>
           <h1 className="text-4xl md:text-6xl font-extrabold mb-4 leading-tight">
             {l.heroTitle} <span className="text-action-300">{l.heroHighlight}</span>
           </h1>
@@ -242,6 +291,61 @@ export default async function LandingPage() {
         </div>
       </section>
 
+      {/* Top voted — accountability pressure */}
+      {topVoted.length > 0 && (
+        <section className="py-12 px-4 bg-gray-50">
+          <div className="max-w-3xl mx-auto">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-2xl font-bold text-primary">{l.topVotedTitle}</h2>
+                <p className="text-sm text-gray-500 mt-0.5">{l.topVotedSubtitle}</p>
+              </div>
+              <Link href="/top" className="text-sm font-bold text-action hover:underline shrink-0">
+                {l.topVotedSeeAll}
+              </Link>
+            </div>
+            <div className="card divide-y divide-gray-100 p-0 overflow-hidden">
+              {topVoted.map((r, i) => {
+                const days = daysOpen(r.created_at)
+                const tier = getSeverityTier(days)
+                const sev  = SEV_PILL[tier]
+                const total = (r.votes ?? 0) + (r.confirmations ?? 1)
+                return (
+                  <Link
+                    key={r.public_token}
+                    href={`/r/${r.public_token}`}
+                    className="flex items-center gap-3 px-5 py-3.5 hover:bg-gray-50 transition-colors no-underline"
+                  >
+                    <span className="text-sm font-extrabold w-5 text-center shrink-0"
+                      style={{ color: i < 3 ? '#0D6FDB' : '#9CA3AF' }}>
+                      {i + 1}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-gray-900 truncate">
+                        {t.tracking.categories[r.category] ?? r.category}
+                      </p>
+                      <p className="text-xs text-gray-400 mt-0.5 truncate">
+                        {r.municipality?.name_el ?? '—'}
+                      </p>
+                    </div>
+                    <span
+                      className="text-xs font-bold px-2 py-0.5 rounded-full shrink-0"
+                      style={{ background: sev.bg, color: sev.text }}
+                    >
+                      ⏱ {days}d
+                    </span>
+                    <div className="shrink-0 text-center bg-primary-50 rounded-xl px-3 py-1.5">
+                      <p className="text-sm font-extrabold text-primary leading-none">{total}</p>
+                      <p className="text-[10px] text-gray-400 mt-0.5">👍</p>
+                    </div>
+                  </Link>
+                )
+              })}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Live stats */}
       <section className="py-12 px-4 bg-gray-50">
         <div className="max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-3 gap-6 text-center">
@@ -283,6 +387,19 @@ export default async function LandingPage() {
                 </div>
               )}
             </div>
+          </div>
+        </section>
+      )}
+
+      {/* Impact CTA band — one partner entry point per page (below leaderboard) */}
+      {(champions.length > 0 || needsWork.length > 0) && (
+        <section className="py-10 px-4 bg-sea-mist border-t border-primary-100">
+          <div className="max-w-2xl mx-auto text-center">
+            <p className="text-sm font-bold text-gray-800 mb-1">{t.partners.impactCta.title}</p>
+            <p className="text-xs text-gray-500 mb-4">{t.partners.impactCta.sub}</p>
+            <Link href="/partners" className="inline-flex items-center gap-1 text-sm font-bold text-primary hover:text-primary-600 transition-colors">
+              {t.partners.impactCta.cta}
+            </Link>
           </div>
         </section>
       )}

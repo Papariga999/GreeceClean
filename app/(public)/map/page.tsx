@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { SEED_REPORTS, type SeedReport } from '@/lib/seed-data'
 import { isSupabaseConfigured, supabase } from '@/lib/supabase'
 import MapWrapper from '@/components/MapWrapper'
+import SupportBanner from '@/components/SupportBanner'
 
 export const metadata: Metadata = {
   title: 'Χάρτης Αναφορών – GreeceClean',
@@ -26,8 +27,11 @@ async function getReports(): Promise<SeedReport[]> {
 export default async function MapPage() {
   const reports = await getReports()
   return (
-    <div className="h-[calc(100vh-64px)]">
-      <MapWrapper reports={reports} />
+    <div className="flex flex-col">
+      <div className="h-[calc(100vh-64px)]">
+        <MapWrapper reports={reports} />
+      </div>
+      <SupportBanner />
     </div>
   )
 }
