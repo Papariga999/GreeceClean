@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin, isSupabaseConfigured } from '@/lib/supabase'
-import { sendEmail } from '@/lib/email'
-import { buildMunicipalityReportEmail, type ReportForEmail } from '@/lib/emailTemplates'
 import { notifyReporterStatus } from '@/lib/reporterNotifications'
 import { VALID_CATEGORIES } from '@/lib/categories'
 import { isValidAdminSession } from '@/lib/adminAuth'
@@ -9,7 +7,7 @@ import { isValidAdminSession } from '@/lib/adminAuth'
 type Params = { params: Promise<{ id: string }> }
 
 type EmailDispatchResult =
-  | { emailDispatched: true; statusUpdated?: boolean; logRecorded?: boolean; reporterNotified?: boolean }
+  | { emailDispatched: true; statusUpdated?: boolean; logRecorded?: boolean; reporterNotified?: boolean; skipped?: boolean; reason?: string }
   | { emailDispatched: false; reason: string }
 
 function imageStoragePathFromUrl(url: string): string | null {
@@ -24,7 +22,7 @@ function imageStoragePathFromUrl(url: string): string | null {
   }
 }
 
-async function dispatchApprovalEmail(reportId: string): Promise<EmailDispatchResult> {
+async function dispatchApprovalEmail(reportId: string, options: { force?: boolean } = {}): Promise<EmailDispatchResult> {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? ''
   const webhookSecret = process.env.WEBHOOK_SECRET
 
@@ -53,7 +51,10 @@ async function dispatchApprovalEmail(reportId: string): Promise<EmailDispatchRes
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${webhookSecret}`,
       },
-      body: JSON.stringify({ report_id: reportId }),
+      body: JSON.stringify({
+        report_id: reportId,
+        ...(options.force ? { force: true } : {}),
+      }),
     })
 
     if (!res.ok) {
@@ -67,12 +68,16 @@ async function dispatchApprovalEmail(reportId: string): Promise<EmailDispatchRes
       statusUpdated?: boolean
       logRecorded?: boolean
       reporterNotified?: boolean
+      skipped?: boolean
+      reason?: string
     }
     return {
       emailDispatched: true,
       statusUpdated: body.statusUpdated,
       logRecorded: body.logRecorded,
       reporterNotified: body.reporterNotified,
+      skipped: body.skipped,
+      reason: body.reason,
     }
   } catch (e) {
     const reason = e instanceof Error ? e.message : 'email webhook request failed'
@@ -127,7 +132,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   } else if (body.action === 'forward') {
     return handleForward(id)
   } else if (body.action === 'resend_email') {
-    const dispatch = await dispatchApprovalEmail(id)
+    const dispatch = await dispatchApprovalEmail(id, { force: true })
     return NextResponse.json({ ok: true, ...dispatch })
   } else if (body.action === 'edit') {
     update = {}
@@ -172,76 +177,12 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 }
 
 async function handleForward(id: string): Promise<NextResponse> {
-  const { data: report, error: fetchError } = await supabaseAdmin
-    .from('reports')
-    .select('id, public_token, category, description, lat, lng, image_url, created_at, status, municipality_id, municipality:municipality_id(id, name_el, email_official)')
-    .eq('id', id)
-    .single()
-
-  if (fetchError || !report) {
-    return NextResponse.json({ error: 'Report not found' }, { status: 404 })
+  const dispatch = await dispatchApprovalEmail(id)
+  if (!dispatch.emailDispatched) {
+    return NextResponse.json({ error: dispatch.reason }, { status: 422 })
   }
 
-  const muni = report.municipality as unknown as { id: string; name_el: string; email_official: string | null } | null
-
-  if (!muni) {
-    return NextResponse.json({ error: 'Δεν έχει οριστεί δήμος για αυτή την αναφορά' }, { status: 422 })
-  }
-  if (!muni.email_official) {
-    return NextResponse.json({ error: `Ο δήμος ${muni.name_el} δεν έχει email επικοινωνίας` }, { status: 422 })
-  }
-
-  const { error: updateError } = await supabaseAdmin
-    .from('reports')
-    .update({ status: 'forwarded', notified_at: new Date().toISOString() })
-    .eq('id', id)
-
-  if (updateError) {
-    console.error('Forward update error:', updateError)
-    return NextResponse.json({ error: 'Update failed' }, { status: 500 })
-  }
-
-  const { subject, html } = await buildMunicipalityReportEmail(
-    report as unknown as ReportForEmail,
-    { id: muni.id, name_el: muni.name_el, email_official: muni.email_official },
-  )
-
-  let emailStatus: 'sent' | 'failed' = 'sent'
-  let emailError: string | null = null
-
-  try {
-    await sendEmail({ to: muni.email_official, subject, html })
-  } catch (e) {
-    emailStatus = 'failed'
-    emailError = e instanceof Error ? e.message : 'Unknown error'
-    console.error('Forward email error:', emailError)
-  }
-
-  const { error: logError } = await supabaseAdmin.from('email_logs').insert({
-    report_id:        id,
-    municipality_id:  muni.id,
-    recipient_email:  muni.email_official,
-    status:           emailStatus,
-    error_message:    emailError,
-  })
-
-  if (logError) {
-    console.error('Forward email log error:', logError)
-  }
-
-  if (emailStatus === 'failed') {
-    return NextResponse.json(
-      { ok: true, warning: 'Το status άλλαξε σε "forwarded" αλλά το email απέτυχε.', logRecorded: !logError },
-      { status: 207 },
-    )
-  }
-
-  const reporterNotification = await notifyReporterStatus(id, 'forwarded')
-  return NextResponse.json({
-    ok: true,
-    logRecorded: !logError,
-    reporterNotified: reporterNotification.sent,
-  })
+  return NextResponse.json({ ok: true, ...dispatch })
 }
 
 export async function DELETE(req: NextRequest, { params }: Params) {

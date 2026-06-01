@@ -82,6 +82,8 @@ create table if not exists reports (
   resolved_at     timestamptz,
   created_at      timestamptz not null default now(),
   updated_at      timestamptz not null default now(),
+  votes         int not null default 0,
+  confirmations int not null default 1,
   constraint reports_description_max_length check (
     description is null or char_length(description) <= 500
   )
@@ -107,6 +109,8 @@ alter table reports add column if not exists confirmed_at    timestamptz;
 alter table reports add column if not exists notified_at     timestamptz;
 alter table reports add column if not exists resolved_at     timestamptz;
 alter table reports add column if not exists updated_at      timestamptz not null default now();
+alter table reports add column if not exists votes         int not null default 0;
+alter table reports add column if not exists confirmations int not null default 1;
 
 do $$
 begin
@@ -147,13 +151,22 @@ comment on table email_logs is 'One row per notification attempt when a report i
 -- ---------------------------------------------------------------------------
 create table if not exists report_subscribers (
   id                    uuid primary key default gen_random_uuid(),
-  report_id             uuid not null unique references reports(id) on delete cascade,
+  report_id             uuid not null references reports(id) on delete cascade,
   email                 text not null,
   locale                text not null default 'el' check (locale in ('el', 'en', 'de')),
   created_at            timestamptz not null default now(),
   forwarded_notified_at timestamptz,
-  resolved_notified_at  timestamptz
+  resolved_notified_at  timestamptz,
+  unique (report_id, email)
 );
+
+-- Drop the legacy single-column unique constraint if it was created before the composite one
+do $$
+begin
+  if exists (select 1 from pg_constraint where conname = 'report_subscribers_report_id_key') then
+    alter table report_subscribers drop constraint report_subscribers_report_id_key;
+  end if;
+end $$;
 
 comment on table report_subscribers is 'Optional reporter opt-in email addresses for status updates; no public RLS policies';
 
@@ -241,9 +254,10 @@ create policy "Public can read approved reports"
   using (is_approved = true);
 
 drop policy if exists "Anyone can submit a report" on reports;
-create policy "Anyone can submit a report"
-  on reports for insert
-  with check (true);
+-- Public report writes must go through app/api/report, which validates inputs,
+-- compresses images, rate-limits abuse, and uses the service role server-side.
+-- With RLS enabled and no insert policy, anon/auth clients cannot bypass
+-- moderation by inserting directly with is_approved=true or forged metadata.
 
 -- email_logs intentionally has RLS enabled and no public policies.
 -- report_subscribers intentionally has RLS enabled and no public policies.
@@ -266,6 +280,7 @@ create index if not exists idx_email_logs_status on email_logs(status);
 create index if not exists idx_email_logs_sent_at on email_logs(sent_at desc);
 create index if not exists idx_report_subscribers_report on report_subscribers(report_id);
 create index if not exists idx_report_subscribers_email on report_subscribers(email);
+create index if not exists idx_reports_votes on reports(votes desc) where is_approved = true;
 
 -- ---------------------------------------------------------------------------
 -- SUPABASE STORAGE

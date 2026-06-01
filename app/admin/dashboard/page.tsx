@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { supabaseAdmin, isSupabaseConfigured } from '@/lib/supabase'
+import { requireAdminSession } from '@/lib/adminPageAuth'
 import AdminReportList, { type AdminReport, type Municipality } from '@/components/AdminReportList'
 import MunicipalityEmailList, { type MunicipalityRow } from '@/components/MunicipalityEmailList'
 
@@ -103,6 +104,8 @@ async function getMunicipalities(): Promise<MunicipalityRow[]> {
 }
 
 export default async function AdminDashboard() {
+  await requireAdminSession()
+
   const [pending, approved, rejected, municipalityRows] = await Promise.all([
     getPendingReports(),
     getApprovedReports(),

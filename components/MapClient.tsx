@@ -55,12 +55,19 @@ export default function MapClient({ reports }: { reports: SeedReport[] }) {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     }).addTo(map)
 
-    // Severity colours for circle markers — mirrors tailwind tokens
+    // Brand severity pins — one PNG per tier, shape = pin-"G" teardrop
+    const SEVERITY_PIN: Record<string, string> = {
+      fresh:   '/brand/pins/pin-fresh.png',
+      waiting: '/brand/pins/pin-recent.png',
+      overdue: '/brand/pins/pin-aging.png',
+      ignored: '/brand/pins/pin-ignored.png',
+    }
+    // Keep hex colours for inline popup HTML (elapsed block)
     const SEVERITY_COLOR: Record<string, string> = {
-      fresh:   '#6B8E23',
-      waiting: '#d97706',
-      overdue: '#ea580c',
-      ignored: '#dc2626',
+      fresh:   '#1FA64B',
+      waiting: '#F2B70C',
+      overdue: '#F4761B',
+      ignored: '#E23B3B',
     }
 
     reports.forEach((r) => {
@@ -121,7 +128,7 @@ export default function MapClient({ reports }: { reports: SeedReport[] }) {
               href="/r/${escHtml(r.public_token)}"
               style="
                 display:block;text-align:center;text-decoration:none;
-                background:#005BAE;color:#ffffff;
+                background:#0D6FDB;color:#ffffff;
                 padding:9px 12px;border-radius:8px;
                 font-size:12px;font-weight:600;letter-spacing:0.2px
               "
@@ -130,14 +137,15 @@ export default function MapClient({ reports }: { reports: SeedReport[] }) {
         </div>
       `
 
-      L.circleMarker([r.lat, r.lng], {
-        radius: 9,
-        fillColor: markerColor,
-        color: '#ffffff',
-        weight: 2,
-        opacity: 1,
-        fillOpacity: 0.85,
+      const icon = L.icon({
+        iconUrl:     SEVERITY_PIN[tier],
+        iconSize:    [30, 41],
+        iconAnchor:  [15, 41],
+        popupAnchor: [0, -38],
+        className:   'gc-pin',
       })
+
+      L.marker([r.lat, r.lng], { icon })
         .addTo(map)
         .bindPopup(popup, { maxWidth: 280, minWidth: 260 })
     })
@@ -146,5 +154,29 @@ export default function MapClient({ reports }: { reports: SeedReport[] }) {
     return () => { map.remove(); mapRef.current = null }
   }, [reports, t, locale])
 
-  return <div ref={containerRef} className="h-full w-full" />
+  // Severity legend data (colours match pin PNGs from README)
+  const LEGEND = [
+    { color: '#1FA64B', label: t.elapsed.tierFresh   + ' < 7d' },
+    { color: '#F2B70C', label: t.elapsed.tierWaiting + ' < 30d' },
+    { color: '#F4761B', label: t.elapsed.tierOverdue + ' < 60d' },
+    { color: '#E23B3B', label: t.elapsed.tierIgnored + ' 60d+' },
+  ]
+
+  return (
+    <div className="relative h-full w-full">
+      <div ref={containerRef} className="h-full w-full" />
+      {/* Severity legend — bottom-left overlay */}
+      <div
+        className="absolute bottom-8 left-2 z-[400] rounded-xl shadow-md"
+        style={{ background: 'rgba(255,255,255,0.95)', padding: '8px 10px', minWidth: 110 }}
+      >
+        {LEGEND.map(l => (
+          <div key={l.color} className="flex items-center gap-2 mb-1 last:mb-0">
+            <span className="shrink-0 w-3 h-3 rounded-full" style={{ background: l.color }} />
+            <span className="text-[10px] text-gray-600 font-semibold capitalize">{l.label}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
 }

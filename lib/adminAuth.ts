@@ -1,24 +1,40 @@
 import type { NextRequest } from 'next/server'
 import { createHmac, timingSafeEqual } from 'crypto'
 
-export function signAdminToken(password: string, secret: string): string {
-  return createHmac('sha256', secret).update(password).digest('hex')
+export const ADMIN_SESSION_MAX_AGE_SECONDS = 60 * 60 * 8
+
+function signPayload(payload: string, secret: string): string {
+  return createHmac('sha256', secret).update(payload).digest('hex')
 }
 
-export function isValidAdminSession(req: NextRequest): boolean {
+export function signAdminToken(password: string, secret: string, now = Date.now()): string {
+  const expiresAt = Math.floor(now / 1000) + ADMIN_SESSION_MAX_AGE_SECONDS
+  const payload = `${password}:${expiresAt}`
+  return `${expiresAt}.${signPayload(payload, secret)}`
+}
+
+export function isValidAdminToken(token: string | undefined): boolean {
   const adminPassword = process.env.ADMIN_PASSWORD
   const cookieSecret = process.env.ADMIN_COOKIE_SECRET
-  const token = req.cookies.get('admin_session')?.value
 
   if (!token || !adminPassword || !cookieSecret) return false
 
-  const expected = signAdminToken(adminPassword, cookieSecret)
+  const [expiresAtRaw, signature] = token.split('.')
+  const expiresAt = Number.parseInt(expiresAtRaw ?? '', 10)
+  if (!Number.isFinite(expiresAt) || expiresAt <= Math.floor(Date.now() / 1000)) return false
+
+  const expected = signPayload(`${adminPassword}:${expiresAt}`, cookieSecret)
   try {
-    return token.length === expected.length &&
-      timingSafeEqual(Buffer.from(token), Buffer.from(expected))
+    return Boolean(signature) &&
+      signature.length === expected.length &&
+      timingSafeEqual(Buffer.from(signature), Buffer.from(expected))
   } catch {
     return false
   }
+}
+
+export function isValidAdminSession(req: NextRequest): boolean {
+  return isValidAdminToken(req.cookies.get('admin_session')?.value)
 }
 
 export function isValidAdminPassword(password: string): boolean {

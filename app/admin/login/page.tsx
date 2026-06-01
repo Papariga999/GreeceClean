@@ -11,6 +11,7 @@ export default async function AdminLoginPage({
 }) {
   const { error } = await searchParams
   const hasError = error === '1'
+  const isRateLimited = error === 'rate_limited'
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
@@ -37,9 +38,11 @@ export default async function AdminLoginPage({
             />
           </div>
 
-          {hasError && (
+          {(hasError || isRateLimited) && (
             <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
-              Λάθος κωδικός. Δοκιμάστε ξανά.
+              {isRateLimited
+                ? 'Πολλές προσπάθειες σύνδεσης. Δοκιμάστε ξανά σε λίγο.'
+                : 'Λάθος κωδικός. Δοκιμάστε ξανά.'}
             </p>
           )}
 

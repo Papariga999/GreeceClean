@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { supabaseAdmin, isSupabaseConfigured } from '@/lib/supabase'
+import { requireAdminSession } from '@/lib/adminPageAuth'
 import MunicipalityEmailList, { type MunicipalityRow } from '@/components/MunicipalityEmailList'
 
 export const metadata: Metadata = {
@@ -40,6 +41,8 @@ async function getMunicipalities(): Promise<MunicipalityRow[]> {
 }
 
 export default async function MunicipalitiesAdminPage() {
+  await requireAdminSession()
+
   const municipalities = await getMunicipalities()
 
   return (

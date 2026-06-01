@@ -24,4 +24,8 @@
   .card {
     @apply bg-white rounded-2xl shadow-sm border border-gray-100 p-6;
   }
+
+  .gc-pin {
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.35));
+  }
 }

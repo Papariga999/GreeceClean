@@ -89,10 +89,10 @@ export default function ReporterStatusUpdate({
       <Body style={{ margin: 0, backgroundColor: '#f9fafb', fontFamily: 'Arial, Helvetica, sans-serif' }}>
         <Container style={{ maxWidth: 560, margin: '32px auto', padding: '0 16px' }}>
           <Section style={{ backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 28 }}>
-            <Text style={{ margin: '0 0 8px', color: '#16a34a', fontSize: 13, fontWeight: 'bold' }}>
+            <Text style={{ margin: '0 0 8px', color: '#39B24A', fontSize: 13, fontWeight: 'bold' }}>
               GreeceClean
             </Text>
-            <Heading as="h1" style={{ margin: '0 0 12px', color: '#005BAE', fontSize: 24, lineHeight: '1.25' }}>
+            <Heading as="h1" style={{ margin: '0 0 12px', color: '#0D6FDB', fontSize: 24, lineHeight: '1.25' }}>
               {statusCopy.title}
             </Heading>
             <Text style={{ margin: '0 0 20px', color: '#374151', fontSize: 15, lineHeight: '1.55' }}>
@@ -106,7 +106,7 @@ export default function ReporterStatusUpdate({
             <Button
               href={reportUrl}
               style={{
-                backgroundColor: '#16a34a',
+                backgroundColor: '#39B24A',
                 color: '#ffffff',
                 padding: '12px 22px',
                 borderRadius: 8,
