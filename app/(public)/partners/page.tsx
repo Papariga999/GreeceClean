@@ -87,21 +87,7 @@ export default async function PartnersPage() {
             <span className="text-action-300">{t.heroHi}</span>
             {t.heroPost}
           </h1>
-          <p className="text-lg md:text-xl text-primary-200 mb-9 max-w-xl mx-auto leading-relaxed">{t.heroSub}</p>
-          <div className="flex flex-wrap gap-3 justify-center">
-            <Link
-              href="#contact"
-              className="bg-action hover:bg-action-600 text-white font-semibold px-8 py-3.5 rounded-2xl shadow-lg transition-colors text-base"
-            >
-              {t.heroCtaPrimary}
-            </Link>
-            <Link
-              href="#solution"
-              className="bg-white/10 hover:bg-white/20 border border-white/40 text-white font-semibold px-8 py-3.5 rounded-2xl transition-colors text-base"
-            >
-              {t.heroCtaSecondary}
-            </Link>
-          </div>
+          <p className="text-lg md:text-xl text-primary-200 max-w-xl mx-auto leading-relaxed">{t.heroSub}</p>
         </div>
       </section>
 

@@ -156,8 +156,6 @@ export type Dictionary = {
     heroHi: string
     heroPost: string
     heroSub: string
-    heroCtaPrimary: string
-    heroCtaSecondary: string
     problemEyebrow: string
     problemHeading: string
     problemLead: string
