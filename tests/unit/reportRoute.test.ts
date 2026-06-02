@@ -67,15 +67,16 @@ describe('POST /api/report validation', () => {
     expect(body.code).toBe('invalid_category')
   })
 
-  it('rejects invalid optional reporter email before image processing', async () => {
-    const form = baseForm()
+  it('ignores reporter email fields during the initial phase', async () => {
+    const image = new File([new Uint8Array(10 * 1024 * 1024 + 1)], 'large.jpg', { type: 'image/jpeg' })
+    const form = baseForm({ image })
     form.set('reporter_email', 'not-an-email')
 
     const res = await POST(requestWithForm(form))
     const body = await res.json() as { code: string }
 
-    expect(res.status).toBe(422)
-    expect(body.code).toBe('invalid_reporter_email')
+    expect(res.status).toBe(413)
+    expect(body.code).toBe('image_too_large')
   })
 
   it('rejects oversized images before image processing', async () => {

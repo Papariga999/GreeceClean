@@ -8,7 +8,6 @@ import { VALID_CATEGORIES } from '@/lib/categories'
 const MAX_BYTES = 500 * 1024 // 500 KB per image
 const STORAGE_BUCKET = 'reports'
 const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 function reportRateLimitPerHour(): number {
   const parsed = Number.parseInt(process.env.REPORT_RATE_LIMIT_PER_HOUR ?? '10', 10)
@@ -137,9 +136,6 @@ export async function POST(req: NextRequest) {
   const lng      = parseFloat(formData.get('lng')?.toString() ?? '')
   const category = formData.get('category')?.toString() ?? ''
   const description = formData.get('description')?.toString().slice(0, 500) || null
-  const reporterEmail = (formData.get('reporter_email')?.toString() ?? '').trim().toLowerCase()
-  const localeRaw = formData.get('locale')?.toString()
-  const reporterLocale = localeRaw === 'en' || localeRaw === 'de' ? localeRaw : 'el'
 
   if (imageFiles.length === 0 || isNaN(lat) || isNaN(lng) || !category) {
     return NextResponse.json({ error: 'Missing required fields', code: 'missing_fields' }, { status: 400 })
@@ -157,10 +153,6 @@ export async function POST(req: NextRequest) {
 
   if (!VALID_CATEGORIES.includes(category)) {
     return NextResponse.json({ error: 'Invalid category', code: 'invalid_category' }, { status: 422 })
-  }
-
-  if (reporterEmail && !EMAIL_RE.test(reporterEmail)) {
-    return NextResponse.json({ error: 'Invalid reporter email', code: 'invalid_reporter_email' }, { status: 422 })
   }
 
   // ── Compress all images ────────────────────────────────────────────────────
@@ -225,7 +217,7 @@ export async function POST(req: NextRequest) {
   )
 
   // ── Insert report ──────────────────────────────────────────────────────────
-  const { data: insertedReport, error: dbErr } = await supabaseAdmin.from('reports').insert({
+  const { error: dbErr } = await supabaseAdmin.from('reports').insert({
     public_token:    publicToken,
     image_url:       imageUrls[0],
     image_urls:      imageUrls,
@@ -236,23 +228,12 @@ export async function POST(req: NextRequest) {
     is_approved:     false,
     municipality_id: municipalityId,
     description,
-  }).select('id').single()
+  })
 
   if (dbErr) {
     console.error('DB insert error:', dbErr)
     await cleanupUploadedImages(uploadedPaths)
     return NextResponse.json({ error: 'Database error', code: 'database_error' }, { status: 500 })
-  }
-
-  if (reporterEmail && insertedReport?.id) {
-    const { error: subscriberErr } = await supabaseAdmin.from('report_subscribers').insert({
-      report_id: insertedReport.id,
-      email:     reporterEmail,
-      locale:    reporterLocale,
-    })
-    if (subscriberErr) {
-      console.error('Reporter subscription insert error:', subscriberErr)
-    }
   }
 
   return NextResponse.json({

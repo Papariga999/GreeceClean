@@ -17,28 +17,25 @@ Use this against a real Supabase project and Resend sandbox/domain.
 2. Submit a report inside Greece with:
    - one photo with EXIF GPS if available,
    - a valid category,
-   - optional description,
-   - optional reporter email for status updates.
+   - optional description.
 3. Confirm the success page returns a `/r/<token>` tracking link.
 4. In Supabase, confirm:
    - `reports.status = pending`,
    - images exist in Storage,
-   - `report_subscribers` contains the reporter email only if one was provided.
+   - no reporter email is collected.
 5. Log in to `/admin/login`.
 6. In `/admin/dashboard`, approve the pending report.
 7. Confirm:
    - report becomes public,
    - municipality email attempt is visible in the Email column,
-   - `email_logs` contains `sent` or `failed`,
-   - if a reporter email was provided and the municipality email was sent, the reporter receives a forwarded update.
+   - `email_logs` contains `sent` or `failed`.
 8. Open the tracking link and confirm the timeline shows submitted/verified/forwarded dates.
 9. Mark the report cleaned in admin.
 10. Confirm:
     - `reports.status = resolved`,
     - `resolved_at` is set,
     - the public tracking timeline shows the resolved date,
-    - public map/tracking no longer show it as open,
-    - if a reporter email was provided, the reporter receives a resolved update.
+    - public map/tracking no longer show it as open.
 
 ## Failure Checks
 

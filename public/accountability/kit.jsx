@@ -253,29 +253,7 @@ function ShockStat({ value, label, color = '#fff', size = 56 }) {
 
 // ── EmailFollow strip ───────────────────────────────────────
 function EmailFollow() {
-  const [on, setOn] = React.useState(false);
-  return (
-    <div style={{ background: T.primary50, borderRadius: 18, padding: 14 }}>
-      {!on ? (
-        <button onClick={() => setOn(true)} style={{ width: '100%', background: 'none', border: 'none', cursor: 'pointer',
-          fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: 10, textAlign: 'left' }}>
-          <span style={{ fontSize: 20 }}>🔔</span>
-          <span style={{ flex: 1 }}>
-            <span style={{ display: 'block', fontSize: 14, fontWeight: 700, color: T.primary }}>Λάβε ενημερώσεις</span>
-            <span style={{ display: 'block', fontSize: 12, color: T.ink2 }}>Ειδοποίηση όταν αλλάξει η κατάσταση · προαιρετικό</span>
-          </span>
-          <span style={{ fontSize: 18, color: T.primary }}>›</span>
-        </button>
-      ) : (
-        <div style={{ display: 'flex', gap: 8 }}>
-          <input placeholder="email σου (προαιρετικό)" style={{ flex: 1, border: `1px solid ${T.line2}`, borderRadius: 14,
-            padding: '10px 12px', fontSize: 13, fontFamily: 'inherit', outline: 'none' }} />
-          <button style={{ background: T.primary, color: '#fff', border: 'none', borderRadius: 14, padding: '0 16px',
-            fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>🔔</button>
-        </div>
-      )}
-    </div>
-  );
+  return null;
 }
 
 // ── Confetti burst ──────────────────────────────────────────

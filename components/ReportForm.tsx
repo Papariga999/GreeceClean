@@ -6,7 +6,6 @@ import exifr from 'exifr'
 import type { Dictionary, Locale } from '@/lib/i18n/types'
 import { CATEGORY_META } from '@/lib/categories'
 import ShareSheet from './reports/ShareSheet'
-import EmailFollowStrip from './reports/EmailFollowStrip'
 
 type FormTranslations = Dictionary['form']
 type CopyTranslations = Dictionary['copy']
@@ -25,8 +24,6 @@ function submitErrorMessage(status: number, body: ReportSubmitErrorBody, t: Form
       return errors.outsideGreece
     case 'image_too_large':
       return errors.imageTooLarge
-    case 'invalid_reporter_email':
-      return errors.invalidReporterEmail
     case 'invalid_category':
       return errors.invalidCategory
     case 'rate_limited':
@@ -52,7 +49,6 @@ type Draft = {
   category?: string
   coords?: { lat: number; lng: number }
   description?: string
-  reporterEmail?: string
 }
 
 function saveDraft(updates: Partial<Draft>) {
@@ -155,7 +151,6 @@ export default function ReportForm({
   const [exifScanning, setExifScanning] = useState(false)
   const [coords,       setCoords]      = useState<{ lat: number; lng: number } | null>(null)
   const [description,  setDescription] = useState('')
-  const [reporterEmail, setReporterEmail] = useState('')
   const [submitting,   setSubmitting]  = useState(false)
   const [submitError,  setSubmitError] = useState<string | null>(null)
   const [trackingUrl,  setTrackingUrl] = useState('')
@@ -189,7 +184,6 @@ export default function ReportForm({
       }
       if (draft.coords) setCoords(draft.coords)
       if (draft.description) setDescription(draft.description)
-      if (draft.reporterEmail) setReporterEmail(draft.reporterEmail)
     } catch { /* ignore */ }
   }, [])
 
@@ -300,7 +294,6 @@ export default function ReportForm({
     fd.append('hp_field', honeyValue)
     fd.append('locale', locale)
     if (!skipDescription && description.trim()) fd.append('description', description.trim())
-    if (reporterEmail.trim()) fd.append('reporter_email', reporterEmail.trim())
 
     try {
       const res = await fetch('/api/report', { method: 'POST', body: fd })
@@ -360,23 +353,6 @@ export default function ReportForm({
             })}
           </div>
 
-          <div className="mb-6">
-            <label htmlFor="reporter_email" className="block text-sm font-medium text-gray-700 mb-1.5">
-              {t.reporterEmailLabel} <span className="text-gray-400 font-normal">{t.reporterEmailOptional}</span>
-            </label>
-            <input
-              id="reporter_email"
-              type="email"
-              value={reporterEmail}
-              onChange={(e) => {
-                setReporterEmail(e.target.value)
-                saveDraft({ reporterEmail: e.target.value })
-              }}
-              placeholder={t.reporterEmailPlaceholder}
-              className="w-full border border-gray-300 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-            />
-            <p className="text-xs text-gray-400 mt-1.5">{t.reporterEmailHint}</p>
-          </div>
         </div>
       )}
 
@@ -600,7 +576,6 @@ export default function ReportForm({
 
       {/* ── Success ───────────────────────────────────────────────────────── */}
       {step === 'success' && (() => {
-        const token = trackingUrl.split('/r/')[1] ?? ''
         return (
           <div className="flex flex-col gap-4 py-4">
             {/* Checkmark + title */}
@@ -630,18 +605,6 @@ export default function ReportForm({
                 {t.successShareBtn}
               </button>
             </div>
-
-            {/* Email follow strip */}
-            <EmailFollowStrip
-              token={token}
-              strings={{
-                title:       t.successFollowTitle,
-                subtitle:    t.successFollowSubtitle,
-                placeholder: t.successFollowPlaceholder,
-                btn:         '🔔',
-                done:        t.successFollowDone,
-              }}
-            />
 
             {/* Tracking page tile */}
             <a
@@ -678,7 +641,6 @@ export default function ReportForm({
                 setExifCoords(null)
                 setCoords(null)
                 setDescription('')
-                setReporterEmail('')
                 setTrackingUrl('')
                 setCopied(false)
                 setShareOpen(false)

@@ -60,11 +60,6 @@ export type Dictionary = {
     voteStillThere: string
     voteStillThereSub: string
     votePeopleCare: string
-    followTitle: string
-    followSubtitle: string
-    followPlaceholder: string
-    followBtn: string
-    followDone: string
     nearbyTitle: string
   }
 
@@ -102,10 +97,6 @@ export type Dictionary = {
     descLabel: string
     descOptional: string
     descPlaceholder: string
-    reporterEmailLabel: string
-    reporterEmailOptional: string
-    reporterEmailPlaceholder: string
-    reporterEmailHint: string
     navNext: string
     navBack: string
     submit: string
@@ -120,17 +111,12 @@ export type Dictionary = {
     successTrackDesc: string
     successMapLink: string
     successMapDesc: string
-    successFollowTitle: string
-    successFollowSubtitle: string
-    successFollowPlaceholder: string
-    successFollowDone: string
     successAnother: string
     submitErrors: {
       missingFields: string
       invalidCoordinates: string
       outsideGreece: string
       imageTooLarge: string
-      invalidReporterEmail: string
       invalidCategory: string
       rateLimited: string
       imageProcessing: string

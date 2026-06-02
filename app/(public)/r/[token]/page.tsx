@@ -7,7 +7,6 @@ import CategoryBadge from '@/components/CategoryBadge'
 import ElapsedTimeBadge from '@/components/reports/ElapsedTimeBadge'
 import VoteButtons from '@/components/reports/VoteButtons'
 import TrackingActions from '@/components/reports/TrackingActions'
-import EmailFollowStrip from '@/components/reports/EmailFollowStrip'
 import ResolvedView from '@/components/reports/ResolvedView'
 
 type Report = {
@@ -367,20 +366,6 @@ export default async function TrackingPage({
               shareSheetTitle: tr.shareSheetTitle,
               copy:            t.copy.copy,
               copied:          t.copy.copied,
-            }}
-          />
-        )}
-
-        {/* Email follow strip */}
-        {!isRejected && (
-          <EmailFollowStrip
-            token={report.public_token}
-            strings={{
-              title:       tr.followTitle,
-              subtitle:    tr.followSubtitle,
-              placeholder: tr.followPlaceholder,
-              btn:         tr.followBtn,
-              done:        tr.followDone,
             }}
           />
         )}
