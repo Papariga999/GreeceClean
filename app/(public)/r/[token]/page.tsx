@@ -2,12 +2,13 @@ import type { Metadata } from 'next'
 import { supabaseAdmin, isSupabaseConfigured } from '@/lib/supabase'
 import { SEED_REPORTS } from '@/lib/seed-data'
 import { getLocale, getDictionary } from '@/lib/i18n'
-import { getSeverityTier } from '@/lib/elapsed'
+import { getElapsed, getSeverityTier } from '@/lib/elapsed'
 import CategoryBadge from '@/components/CategoryBadge'
 import ElapsedTimeBadge from '@/components/reports/ElapsedTimeBadge'
 import VoteButtons from '@/components/reports/VoteButtons'
 import TrackingActions from '@/components/reports/TrackingActions'
 import ResolvedView from '@/components/reports/ResolvedView'
+import ReportLocationMap from '@/components/reports/ReportLocationMap'
 
 type Report = {
   public_token: string
@@ -164,13 +165,9 @@ export default async function TrackingPage({
   const isRejected   = report.status === 'rejected'
   const isResolved   = report.status === 'resolved'
 
-  const bbox = [
-    (report.lng - 0.008).toFixed(5),
-    (report.lat - 0.006).toFixed(5),
-    (report.lng + 0.008).toFixed(5),
-    (report.lat + 0.006).toFixed(5),
-  ].join('%2C')
-  const osmSrc = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${report.lat.toFixed(5)}%2C${report.lng.toFixed(5)}`
+  const elapsed = getElapsed(report)
+  const primaryDays = elapsed.daysSinceNotified ?? elapsed.daysSinceReported
+  const mapTier = isResolved ? 'fresh' : getSeverityTier(primaryDays)
 
   const formatMilestoneDate = (value?: string | null) =>
     value
@@ -230,7 +227,7 @@ export default async function TrackingPage({
 
         {/* Map */}
         <div className="rounded-2xl overflow-hidden border border-gray-100 shadow-sm h-52">
-          <iframe title={tr.pageTitle} src={osmSrc} className="w-full h-full border-0" loading="lazy" />
+          <ReportLocationMap lat={report.lat} lng={report.lng} tier={mapTier} title={tr.pageTitle} />
         </div>
 
         {/* Details */}
