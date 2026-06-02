@@ -1,0 +1,253 @@
+/* ============================================================================
+   GreeceClean Design Tokens
+   Civic technology for a cleaner Greece. Source: Papariga999/GreeceClean.
+   Brand refreshed (2026) to the new GreeceClean identity — the pin-as-"G"
+   logo with the eco leaf and Aegean waves. Two brand colors:
+   Aegean Blue #0D6FDB + Eco Green #39B24A (Sea Mist #F2F7FB as light surface).
+   ============================================================================ */
+
+/* Inter — the brand typeface, loaded with Greek + Latin subsets via next/font
+   in the product. Here we load it from Google Fonts. */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap&subset=greek,latin');
+
+:root {
+  /* ── Brand: Primary (Aegean Blue) ──────────────────────────────────────── */
+  --primary:      #0D6FDB;   /* DEFAULT — navigation, headings, primary buttons */
+  --primary-50:   #EAF2FC;
+  --primary-100:  #D2E3FB;
+  --primary-200:  #A6C7F7;
+  --primary-300:  #79ABF3;
+  --primary-400:  #4D8FEF;
+  --primary-500:  #0D6FDB;
+  --primary-600:  #0B57AD;   /* hover state for primary buttons/links */
+  --primary-700:  #084A92;
+  --primary-800:  #063463;
+  --primary-900:  #031C36;
+
+  /* ── Brand: Action (Eco Green) ─────────────────────────────────────────── */
+  --action:      #39B24A;    /* DEFAULT — CTAs, confirmation, resolved badges */
+  --action-50:   #ECF7EE;
+  --action-100:  #D7EFDB;
+  --action-200:  #AEDFB6;
+  --action-300:  #BFE0C6;    /* light highlight text on dark blue */
+  --action-400:  #5DBF6D;
+  --action-500:  #39B24A;
+  --action-600:  #2E8C3B;    /* hover state for action buttons */
+  --action-700:  #2E7D34;
+  --action-800:  #17471D;
+  --action-900:  #0B230F;
+
+  /* ── Sea Mist (light brand surface) ────────────────────────────────────── */
+  --sea-mist:    #F2F7FB;
+
+  /* ── Named brand tones (Brand Guideline v1.1) ──────────────────────────────
+     Two documented support tones from the guideline. Use sparingly — the core
+     pairing is still Aegean Blue + Eco Green on white / Sea Mist. */
+  --deep-aegean: #064A9B;   /* dense header/footer fills, deep contrast surfaces, hover */
+  --ink-navy:    #102A43;   /* optional brand navy for headlines / body on light */
+
+  /* ── Neutrals (Tailwind gray scale, as used in product) ────────────────── */
+  --gray-50:   #F9FAFB;   /* page background */
+  --gray-100:  #F3F4F6;   /* card borders, track fills, muted chips */
+  --gray-200:  #E5E7EB;   /* dividers, inactive step dots */
+  --gray-300:  #D1D5DB;   /* input borders */
+  --gray-400:  #9CA3AF;   /* tertiary text, captions */
+  --gray-500:  #6B7280;   /* secondary text */
+  --gray-600:  #4B5563;   /* body text muted */
+  --gray-700:  #374151;
+  --gray-800:  #1F2937;   /* strong body text */
+  --gray-900:  #111827;   /* default foreground */
+  --white:     #FFFFFF;
+
+  /* ── Semantic foreground / background ──────────────────────────────────── */
+  --bg:        var(--gray-50);
+  --surface:   var(--white);
+  --fg1:       var(--gray-900);   /* primary text */
+  --fg2:       var(--gray-600);   /* secondary text */
+  --fg3:       var(--gray-400);   /* tertiary / captions */
+  --border:    var(--gray-100);   /* default card border */
+  --border-input: var(--gray-300);
+
+  /* ── Status colors (report lifecycle + admin) ──────────────────────────── */
+  --status-pending-bg:   #FEF9C3;  --status-pending-fg:   #854D0E;  /* yellow */
+  --status-review-bg:    #DBEAFE;  --status-review-fg:    #1E40AF;  /* blue */
+  --status-forwarded-bg: #F3E8FF;  --status-forwarded-fg: #6B21A8;  /* purple */
+  --status-resolved-bg:  #DCFCE7;  --status-resolved-fg:  #166534;  /* green */
+  --status-rejected-bg:  #FEE2E2;  --status-rejected-fg:  #991B1B;  /* red */
+
+  /* Priority */
+  --priority-urgent-bg:  #FEE2E2;  --priority-urgent-fg:  #B91C1C;
+  --priority-medium-bg:  #FEF9C3;  --priority-medium-fg:  #A16207;
+  --priority-normal-bg:  #F3F4F6;  --priority-normal-fg:  #6B7280;
+
+  /* Map pin status (used in Leaflet popups — lighter tints) */
+  --pin-pending:   #6b7280;  --pin-pending-bg:   #f3f4f6;
+  --pin-review:    #b45309;  --pin-review-bg:    #fffbeb;
+  --pin-forwarded: #1d4ed8;  --pin-forwarded-bg: #eff6ff;
+  --pin-resolved:  #15803d;  --pin-resolved-bg:  #f0fdf4;
+
+  /* WhatsApp share brand */
+  --whatsapp: #25D366;
+  --viber: #7360F2;
+
+  /* ── Severity scale (NEW — "how long ignored") ─────────────────────────────
+     A bold, emotionally-loaded 4-stop ramp that appears EVERYWHERE the age of
+     an open report matters: detail counters, map pins, Top-10 rows, share
+     cards. Thresholds are by days-open. Each stop = strong fg + soft tint bg. */
+  --sev-fresh:    #15A34A;  --sev-fresh-bg:    #DCFCE7;  /* < 7 days  — φρέσκο */
+  --sev-watch:    #F59E0B;  --sev-watch-bg:    #FEF3C7;  /* < 30 days — προσοχή */
+  --sev-escalate: #EA580C;  --sev-escalate-bg: #FFEDD5;  /* < 60 days — κλιμακώνεται */
+  --sev-ignored:  #DC2626;  --sev-ignored-bg:  #FEE2E2;  /* > 60 days — αγνοείται */
+  /* On resolution the counter "freezes" green as a success (sev-fresh). */
+
+  /* ── Typography ────────────────────────────────────────────────────────── */
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: ui-monospace, 'SFMono-Regular', 'Menlo', monospace;  /* tracking tokens */
+
+  /* Type scale — observed from the product */
+  --text-hero:       3.75rem;  /* 60px — landing h1 (md:text-6xl) */
+  --text-hero-sm:    2.25rem;  /* 36px — landing h1 mobile (text-4xl) */
+  --text-h1:         1.875rem; /* 30px — section / page titles (text-3xl) */
+  --text-h2:         1.5rem;   /* 24px — form step titles (text-2xl) */
+  --text-h3:         1.25rem;  /* 20px — card titles (text-xl) */
+  --text-lg:         1.125rem; /* 18px — hero subcopy */
+  --text-base:       1rem;     /* 16px */
+  --text-sm:         0.875rem; /* 14px — most UI text */
+  --text-xs:         0.75rem;  /* 12px — captions, meta, badges */
+
+  --weight-normal:   400;
+  --weight-medium:   500;
+  --weight-semibold: 600;
+  --weight-bold:     700;
+  --weight-extrabold:800;   /* hero, stat numbers, step numbers */
+
+  /* ── Radii ─────────────────────────────────────────────────────────────── */
+  --radius:      1rem;     /* DEFAULT / lg */
+  --radius-xl:   1.25rem;
+  --radius-2xl:  1.5rem;   /* cards, buttons, inputs — the signature radius */
+  --radius-full: 9999px;   /* pills, badges, icon circles, step dots */
+
+  /* ── Shadows ───────────────────────────────────────────────────────────── */
+  --shadow-sm:  0 1px 2px 0 rgb(0 0 0 / 0.05);                       /* cards */
+  --shadow-md:  0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);  /* header */
+  --shadow-lg:  0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); /* hero CTA */
+  --shadow-xl:  0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+
+  /* ── Motion ────────────────────────────────────────────────────────────── */
+  --duration-fast: 150ms;  /* nav links, hover */
+  --duration-base: 200ms;  /* buttons, color transitions */
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);  /* Tailwind default */
+
+  /* ── Layout ────────────────────────────────────────────────────────────── */
+  --container-form:  32rem;   /* max-w-lg — report form, tracking page */
+  --container-prose: 56rem;   /* max-w-3xl/4xl — landing sections */
+  --container-wide:  80rem;   /* max-w-6xl/7xl — header, admin dashboard */
+}
+
+/* ============================================================================
+   SEMANTIC ELEMENT STYLES — apply .gc-* classes or use as reference
+   ============================================================================ */
+
+.gc-body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--fg1);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.gc-hero-title {
+  font-size: var(--text-hero);
+  font-weight: var(--weight-extrabold);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+h1, .gc-h1 {
+  font-size: var(--text-h1);
+  font-weight: var(--weight-bold);
+  color: var(--primary);
+  line-height: 1.2;
+}
+
+h2, .gc-h2 {
+  font-size: var(--text-h2);
+  font-weight: var(--weight-bold);
+  color: var(--primary);
+  line-height: 1.25;
+}
+
+h3, .gc-h3 {
+  font-size: var(--text-h3);
+  font-weight: var(--weight-semibold);
+  color: var(--primary);
+}
+
+p, .gc-p {
+  font-size: var(--text-base);
+  color: var(--fg2);
+  line-height: 1.6;
+}
+
+.gc-small  { font-size: var(--text-sm); color: var(--fg2); }
+.gc-caption { font-size: var(--text-xs); color: var(--fg3); }
+.gc-eyebrow {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.gc-mono { font-family: var(--font-mono); }
+
+/* ── Buttons ───────────────────────────────────────────────────────────── */
+.btn-primary {
+  background: var(--primary);
+  color: var(--white);
+  font-weight: var(--weight-semibold);
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-2xl);
+  border: none;
+  cursor: pointer;
+  transition: background-color var(--duration-base) var(--ease);
+}
+.btn-primary:hover { background: var(--primary-600); }
+.btn-primary:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--primary-300); }
+
+.btn-action {
+  background: var(--action);
+  color: var(--white);
+  font-weight: var(--weight-semibold);
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-2xl);
+  border: none;
+  cursor: pointer;
+  transition: background-color var(--duration-base) var(--ease);
+}
+.btn-action:hover { background: var(--action-600); }
+.btn-action:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--action-300); }
+
+/* ── Card ──────────────────────────────────────────────────────────────── */
+.card {
+  background: var(--surface);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  padding: 1.5rem;
+}
+
+/* ── Input ─────────────────────────────────────────────────────────────── */
+.gc-input {
+  width: 100%;
+  border: 1px solid var(--border-input);
+  border-radius: var(--radius-2xl);
+  padding: 0.75rem 1rem;
+  font-size: var(--text-sm);
+  font-family: var(--font-sans);
+  transition: box-shadow var(--duration-base) var(--ease);
+}
+.gc-input:focus {
+  outline: none;
+  border-color: transparent;
+  box-shadow: 0 0 0 2px var(--primary);
+}
