@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createHmac } from 'crypto'
+import { ADMIN_SESSION_MAX_AGE_SECONDS, isValidAdminPassword, signAdminToken } from '@/lib/adminAuth'
+import { checkRateLimit, getClientIp, resetRateLimit } from '@/lib/rateLimit'
 
-function signToken(password: string, secret: string): string {
-  return createHmac('sha256', secret).update(password).digest('hex')
+const ADMIN_LOGIN_WINDOW_MS = 15 * 60 * 1000
+
+function adminLoginLimit(): number {
+  const parsed = Number.parseInt(process.env.ADMIN_LOGIN_RATE_LIMIT_PER_15_MIN ?? '5', 10)
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : 5
 }
 
 export async function POST(req: NextRequest) {
@@ -16,20 +20,29 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Server not configured' }, { status: 500 })
   }
 
-  const passwordMatch = (() => {
-    try {
-      const { timingSafeEqual } = require('crypto')
-      return password.length === adminPassword.length &&
-        timingSafeEqual(Buffer.from(password), Buffer.from(adminPassword))
-    } catch { return false }
-  })()
-  if (!passwordMatch) {
+  const rateLimitKey = `admin-login:${getClientIp(req.headers)}`
+  const rate = checkRateLimit(rateLimitKey, {
+    limit: adminLoginLimit(),
+    windowMs: ADMIN_LOGIN_WINDOW_MS,
+  })
+  if (!rate.allowed) {
+    const loginUrl = new URL('/admin/login', req.url)
+    loginUrl.searchParams.set('error', 'rate_limited')
+    return NextResponse.redirect(loginUrl, {
+      status: 303,
+      headers: { 'Retry-After': String(rate.retryAfterSeconds) },
+    })
+  }
+
+  if (!isValidAdminPassword(password)) {
     const loginUrl = new URL('/admin/login', req.url)
     loginUrl.searchParams.set('error', '1')
     return NextResponse.redirect(loginUrl, { status: 303 })
   }
 
-  const token = signToken(adminPassword, cookieSecret)
+  resetRateLimit(rateLimitKey)
+
+  const token = signAdminToken(adminPassword, cookieSecret)
   const dashboardUrl = new URL('/admin/dashboard', req.url)
   const res = NextResponse.redirect(dashboardUrl, { status: 303 })
 
@@ -38,7 +51,7 @@ export async function POST(req: NextRequest) {
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
     path: '/',
-    maxAge: 60 * 60 * 8, // 8 hours
+    maxAge: ADMIN_SESSION_MAX_AGE_SECONDS,
   })
 
   return res

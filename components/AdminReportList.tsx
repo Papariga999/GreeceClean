@@ -17,7 +17,13 @@ export type AdminReport = {
   created_at: string
   description: string | null
   municipality_id: string | null
-  municipality: { name_el: string } | null
+  municipality: { name_el: string; email_official?: string | null } | null
+  email_log: {
+    status: 'sent' | 'failed'
+    recipient_email: string
+    sent_at: string
+    error_message: string | null
+  } | null
 }
 
 export type Municipality = {
@@ -71,6 +77,47 @@ function PriorityBadge({ category, createdAt }: { category: string; createdAt: s
   return <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-500">Κανονική</span>
 }
 
+function EmailLogCell({
+  log,
+  awaitingEmail,
+}: {
+  log: AdminReport['email_log']
+  awaitingEmail?: boolean
+}) {
+  if (!log) {
+    if (awaitingEmail) {
+      return (
+        <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-semibold bg-orange-100 text-orange-700">
+          Awaiting municipality email
+        </span>
+      )
+    }
+    return <span className="text-xs text-gray-300 italic">No email yet</span>
+  }
+
+  const sentAt = new Date(log.sent_at).toLocaleString('el-GR', {
+    day: '2-digit',
+    month: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+
+  return (
+    <div className="space-y-1 max-w-[180px]">
+      <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-semibold ${
+        log.status === 'sent' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+      }`}>
+        {log.status}
+      </span>
+      <p className="text-[11px] text-gray-500 truncate" title={log.recipient_email}>{log.recipient_email}</p>
+      <p className="text-[11px] text-gray-400">{sentAt}</p>
+      {log.error_message && (
+        <p className="text-[11px] text-red-500 truncate" title={log.error_message}>{log.error_message}</p>
+      )}
+    </div>
+  )
+}
+
 const STATUSES: Record<string, string> = {
   pending:   'Σε αναμονή',
   in_review: 'Υπό εξέταση',
@@ -122,11 +169,22 @@ export default function AdminReportList({
         headers: body ? { 'Content-Type': 'application/json' } : undefined,
         body: body ? JSON.stringify(body) : undefined,
       })
+      const data = await res.json().catch(() => ({})) as {
+        error?: string
+        emailDispatched?: boolean
+        logRecorded?: boolean
+        statusUpdated?: boolean
+        reason?: string
+      }
       if (!res.ok) {
-        const data = await res.json().catch(() => ({})) as { error?: string }
         alert(`Σφάλμα: ${data.error ?? `HTTP ${res.status}`}`)
         return
       }
+      if (data.emailDispatched === false) {
+        alert(`Approved, but email was not sent: ${data.reason ?? 'unknown reason'}`)
+      }
+      if (data.statusUpdated === false) alert('Email sent, but the report status was not updated.')
+      if (data.logRecorded === false) alert('Email sent, but the email log was not recorded.')
       router.refresh()
     } catch {
       alert('Σφάλμα δικτύου. Δοκιμάστε ξανά.')
@@ -155,16 +213,23 @@ export default function AdminReportList({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'forward' }),
       })
-      const data = await res.json() as { ok?: boolean; error?: string; warning?: string }
+      const data = await res.json() as { ok?: boolean; error?: string; warning?: string; logRecorded?: boolean }
       if (!res.ok && res.status !== 207) {
         alert(`Σφάλμα: ${data.error ?? 'Αποτυχία αποστολής'}`)
         return
       }
       if (data.warning) alert(`⚠ ${data.warning}`)
+      if (data.logRecorded === false) alert('Email sent, but the email log was not recorded.')
       router.refresh()
     } finally {
       setLoadingId(null)
     }
+  }
+
+  async function resendReportEmail(r: AdminReport) {
+    const muniName = r.municipality?.name_el ?? 'the municipality'
+    if (!confirm(`Resend email notification to ${muniName}?`)) return
+    await runAction(r.id, 'PATCH', { action: 'resend_email' })
   }
 
   async function saveEdit(id: string) {
@@ -205,6 +270,7 @@ export default function AdminReportList({
               <th className="text-left px-4 py-3 font-semibold text-gray-600">Προτεραιότητα</th>
               <th className="text-left px-4 py-3 font-semibold text-gray-600">Κατάσταση</th>
               <th className="text-left px-4 py-3 font-semibold text-gray-600">Ημερομηνία</th>
+              <th className="text-left px-4 py-3 font-semibold text-gray-600">Email</th>
               <th className="text-left px-4 py-3 font-semibold text-gray-600">Ενέργειες</th>
             </tr>
           </thead>
@@ -245,6 +311,12 @@ export default function AdminReportList({
                   </td>
                   <td className="px-4 py-3 text-gray-500 text-xs">
                     {new Date(r.created_at).toLocaleDateString('el-GR')}
+                  </td>
+                  <td className="px-4 py-3">
+                    <EmailLogCell
+                      log={r.email_log}
+                      awaitingEmail={mode === 'approved' && Boolean(r.municipality_id && !r.municipality?.email_official)}
+                    />
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex gap-3 items-center flex-wrap">
@@ -298,6 +370,14 @@ export default function AdminReportList({
                               📨 Προώθηση
                             </button>
                           )}
+                          {r.municipality_id && (
+                            <button
+                              onClick={() => resendReportEmail(r)}
+                              className="text-xs text-blue-600 font-semibold hover:underline"
+                            >
+                              Resend email
+                            </button>
+                          )}
                           <button
                             onClick={() => runAction(r.id, 'PATCH', { action: 'deactivate' })}
                             className="text-xs text-orange-500 font-semibold hover:underline"
@@ -324,7 +404,7 @@ export default function AdminReportList({
                 {/* ── Inline edit row ── */}
                 {editingId === r.id && (
                   <tr className="bg-blue-50 border-t border-blue-100">
-                    <td colSpan={8} className="px-4 py-4">
+                    <td colSpan={9} className="px-4 py-4">
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
                         <div>
                           <label className="block text-xs font-medium text-gray-700 mb-1">Κατηγορία</label>

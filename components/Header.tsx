@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { useLocale } from './LocaleProvider'
 import LanguageSwitcher from './LanguageSwitcher'
+import Logo from './Logo'
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -18,8 +19,8 @@ export default function Header() {
     <header className="bg-primary text-white shadow-md">
       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
         <Link href="/" className="flex items-center gap-2 font-bold text-xl tracking-tight shrink-0">
-          <span className="text-2xl">🌿</span>
-          <span>GreeceClean</span>
+          <Logo variant="white" size={26} priority />
+          <span>Greece<span className="text-action-300">Clean</span></span>
         </Link>
 
         {/* Desktop nav */}

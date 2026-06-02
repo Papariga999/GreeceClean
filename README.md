@@ -179,8 +179,8 @@ Typography uses **Inter** with Greek and Latin character subsets loaded via `nex
 
 ### Prerequisites
 
-- Node.js ≥ 18
-- npm ≥ 9
+- Node.js >= 20.9
+- npm >= 10
 - A [Supabase](https://supabase.com) project
 - A [Resend](https://resend.com) account (for municipality email forwarding)
 
@@ -210,14 +210,16 @@ Fill in the values — see [Environment Variables](#environment-variables) below
 Run the following SQL files **in order** in your Supabase SQL editor:
 
 ```bash
-supabase/schema.sql                             # Tables, RLS, indexes, triggers
-supabase/email_notifications.sql                # email_logs table + region column
-supabase/seed_municipalities.sql                # Pre-loaded Greek municipalities with emails
-supabase/migrations/001_postgis_geometry.sql    # PostGIS extension, geometry columns, spatial indexes & triggers
-supabase/seed.sql                               # (Optional) 27 sample reports for development
+supabase/schema.sql                              # Authoritative tables, RLS, indexes, triggers, storage bucket
+supabase/migrations/001_postgis_geometry.sql     # Additive compatibility migration
+supabase/migrations/002_email_webhook_trigger.sql # Optional pg_net webhook trigger
+supabase/migrations/003_report_timestamps.sql    # Additive compatibility migration
+supabase/migrations/004_schema_convergence.sql    # Additive convergence migration
+supabase/seed_municipalities.sql                 # Pre-loaded Greek municipalities with emails
+supabase/seed.sql                                # Optional sample reports for development
 ```
 
-> **Note:** The PostGIS migration requires the `postgis` extension to be enabled in your Supabase project (available on all paid plans and the free tier via the Supabase dashboard under **Database → Extensions**).
+> **Note:** `schema.sql` creates the public `reports` storage bucket when run inside Supabase. If your SQL environment cannot access `storage.buckets`, create a public bucket named `reports` manually.
 
 ### 5. Run Development Server
 
@@ -239,7 +241,21 @@ npm run dev
 | `ADMIN_PASSWORD` | ✅ | Password for the admin dashboard |
 | `ADMIN_COOKIE_SECRET` | ✅ | 32-byte secret for HMAC session signing. Generate: `openssl rand -hex 32` |
 | `RESEND_API_KEY` | ✅ | Resend API key for municipality email forwarding |
+| `WEBHOOK_SECRET` | ✅ | Bearer token for `/api/send-report-email`. Generate: `openssl rand -hex 32` |
+| `GEOCODER_PROVIDER` | ☑️ Optional | Reverse-geocoding provider. Defaults to `nominatim`; unsupported values fall back to Nominatim. |
+| `NOMINATIM_USER_AGENT` | ☑️ Optional | Custom User-Agent for Nominatim reverse geocoding. Set this to a project contact string in production. |
 | `EMAIL_FROM` | ☑️ Optional | Override sender address (default: `GreeceClean <noreply@greececlean.gr>`) |
+| `RESEND_VERIFIED_DOMAIN` | ☑️ Optional | Expected verified Resend domain, e.g. `greececlean.gr`; used for startup/send-time warnings. |
+
+### Resend Domain Setup
+
+Before production email forwarding, add `greececlean.gr` in Resend Domains and publish the DNS records Resend provides:
+
+- SPF/TXT record for authorized sending
+- DKIM records for message signing
+- Optional DMARC record for domain policy/reporting
+
+Set `EMAIL_FROM` to an address on that verified domain and set `RESEND_VERIFIED_DOMAIN=greececlean.gr`. If the sender domain does not match, the app logs a warning before sending.
 
 ---
 
@@ -297,5 +313,5 @@ All UI strings must be added to all three translation files (`lib/i18n/el.ts`, `
 
 ---
 
-_For architecture, API reference, database schema, and security details, see [docs/TECHNICAL_DOCS.md](docs/TECHNICAL_DOCS.md)._
+_For architecture, API reference, database schema, and security details, see [docs/TECHNICAL_DOCS.md](docs/TECHNICAL_DOCS.md). For the real-service verification flow, see [docs/MANUAL_E2E.md](docs/MANUAL_E2E.md)._
 ]]>

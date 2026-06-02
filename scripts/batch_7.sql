@@ -1,0 +1,21 @@
+INSERT INTO municipalities (name_el, name_en, name_de, email_official) VALUES
+('Δήμος Τυρνάβου', '', '', 'dimos@tirnavos.gr'),
+('Δήμος Ύδρας', '', '', 'dimosydr@otenet.gr'),
+('Δήμος Φαιστού', '', '', 'dmiron@otenet.gr'),
+('Δήμος Φαρκαδόνας', '', '', 'dimosfarkadonas@yahoo.gr'),
+('Δήμος Φαρσάλων', '', '', 'mayor@dimosfarsalon.gr'),
+('Δήμος Φιλιατών', '', '', 'info@filiates.gr'),
+('Δήμος Φιλοθέης-Ψυχικού', '', '', 'psychiko@otenet.gr'),
+('Δήμος Φλώρινας', '', '', 'dhmosflo@line.gr'),
+('Δήμος Φολεγάνδρου', '', '', 'k.folegandrou@kep.gov.gr'),
+('Δήμος Φούρνων Κορσεών', '', '', 'fournoi@otenet.gr'),
+('Δήμος Φυλής', '', '', 'contcenter@fyli.gr'),
+('Δήμος Χαϊδαρίου', '', '', 'protokollo@haidari.gr'),
+('Δήμος Χαλκηδόνος', '', '', 'dimos.xalk@n3.syzefxis.gov.gr'),
+('Δήμος Χάλκης', '', '', 'dhalkis@yahoo.com'),
+('Δήμος Χανίων', '', '', 'dimos@chania.gr'),
+('Δήμος Χερσονήσου', '', '', 'dimos@hersonisos.gr'),
+('Δήμος Χίου', '', '', 'd.xios7@otenet.gr'),
+('Δήμος Ωραιοκάστρου', '', '', 'info@oraiokastro.gr'),
+('Δήμος Ωρωπού', '', '', 'info@oropos.gov.gr')
+ON CONFLICT DO NOTHING;

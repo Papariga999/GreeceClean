@@ -2,9 +2,15 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin, isSupabaseConfigured } from '@/lib/supabase'
 import { sendEmail } from '@/lib/email'
 import { buildMunicipalityReportEmail, type ReportForEmail } from '@/lib/emailTemplates'
+import { notifyReporterStatus } from '@/lib/reporterNotifications'
 import type { Lang } from '@/emails/MunicipalityReport'
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
+type EmailRequestBody = {
+  report_id?: string
+  force?: boolean
+}
 
 function isAuthorized(req: NextRequest): boolean {
   const secret = process.env.WEBHOOK_SECRET
@@ -24,7 +30,7 @@ export async function POST(req: NextRequest) {
   }
 
   // ── Parse body ──────────────────────────────────────────────────────────────
-  let body: { report_id?: string }
+  let body: EmailRequestBody
   try {
     body = await req.json()
   } catch {
@@ -41,7 +47,7 @@ export async function POST(req: NextRequest) {
     .from('reports')
     .select(`
       id, public_token, category, description, lat, lng,
-      image_url, created_at, status,
+      image_url, created_at, status, notified_at,
       municipality:municipality_id (id, name_el, email_official, name_de)
     `)
     .eq('id', report_id)
@@ -65,6 +71,34 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: `Municipality ${muni.name_el} has no official email` }, { status: 422 })
   }
 
+  if (body.force !== true) {
+    const { data: existingSentLog, error: sentLogError } = await supabaseAdmin
+      .from('email_logs')
+      .select('id, recipient_email, sent_at')
+      .eq('report_id', report_id)
+      .eq('status', 'sent')
+      .order('sent_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+
+    if (sentLogError) {
+      console.error('[send-report-email] sent email lookup failed:', sentLogError)
+    }
+
+    const notifiedAt = (report as { notified_at?: string | null }).notified_at
+    if (existingSentLog || notifiedAt) {
+      return NextResponse.json({
+        ok: true,
+        recipient: muni.email_official,
+        statusUpdated: false,
+        reporterNotified: false,
+        logRecorded: true,
+        skipped: true,
+        reason: 'already_sent',
+      })
+    }
+  }
+
   // Determine email language: German municipalities get 'de', rest default to 'el'
   const lang: Lang = muni.name_de ? 'de' : 'el'
 
@@ -86,7 +120,29 @@ export async function POST(req: NextRequest) {
   }
 
   // ── Log to email_logs ──────────────────────────────────────────────────────
-  await supabaseAdmin.from('email_logs').insert({
+  let statusUpdated = false
+  let reporterNotified = false
+  if (emailStatus === 'sent') {
+    const currentStatus = (report as { status?: string }).status
+    const update = currentStatus === 'resolved'
+      ? { notified_at: new Date().toISOString() }
+      : { status: 'forwarded', notified_at: new Date().toISOString() }
+
+    const { error: updateErr } = await supabaseAdmin
+      .from('reports')
+      .update(update)
+      .eq('id', report_id)
+
+    if (updateErr) {
+      console.error('[send-report-email] report status update failed:', updateErr)
+    } else {
+      statusUpdated = true
+      const reporterNotification = await notifyReporterStatus(report_id, 'forwarded')
+      reporterNotified = reporterNotification.sent
+    }
+  }
+
+  const { error: logErr } = await supabaseAdmin.from('email_logs').insert({
     report_id,
     municipality_id: muni.id,
     recipient_email: muni.email_official,
@@ -94,9 +150,19 @@ export async function POST(req: NextRequest) {
     error_message:   emailError,
   })
 
+  if (logErr) {
+    console.error('[send-report-email] email_logs insert failed:', logErr)
+  }
+
   if (emailStatus === 'failed') {
     return NextResponse.json({ error: 'Email delivery failed' }, { status: 500 })
   }
 
-  return NextResponse.json({ ok: true, recipient: muni.email_official })
+  return NextResponse.json({
+    ok: true,
+    recipient: muni.email_official,
+    statusUpdated,
+    reporterNotified,
+    logRecorded: !logErr,
+  })
 }

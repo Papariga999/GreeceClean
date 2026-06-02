@@ -10,6 +10,8 @@ export type MunicipalityRow = {
   name_de: string | null
   email_official: string | null
   region: string | null
+  is_auto_created?: boolean | null
+  pending_report_count: number
 }
 
 type EditDraft = {
@@ -80,6 +82,16 @@ export default function MunicipalityEmailList({
 
   const withEmail    = municipalities.filter((m) => m.email_official).length
   const withoutEmail = municipalities.length - withEmail
+  const openReports = municipalities.reduce((sum, m) => sum + m.pending_report_count, 0)
+  const sortedMunicipalities = municipalities.slice().sort((a, b) => {
+    const aMissingEmail = a.email_official ? 0 : 1
+    const bMissingEmail = b.email_official ? 0 : 1
+    if (aMissingEmail !== bMissingEmail) return bMissingEmail - aMissingEmail
+    if (a.pending_report_count !== b.pending_report_count) {
+      return b.pending_report_count - a.pending_report_count
+    }
+    return a.name_el.localeCompare(b.name_el, 'el')
+  })
 
   return (
     <div>
@@ -91,6 +103,10 @@ export default function MunicipalityEmailList({
         <span className="flex items-center gap-1.5">
           <span className="inline-block w-2.5 h-2.5 rounded-full bg-gray-300" />
           <strong>{withoutEmail}</strong> χωρίς email
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="inline-block w-2.5 h-2.5 rounded-full bg-blue-400" />
+          <strong>{openReports}</strong> open reports
         </span>
       </div>
 
@@ -104,25 +120,33 @@ export default function MunicipalityEmailList({
                 <th className="text-left px-4 py-3 font-semibold text-gray-600">Γερμανικό όνομα</th>
                 <th className="text-left px-4 py-3 font-semibold text-gray-600">Περιφέρεια</th>
                 <th className="text-left px-4 py-3 font-semibold text-gray-600">Email επικοινωνίας</th>
+                <th className="text-left px-4 py-3 font-semibold text-gray-600">Open reports</th>
                 <th className="text-left px-4 py-3 font-semibold text-gray-600 w-28" />
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {municipalities.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-gray-400 text-sm italic">
+                  <td colSpan={7} className="px-4 py-8 text-center text-gray-400 text-sm italic">
                     Δεν βρέθηκαν αποτελέσματα
                   </td>
                 </tr>
               )}
-              {municipalities.map((m) => (
+              {sortedMunicipalities.map((m) => (
                 <Fragment key={m.id}>
                   {/* Main row */}
                   <tr className={`transition-colors ${editId === m.id ? 'bg-blue-50' : 'hover:bg-gray-50'}`}>
                     <td className="px-4 py-3">
                       <StatusDot email={m.email_official} />
                     </td>
-                    <td className="px-4 py-3 font-medium text-gray-800">{m.name_el}</td>
+                    <td className="px-4 py-3 font-medium text-gray-800">
+                      <div className="flex flex-col gap-1">
+                        <span>{m.name_el}</span>
+                        {m.is_auto_created && (
+                          <span className="text-[11px] text-orange-600 font-semibold">Auto-created</span>
+                        )}
+                      </div>
+                    </td>
                     <td className="px-4 py-3 text-gray-500">
                       {m.name_de
                         ? <span className="text-xs font-mono">{m.name_de}</span>
@@ -139,6 +163,13 @@ export default function MunicipalityEmailList({
                           </a>
                         : <span className="text-gray-300 italic text-xs">Δεν έχει οριστεί</span>}
                     </td>
+                    <td className="px-4 py-3">
+                      <span className={`inline-flex min-w-8 justify-center px-2 py-0.5 rounded-full text-xs font-semibold ${
+                        m.pending_report_count > 0 ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-400'
+                      }`}>
+                        {m.pending_report_count}
+                      </span>
+                    </td>
                     <td className="px-4 py-3 text-right">
                       <button
                         onClick={() => editId === m.id ? cancelEdit() : startEdit(m)}
@@ -152,7 +183,7 @@ export default function MunicipalityEmailList({
                   {/* Inline edit row */}
                   {editId === m.id && (
                     <tr className="bg-blue-50 border-t border-blue-100">
-                      <td colSpan={6} className="px-4 py-4">
+                      <td colSpan={7} className="px-4 py-4">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3 max-w-3xl">
                           <div>
                             <label className="block text-xs font-medium text-gray-700 mb-1">

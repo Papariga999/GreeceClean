@@ -1,11 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin, isSupabaseConfigured } from '@/lib/supabase'
+import { isValidAdminSession } from '@/lib/adminAuth'
 
 type Params = { params: Promise<{ id: string }> }
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 export async function PATCH(req: NextRequest, { params }: Params) {
+  if (!isValidAdminSession(req)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
   if (!isSupabaseConfigured) {
     return NextResponse.json({ error: 'Supabase not configured' }, { status: 503 })
   }
@@ -23,14 +28,14 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     name_de?: string
   }
 
-  const update: Record<string, string> = {}
+  const update: Record<string, string | null> = {}
 
   if ('email_official' in body) {
     const email = (body.email_official ?? '').trim().toLowerCase()
     if (email !== '' && !EMAIL_RE.test(email)) {
       return NextResponse.json({ error: 'Invalid email address' }, { status: 400 })
     }
-    update.email_official = email || ''
+    update.email_official = email || null
   }
 
   if ('region' in body) {

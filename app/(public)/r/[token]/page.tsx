@@ -2,8 +2,13 @@ import type { Metadata } from 'next'
 import { supabaseAdmin, isSupabaseConfigured } from '@/lib/supabase'
 import { SEED_REPORTS } from '@/lib/seed-data'
 import { getLocale, getDictionary } from '@/lib/i18n'
-import CopyButton from '@/components/CopyButton'
+import { getSeverityTier } from '@/lib/elapsed'
 import CategoryBadge from '@/components/CategoryBadge'
+import ElapsedTimeBadge from '@/components/reports/ElapsedTimeBadge'
+import VoteButtons from '@/components/reports/VoteButtons'
+import TrackingActions from '@/components/reports/TrackingActions'
+import EmailFollowStrip from '@/components/reports/EmailFollowStrip'
+import ResolvedView from '@/components/reports/ResolvedView'
 
 type Report = {
   public_token: string
@@ -14,7 +19,13 @@ type Report = {
   lng: number
   category: string
   created_at: string
+  confirmed_at?: string | null
+  notified_at?: string | null
+  resolved_at?: string | null
   description?: string | null
+  votes?: number
+  confirmations?: number
+  municipality_id?: string | null
   municipality: { name_el: string } | null
 }
 
@@ -23,6 +34,7 @@ type NearbyReport = {
   lat: number
   lng: number
   category: string
+  created_at: string
   municipality: { name_el: string } | null
   distanceKm: number
 }
@@ -31,7 +43,7 @@ async function getReport(token: string): Promise<Report | null> {
   if (isSupabaseConfigured) {
     const { data } = await supabaseAdmin
       .from('reports')
-      .select('public_token, status, image_url, image_urls, lat, lng, category, created_at, description, municipality:municipality_id(name_el)')
+      .select('public_token, status, image_url, image_urls, lat, lng, category, created_at, confirmed_at, notified_at, resolved_at, description, votes, confirmations, municipality_id, municipality:municipality_id(name_el)')
       .eq('public_token', token)
       .single()
     if (data) return data as unknown as Report
@@ -46,25 +58,24 @@ function calcDistanceKm(lat1: number, lng1: number, lat2: number, lng2: number):
   return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
 }
 
-async function getNearby(current: Report): Promise<[NearbyReport | null, NearbyReport | null]> {
-  let rows: Array<{ public_token: string; lat: number; lng: number; category: string; municipality: { name_el: string } | null }>
+async function getNearby(current: Report): Promise<NearbyReport[]> {
+  let rows: Array<{ public_token: string; lat: number; lng: number; category: string; created_at: string; municipality: { name_el: string } | null }>
 
   if (isSupabaseConfigured) {
     const { data } = await supabaseAdmin
       .from('reports')
-      .select('public_token, lat, lng, category, municipality:municipality_id(name_el)')
+      .select('public_token, lat, lng, category, created_at, municipality:municipality_id(name_el)')
       .eq('is_approved', true)
     rows = (data ?? []) as unknown as typeof rows
   } else {
     rows = SEED_REPORTS as typeof rows
   }
 
-  const sorted = rows
+  return rows
     .filter((r) => r.public_token !== current.public_token)
     .map((r) => ({ ...r, distanceKm: calcDistanceKm(current.lat, current.lng, r.lat, r.lng) }))
     .sort((a, b) => a.distanceKm - b.distanceKm)
-
-  return [sorted[0] ?? null, sorted[1] ?? null]
+    .slice(0, 2)
 }
 
 function appUrl() {
@@ -112,6 +123,18 @@ export async function generateMetadata({
   }
 }
 
+// Severity colour for nearby cards
+const SEV_COLORS: Record<string, { bg: string; text: string }> = {
+  fresh:    { bg: '#DCFCE7', text: '#15803D' },
+  waiting:  { bg: '#FEF3C7', text: '#D97706' },
+  overdue:  { bg: '#FFEDD5', text: '#EA580C' },
+  ignored:  { bg: '#FEE2E2', text: '#DC2626' },
+}
+
+function daysOpen(createdAt: string) {
+  return Math.floor((Date.now() - new Date(createdAt).getTime()) / 86_400_000)
+}
+
 export default async function TrackingPage({
   params,
 }: {
@@ -122,7 +145,7 @@ export default async function TrackingPage({
   const t  = getDictionary(locale)
   const tr = t.tracking
 
-  const [nearbyLeft, nearbyRight] = report ? await getNearby(report) : [null, null]
+  const nearby = report ? await getNearby(report) : []
 
   if (!report) {
     return (
@@ -136,9 +159,11 @@ export default async function TrackingPage({
     )
   }
 
-  const trackingUrl  = `${appUrl()}/r/${report.public_token}`
-  const whatsappText = encodeURIComponent(tr.whatsappTemplate.replace('{url}', trackingUrl))
+  const trackingUrl = `${appUrl()}/r/${report.public_token}`
+  // Plain text for share sheet (URL appended per-platform inside ShareSheet)
+  const shareText   = tr.whatsappTemplate.replace('{url}', '').replace(/\s+$/, '')
   const isRejected   = report.status === 'rejected'
+  const isResolved   = report.status === 'resolved'
 
   const bbox = [
     (report.lng - 0.008).toFixed(5),
@@ -148,8 +173,25 @@ export default async function TrackingPage({
   ].join('%2C')
   const osmSrc = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${report.lat.toFixed(5)}%2C${report.lng.toFixed(5)}`
 
+  const formatMilestoneDate = (value?: string | null) =>
+    value
+      ? new Date(value).toLocaleDateString(locale === 'el' ? 'el-GR' : locale === 'de' ? 'de-DE' : 'en-GB', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric',
+        })
+      : null
+
+  const milestoneDates = [
+    report.created_at,
+    report.confirmed_at,
+    report.notified_at,
+    report.resolved_at,
+  ]
+
   const STEPS = tr.steps.map((label, i) => ({
     label,
+    date: formatMilestoneDate(milestoneDates[i]),
     done: [
       () => true,
       (s: string) => ['in_review', 'forwarded', 'resolved'].includes(s),
@@ -158,65 +200,13 @@ export default async function TrackingPage({
     ][i],
   }))
 
+  const votes         = report.votes         ?? 0
+  const confirmations = report.confirmations ?? 1
+
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-4">
       <div className="max-w-lg mx-auto space-y-5">
         <h1 className="text-2xl font-bold text-primary">{tr.pageTitle}</h1>
-
-        {/* Nearby navigation */}
-        {(nearbyLeft || nearbyRight) && (
-          <div className="flex items-stretch gap-2">
-            {nearbyLeft ? (
-              <a href={`/r/${nearbyLeft.public_token}`}
-                className="flex-1 card flex items-center gap-3 py-3 px-4 hover:bg-gray-50 active:bg-gray-100 transition-colors no-underline">
-                <span className="text-gray-400 text-lg leading-none">←</span>
-                <div className="min-w-0 flex items-center gap-2">
-                  <CategoryBadge
-                    categoryId={nearbyLeft.category}
-                    label=""
-                    size="sm"
-                  />
-                  <div className="min-w-0">
-                    <p className="text-xs text-gray-400 mb-0.5">
-                      {nearbyLeft.distanceKm < 1
-                        ? `${Math.round(nearbyLeft.distanceKm * 1000)} m`
-                        : `${nearbyLeft.distanceKm.toFixed(1)} km`}
-                    </p>
-                    <p className="text-sm font-semibold text-primary truncate">
-                      {tr.categories[nearbyLeft.category as keyof typeof tr.categories] ?? nearbyLeft.category}
-                    </p>
-                    <p className="text-xs text-gray-400 truncate">{nearbyLeft.municipality?.name_el ?? ''}</p>
-                  </div>
-                </div>
-              </a>
-            ) : <div className="flex-1" />}
-
-            {nearbyRight ? (
-              <a href={`/r/${nearbyRight.public_token}`}
-                className="flex-1 card flex items-center gap-3 py-3 px-4 hover:bg-gray-50 active:bg-gray-100 transition-colors no-underline text-right justify-end">
-                <div className="min-w-0 flex items-center gap-2 justify-end">
-                  <div className="min-w-0">
-                    <p className="text-xs text-gray-400 mb-0.5">
-                      {nearbyRight.distanceKm < 1
-                        ? `${Math.round(nearbyRight.distanceKm * 1000)} m`
-                        : `${nearbyRight.distanceKm.toFixed(1)} km`}
-                    </p>
-                    <p className="text-sm font-semibold text-primary truncate">
-                      {tr.categories[nearbyRight.category as keyof typeof tr.categories] ?? nearbyRight.category}
-                    </p>
-                    <p className="text-xs text-gray-400 truncate">{nearbyRight.municipality?.name_el ?? ''}</p>
-                  </div>
-                  <CategoryBadge
-                    categoryId={nearbyRight.category}
-                    label=""
-                    size="sm"
-                  />
-                </div>
-                <span className="text-gray-400 text-lg leading-none">→</span>
-              </a>
-            ) : <div className="flex-1" />}
-          </div>
-        )}
 
         {/* Photos */}
         {report.image_url && (() => {
@@ -260,7 +250,13 @@ export default async function TrackingPage({
             {report.municipality && (
               <div className="flex gap-2">
                 <dt className="font-medium shrink-0">{tr.labelMunicipality}</dt>
-                <dd>{report.municipality.name_el}</dd>
+                <dd>
+                  {report.municipality_id ? (
+                    <a href={`/scorecard/${report.municipality_id}`} className="text-primary hover:underline font-medium">
+                      {report.municipality.name_el} ›
+                    </a>
+                  ) : report.municipality.name_el}
+                </dd>
               </div>
             )}
             <div className="flex gap-2">
@@ -283,12 +279,12 @@ export default async function TrackingPage({
           </div>
         )}
 
-        {/* Stepper */}
+        {/* Status stepper */}
         {!isRejected && (
           <div className="card">
             <h2 className="font-semibold text-primary mb-6">{tr.progressTitle}</h2>
             <ol className="relative ml-3 space-y-0">
-              {STEPS.map(({ label, done }, i) => {
+              {STEPS.map(({ label, date, done }, i) => {
                 const isDone = done(report.status)
                 const isLast = i === STEPS.length - 1
                 return (
@@ -299,8 +295,15 @@ export default async function TrackingPage({
                     <span className={`shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-colors ${isDone ? 'bg-action border-action text-white' : 'bg-white border-gray-300 text-gray-400'}`}>
                       {isDone ? '✓' : i + 1}
                     </span>
-                    <span className={`pt-0.5 text-sm font-medium ${isDone ? 'text-gray-800' : 'text-gray-400'}`}>
-                      {label}
+                    <span className="pt-0.5">
+                      <span className={`block text-sm font-medium ${isDone ? 'text-gray-800' : 'text-gray-400'}`}>
+                        {label}
+                      </span>
+                      {isDone && date && (
+                        <time className="block text-xs text-gray-400 mt-0.5" dateTime={milestoneDates[i] ?? undefined}>
+                          {date}
+                        </time>
+                      )}
                     </span>
                   </li>
                 )
@@ -309,26 +312,120 @@ export default async function TrackingPage({
           </div>
         )}
 
-        {/* Share */}
-        <div className="card">
-          <p className="text-sm font-medium text-gray-600 mb-3">{tr.shareTitle}</p>
-          <div className="flex flex-col gap-3">
-            <a
-              href={`https://wa.me/?text=${whatsappText}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2.5 w-full py-3 rounded-2xl text-sm font-semibold text-white transition-colors"
-              style={{ backgroundColor: '#25D366' }}
-            >
-              <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current" aria-hidden="true">
-                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-              </svg>
-              WhatsApp
-            </a>
-            <CopyButton url={trackingUrl} />
-            <p className="text-center text-xs text-gray-400 break-all">{trackingUrl}</p>
+        {/* Elapsed-time pressure badge */}
+        {!isRejected && (
+          <ElapsedTimeBadge
+            report={report}
+            strings={t.elapsed}
+            locale={locale}
+          />
+        )}
+
+        {/* Resolved celebration */}
+        {isResolved && (
+          <ResolvedView
+            url={trackingUrl}
+            shareText={shareText}
+            total={votes + confirmations}
+            strings={{
+              resolvedTitle:     tr.resolvedTitle,
+              resolvedBy:        tr.resolvedBy,
+              resolvedShare:     tr.resolvedShare,
+              resolvedShareTitle: tr.resolvedShareTitle,
+              copy:              t.copy.copy,
+              copied:            t.copy.copied,
+            }}
+          />
+        )}
+
+        {/* Vote buttons — accountability pressure (hidden for rejected/resolved) */}
+        {!isRejected && !isResolved && (
+          <VoteButtons
+            token={report.public_token}
+            initialVotes={votes}
+            initialConfirmations={confirmations}
+            strings={{
+              title:          tr.voteTitle,
+              important:      tr.voteImportant,
+              importantSub:   tr.voteImportantSub,
+              stillThere:     tr.voteStillThere,
+              stillThereSub:  tr.voteStillThereSub,
+              peopleCare:     tr.votePeopleCare,
+            }}
+          />
+        )}
+
+        {/* Clean confirm + Share sheet */}
+        {!isRejected && (
+          <TrackingActions
+            url={trackingUrl}
+            shareText={shareText}
+            strings={{
+              cleanLabel:     tr.cleanLabel,
+              cleanThanks:    tr.cleanThanks,
+              shareBtn:       tr.shareBtn,
+              shareSheetTitle: tr.shareSheetTitle,
+              copy:            t.copy.copy,
+              copied:          t.copy.copied,
+            }}
+          />
+        )}
+
+        {/* Email follow strip */}
+        {!isRejected && (
+          <EmailFollowStrip
+            token={report.public_token}
+            strings={{
+              title:       tr.followTitle,
+              subtitle:    tr.followSubtitle,
+              placeholder: tr.followPlaceholder,
+              btn:         tr.followBtn,
+              done:        tr.followDone,
+            }}
+          />
+        )}
+
+        {/* Nearby reports — card grid */}
+        {nearby.length > 0 && (
+          <div>
+            <p className="text-sm font-bold text-gray-700 mb-3">{tr.nearbyTitle} · {nearby.length}</p>
+            <div className="grid grid-cols-2 gap-3">
+              {nearby.map((r) => {
+                const days = daysOpen(r.created_at)
+                const tier = getSeverityTier(days)
+                const sev  = SEV_COLORS[tier]
+                return (
+                  <a
+                    key={r.public_token}
+                    href={`/r/${r.public_token}`}
+                    className="card flex flex-col gap-2 p-3 hover:bg-gray-50 active:bg-gray-100 transition-colors no-underline"
+                  >
+                    <div className="flex items-center justify-between">
+                      <CategoryBadge categoryId={r.category} label="" size="sm" />
+                      <span
+                        className="text-xs font-bold px-2 py-0.5 rounded-full"
+                        style={{ background: sev.bg, color: sev.text }}
+                      >
+                        {days}d
+                      </span>
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-primary leading-tight">
+                        {tr.categories[r.category] ?? r.category}
+                      </p>
+                      <p className="text-xs text-gray-400 mt-0.5 truncate">
+                        {r.municipality?.name_el ?? ''}
+                        {r.distanceKm < 1
+                          ? ` · ${Math.round(r.distanceKm * 1000)} m`
+                          : ` · ${r.distanceKm.toFixed(1)} km`}
+                      </p>
+                    </div>
+                  </a>
+                )
+              })}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   )

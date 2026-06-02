@@ -2,11 +2,11 @@
 
 import { createContext, useContext } from 'react'
 import type { Locale, Dictionary } from '@/lib/i18n/types'
-import el from '@/lib/i18n/el'
-import en from '@/lib/i18n/en'
-import de from '@/lib/i18n/de'
+import el from '@/lib/i18n/el.json'
+import en from '@/lib/i18n/en.json'
+import de from '@/lib/i18n/de.json'
 
-const dicts: Record<Locale, Dictionary> = { el, en, de }
+const dicts = { el, en, de } as Record<Locale, Dictionary>
 
 type LocaleCtx = { locale: Locale; t: Dictionary }
 const Ctx = createContext<LocaleCtx | null>(null)
