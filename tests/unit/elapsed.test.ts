@@ -56,12 +56,12 @@ describe('getElapsed', () => {
 
 describe('getSeverityTier', () => {
   it('0 days → fresh', () => expect(getSeverityTier(0)).toBe('fresh'))
-  it('7 days → fresh', () => expect(getSeverityTier(7)).toBe('fresh'))
-  it('8 days → waiting', () => expect(getSeverityTier(8)).toBe('waiting'))
-  it('30 days → waiting', () => expect(getSeverityTier(30)).toBe('waiting'))
-  it('31 days → overdue', () => expect(getSeverityTier(31)).toBe('overdue'))
-  it('90 days → overdue', () => expect(getSeverityTier(90)).toBe('overdue'))
-  it('91 days → ignored', () => expect(getSeverityTier(91)).toBe('ignored'))
+  it('6 days → fresh', () => expect(getSeverityTier(6)).toBe('fresh'))
+  it('7 days → waiting', () => expect(getSeverityTier(7)).toBe('waiting'))
+  it('29 days → waiting', () => expect(getSeverityTier(29)).toBe('waiting'))
+  it('30 days → overdue', () => expect(getSeverityTier(30)).toBe('overdue'))
+  it('59 days → overdue', () => expect(getSeverityTier(59)).toBe('overdue'))
+  it('60 days → ignored', () => expect(getSeverityTier(60)).toBe('ignored'))
   it('500 days → ignored', () => expect(getSeverityTier(500)).toBe('ignored'))
 })
 

@@ -1,7 +1,7 @@
 // Severity thresholds in days — adjust here to change all tiers at once
-const TIER_WAITING = 8
-const TIER_OVERDUE = 31
-const TIER_IGNORED = 91
+const TIER_WAITING = 7
+const TIER_OVERDUE = 30
+const TIER_IGNORED = 60
 
 export type SeverityTier = 'fresh' | 'waiting' | 'overdue' | 'ignored'
 

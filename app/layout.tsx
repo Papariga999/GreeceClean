@@ -15,6 +15,7 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? 'https://greececlean.vercel.app'),
   title: 'GreeceClean – Αναφορά Απορριμμάτων',
   description: 'Βοηθήστε να κρατήσουμε την Ελλάδα καθαρή. Αναφέρετε παράνομες χωματερές και σκουπίδια στον δήμο σας.',
   keywords: ['ελλάδα', 'καθαριότητα', 'αναφορά', 'δήμος', 'περιβάλλον'],
@@ -32,13 +33,13 @@ export const metadata: Metadata = {
     description: 'Κρατήστε την Ελλάδα καθαρή',
     locale: 'el_GR',
     type: 'website',
-    images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'GreeceClean' }],
+    images: [{ url: '/brand/og-image.png', width: 1200, height: 630, alt: 'GreeceClean' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'GreeceClean',
     description: 'Κρατήστε την Ελλάδα καθαρή',
-    images: ['/opengraph-image'],
+    images: ['/brand/og-image.png'],
   },
 }
 

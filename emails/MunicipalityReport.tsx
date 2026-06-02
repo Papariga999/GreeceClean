@@ -110,7 +110,8 @@ const PRIORITY_STYLE: Record<Priority, { bg: string; text: string; border: strin
   normal: { bg: '#D1FAE5', text: '#065F46', border: '#6EE7B7' },
 }
 
-const ACCENT  = '#16a34a'
+const PRIMARY = '#0D6FDB'
+const ACTION  = '#39B24A'
 const TEXT    = '#1f2937'
 const MUTED   = '#6b7280'
 const BORDER  = '#e5e7eb'
@@ -147,9 +148,9 @@ export default function MunicipalityReport({
           <Section style={{ backgroundColor: '#ffffff', borderRadius: 12, border: `1px solid ${BORDER}`, overflow: 'hidden' }}>
 
             {/* Header */}
-            <Section style={{ backgroundColor: ACCENT, padding: '20px 32px' }}>
+            <Section style={{ backgroundColor: PRIMARY, padding: '20px 32px' }}>
               <Text style={{ margin: 0, color: '#ffffff', fontSize: 20, fontWeight: 'bold', letterSpacing: '-0.3px' }}>
-                🌿 GreeceClean
+                <span>Greece</span><span style={{ color: '#BFE0C6' }}>Clean</span>
               </Text>
               <Text style={{ margin: '4px 0 0', color: 'rgba(255,255,255,0.85)', fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.8px' }}>
                 Official Environmental Report
@@ -160,7 +161,7 @@ export default function MunicipalityReport({
             <Section style={{ padding: '32px' }}>
 
               {/* Badge + title */}
-              <Text style={{ margin: '0 0 6px', color: ACCENT, fontSize: 11, fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.8px' }}>
+              <Text style={{ margin: '0 0 6px', color: PRIMARY, fontSize: 11, fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.8px' }}>
                 {t.badge}
               </Text>
               <Heading as="h1" style={{ margin: '0 0 6px', fontSize: 24, color: TEXT, lineHeight: '1.3' }}>
@@ -212,7 +213,7 @@ export default function MunicipalityReport({
               <Hr style={{ borderColor: BORDER, margin: '16px 0 24px' }} />
 
               {/* Google Maps link */}
-              <Link href={mapsUrl} style={{ color: ACCENT, fontSize: 14, fontWeight: 'bold', textDecoration: 'none' }}>
+              <Link href={mapsUrl} style={{ color: PRIMARY, fontSize: 14, fontWeight: 'bold', textDecoration: 'none' }}>
                 📍 {t.mapsLink}
               </Link>
 
@@ -238,7 +239,7 @@ export default function MunicipalityReport({
                 <Button
                   href={reportUrl}
                   style={{
-                    backgroundColor: ACCENT,
+                    backgroundColor: ACTION,
                     color: '#ffffff',
                     padding: '14px 28px',
                     borderRadius: 8,
@@ -254,7 +255,7 @@ export default function MunicipalityReport({
 
               <Text style={{ margin: '8px 0 0', fontSize: 13, color: MUTED }}>
                 {t.orOpen}{' '}
-                <Link href={reportUrl} style={{ color: ACCENT, wordBreak: 'break-all' }}>
+                <Link href={reportUrl} style={{ color: PRIMARY, wordBreak: 'break-all' }}>
                   {reportUrl}
                 </Link>
               </Text>

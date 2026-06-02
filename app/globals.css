@@ -26,6 +26,6 @@
   }
 
   .gc-pin {
-    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.35));
+    filter: drop-shadow(0 0 1.5px #fff) drop-shadow(0 2px 3px rgba(0, 0, 0, 0.35));
   }
 }
