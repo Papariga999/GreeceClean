@@ -8,7 +8,9 @@ const SRC: Record<Variant, string> = {
   lockup: '/brand/logo-lockup.png',
 }
 
-// symbol natural ratio ≈ 221 × 301 (w × h)
+const SYMBOL_RATIO = 301 / 221
+const LOCKUP_RATIO = 1354 / 425
+
 type Props = { variant?: Variant; size?: number; priority?: boolean }
 
 export default function Logo({ variant = 'symbol', size = 28, priority = false }: Props) {
@@ -17,13 +19,13 @@ export default function Logo({ variant = 'symbol', size = 28, priority = false }
       <Image
         src={SRC.lockup}
         alt="GreeceClean"
-        width={Math.round(size * 3.1)}
+        width={Math.round(size * LOCKUP_RATIO)}
         height={size}
         priority={priority}
       />
     )
   }
-  const h = Math.round(size * (301 / 221))
+  const h = Math.round(size * SYMBOL_RATIO)
   return (
     <Image
       src={SRC[variant]}
