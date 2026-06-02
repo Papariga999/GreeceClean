@@ -239,23 +239,21 @@
     "mvMission": "Jedem Menschen in Griechenland den einfachsten Weg zu geben, ein Umweltproblem zu melden – und sichtbar zu machen, ob es behoben wird.",
     "mvVisionLabel": "Unsere Vision",
     "mvVision": "Ein Griechenland, in dem Vernachlässigung sich nicht verstecken kann – in dem Gemeinden handeln, weil Untätigkeit nicht länger unsichtbar bleibt, und sauberer öffentlicher Raum die Regel ist, nicht die Ausnahme.",
-    "tractionEyebrow": "Wirkung & Fortschritt",
-    "tractionHeading": "Transparenz ab dem ersten Tag",
-    "tractionSub": "GreeceClean startet jetzt. Das sind die Kennzahlen, die jeder Partner sehen wird — öffentlich und ehrlich, nichts beschönigt.",
-    "tractionMetrics": [
-      { "label": "Meldungen" }, { "label": "Gelöste Fälle" }, { "label": "Lösungsquote" }, { "label": "Aktive Gemeinden" }
-    ],
-    "tractionMetricNote": "Live ab dem Start",
-    "tractionBaLabel": "Wie eine gelöste Meldung aussieht",
-    "tractionBaSub": "Beispielhaft: ein Ort vor und nach einer Bürgermeldung.",
-    "tractionBaBefore": "Vorher — gemeldet",
-    "tractionBaAfter": "Nachher — beseitigt",
-    "tractionBaPairs": [
-      { "caption": "Beispielort" },
-      { "caption": "Beispielort" }
-    ],
-    "tractionPartnersLabel": "Unsere Partner",
-    "tractionPartnersNote": "Hier werden unsere Partner erscheinen. Wir zeigen keine Logos, die nicht echt sind.",
+    "claims": {
+      "eyebrow": "Warum unterstützenswert",
+      "heading": "Warum GreeceClean unterstützenswert ist",
+      "sub": "Sechs Gründe, kurz und konkret — das Kernargument für eine Unterstützung.",
+      "items": [
+        { "title": "Ein echtes, EU-sanktioniertes Problem.", "desc": "Nicht theoretisch: Griechenland zahlt Millionen an EU-Strafen wegen Abfall. Das Problem ist messbar und dringend." },
+        { "title": "Wir schließen die fehlende Lücke.", "desc": "Gemeinden wissen oft nicht, wo der Müll liegt. Wir verbinden die Meldung mit sichtbarer Handlung – das fehlende Stück." },
+        { "title": "Wenig Mittel, große Wirkung.", "desc": "Digitale Infrastruktur, die landesweit skaliert – ohne proportionale Kosten. Jeder Euro Unterstützung wird vervielfacht." },
+        { "title": "Unabhängig, transparent, datenschutzkonform.", "desc": "Offene Ergebnisse, klare Mittelverwendung, anonyme Meldungen, DSGVO-konform. Keine Abhängigkeit von einem einzelnen Interesse." },
+        { "title": "Daten mit öffentlichem Wert.", "desc": "Aggregierte, anonymisierte Müll-Daten – nützlich für Politik, Forschung und Recycling-/EPR-Ziele." },
+        { "title": "Der richtige Moment.", "desc": "EU-Druck, Recyclingziele und Tourismussaison fallen jetzt zusammen. Unterstützung heute hat die größte Wirkung." }
+      ],
+      "partnersLabel": "Unsere Partner",
+      "partnersNote": "Hier erscheinen unsere Partner, sobald sie bestätigt sind. Wir zeigen keine Logos, die nicht echt sind."
+    },
     "whyEyebrow": "Warum Partner werden",
     "whyHeading": "Unterschiedlicher Nutzen für jeden Partner",
     "whySub": "Dieselbe transparente Infrastruktur darunter — zugeschnitten auf Ihre Ziele.",
@@ -351,6 +349,27 @@
       "title": "Dieses Dashboard wird durch unsere Partner möglich.",
       "sub": "Soll auch Ihre Region abgedeckt werden? Lassen Sie es uns gemeinsam angehen.",
       "cta": "Partner werden →"
+    },
+    "regionLayer": {
+      "heroEyebrow": "Regionaler Layer",
+      "heroTitle": "Eine sauberere Destination, nur einen QR entfernt.",
+      "heroSub": "Ein co-gebrandeter Melde-Landepunkt für Hotels, Destinationen und lokale Partner. Gäste können Probleme direkt vor Ort melden, während die Region eine sichtbare, nachvollziehbare Sauberkeits-Ebene erhält.",
+      "reportCta": "Problem melden",
+      "partnerCta": "Partner werden",
+      "qrLabel": "Gäste-QR",
+      "qrTitle": "Scan an Rezeptionen, Strandbars oder Wanderwegen",
+      "qrSub": "Dieser Platzhalter wird vor dem Start durch einen echten, destinationsspezifischen QR-Code ersetzt.",
+      "sponsorLabel": "Sponsor-Slot",
+      "sponsorNote": "Reserviert ausschließlich für ein echtes Destinations- oder Hotelpartner-Logo.",
+      "stepsTitle": "So funktioniert ein regionaler Layer",
+      "steps": [
+        { "title": "Gäste scannen", "desc": "Der QR öffnet eine lokale Meldeseite in EL, EN und DE." },
+        { "title": "Meldungen werden korrekt weitergeleitet", "desc": "GreeceClean leitet geprüfte Meldungen an die zuständige Gemeinde weiter." },
+        { "title": "Wirkung bleibt sichtbar", "desc": "Die Region kann aggregierten, anonymisierten Fortschritt zeigen, ohne Kontrolle über die Daten zu erhalten." }
+      ],
+      "partnerNudgeTitle": "Möchten Sie das für Ihre Destination?",
+      "partnerNudgeSub": "Wir können regionale Layer für Inseln, Resorts, Hotels und Gemeinden erstellen, ohne Sponsorendaten mit Bürgermeldungen zu vermischen.",
+      "partnerNudgeCta": "Partnerschaft starten"
     }
   }
 }

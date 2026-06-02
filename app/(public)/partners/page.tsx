@@ -50,18 +50,18 @@ function FeatureChip({ label }: { label: string }) {
   )
 }
 
-function PlaceholderImage({ label, height = 160, green = false }: { label: string; height?: number; green?: boolean }) {
+function ClaimCard({ number, title, desc }: { number: string; title: string; desc: string }) {
   return (
-    <div
-      className={`relative rounded-2xl overflow-hidden flex items-center justify-center border ${green ? 'border-action-200' : 'border-primary-100'}`}
-      style={{
-        height,
-        background: green
-          ? 'repeating-linear-gradient(135deg, #E4F4E8 0 13px, #F1FAF3 13px 26px)'
-          : 'repeating-linear-gradient(135deg, #E7F0F9 0 13px, #F2F7FB 13px 26px)',
-      }}
-    >
-      <span className="font-mono text-[11px] text-gray-400 tracking-wide text-center px-3 leading-snug">{label}</span>
+    <div className="card p-7 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg">
+      <div className="flex items-start gap-4">
+        <span className="w-[46px] h-[46px] rounded-[14px] bg-primary-50 text-primary font-mono font-extrabold text-sm flex items-center justify-center shrink-0">
+          {number}
+        </span>
+        <div>
+          <h3 className="text-lg font-bold text-primary leading-snug">{title}</h3>
+          <p className="mt-2 text-[14.5px] text-gray-600 leading-relaxed">{desc}</p>
+        </div>
+      </div>
     </div>
   )
 }
@@ -159,53 +159,26 @@ export default async function PartnersPage() {
         </div>
       </section>
 
-      {/* ── 5 · TRACTION ──────────────────────────────────────────────────────── */}
+      {/* ── 5 · WHY SUPPORT ───────────────────────────────────────────────────── */}
       <section className="py-20 px-5 bg-sea-mist">
         <div className="max-w-5xl mx-auto">
-          <SectionHead eyebrow={t.tractionEyebrow} heading={t.tractionHeading} sub={t.tractionSub} />
+          <SectionHead eyebrow={t.claims.eyebrow} heading={t.claims.heading} sub={t.claims.sub} />
 
-          {/* metrics grid — pre-launch honest dashes */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-12 mb-12">
-            {t.tractionMetrics.map((m, i) => (
-              <div key={i} className="card text-center py-6 px-4">
-                <div className="text-4xl font-extrabold text-primary-200 leading-none">—</div>
-                <p className="mt-3 text-sm font-semibold text-gray-800">{m.label}</p>
-                <span className="mt-2 inline-block text-[11px] font-semibold text-action-600 bg-action-50 rounded-full px-3 py-0.5">
-                  {t.tractionMetricNote}
-                </span>
-              </div>
+          <div className="grid md:grid-cols-2 gap-5 mt-12 mb-10">
+            {t.claims.items.map((claim, i) => (
+              <ClaimCard
+                key={claim.title}
+                number={String(i + 1).padStart(2, '0')}
+                title={claim.title}
+                desc={claim.desc}
+              />
             ))}
           </div>
 
-          {/* before / after */}
-          <div className="text-center mb-5">
-            <h3 className="text-xl font-bold text-primary">{t.tractionBaLabel}</h3>
-            <p className="text-sm text-gray-500 mt-1">{t.tractionBaSub}</p>
+          <div className="card p-8 text-center bg-white/80">
+            <p className="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-2">{t.claims.partnersLabel}</p>
+            <p className="text-sm text-gray-500 italic max-w-md mx-auto">{t.claims.partnersNote}</p>
           </div>
-          <div className="grid sm:grid-cols-2 gap-5 mb-12">
-            {t.tractionBaPairs.map((p, i) => (
-              <div key={i} className="card p-4">
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <PlaceholderImage label="before" height={130} />
-                    <p className="mt-2 text-xs font-semibold text-gray-400">{t.tractionBaBefore}</p>
-                  </div>
-                  <div>
-                    <PlaceholderImage label="after" height={130} green />
-                    <p className="mt-2 text-xs font-semibold text-action-600">{t.tractionBaAfter}</p>
-                  </div>
-                </div>
-                <p className="mt-3 text-xs text-gray-500">{p.caption}</p>
-              </div>
-            ))}
-          </div>
-
-          {/* partner logos placeholder — no fake logos */}
-          <p className="text-center text-xs font-semibold uppercase tracking-widest text-gray-500 mb-4">{t.tractionPartnersLabel}</p>
-          <div className="grid grid-cols-4 gap-3 mb-3">
-            {[0, 1, 2, 3].map((i) => <PlaceholderImage key={i} label="logo" height={70} />)}
-          </div>
-          <p className="text-center text-xs text-gray-400 italic">{t.tractionPartnersNote}</p>
         </div>
       </section>
 
@@ -232,10 +205,10 @@ export default async function PartnersPage() {
                   ))}
                 </ul>
                 <Link
-                  href="#contact"
+                  href={i === 2 ? '/region' : '#contact'}
                   className="self-start text-sm font-bold text-primary hover:text-primary-600 transition-colors inline-flex items-center gap-1"
                 >
-                  {t.whyCta} <span aria-hidden="true">→</span>
+                  {i === 2 ? t.whyRegionLink : t.whyCta} <span aria-hidden="true">→</span>
                 </Link>
               </div>
             ))}

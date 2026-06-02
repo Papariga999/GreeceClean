@@ -4,6 +4,15 @@ import { sendEmail } from '@/lib/email'
 const PARTNERS_EMAIL = 'partners@greececlean.gr'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const MAX = {
+  name: 120,
+  org: 160,
+  role: 120,
+  email: 160,
+  interest: 80,
+  region: 160,
+  message: 1000,
+}
 
 // Simple in-process rate limiter: max 5 requests per IP per 10 minutes.
 const rateMap = new Map<string, { count: number; resetAt: number }>()
@@ -33,9 +42,26 @@ type Body = {
   company?: string
 }
 
+function text(value: unknown, max: number): string {
+  return (typeof value === 'string' ? value : '').trim().slice(0, max)
+}
+
+function escapeHtml(value: string): string {
+  return value
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;')
+}
+
+function subjectSafe(value: string): string {
+  return value.replace(/[\r\n]+/g, ' ')
+}
+
 function buildHtml(b: Required<Omit<Body, 'consent' | 'company'>> & { consentAt: string }): string {
   const row = (label: string, value: string) =>
-    `<tr><td style="padding:6px 12px;background:#F9FAFB;font-weight:600;color:#374151;font-size:13px;width:140px">${label}</td><td style="padding:6px 12px;color:#1F2937;font-size:13px">${value || '—'}</td></tr>`
+    `<tr><td style="padding:6px 12px;background:#F9FAFB;font-weight:600;color:#374151;font-size:13px;width:140px">${escapeHtml(label)}</td><td style="padding:6px 12px;color:#1F2937;font-size:13px">${value ? escapeHtml(value) : '—'}</td></tr>`
 
   return `<!DOCTYPE html>
 <html>
@@ -63,13 +89,13 @@ tr:nth-child(even) td{background:#fff}
     </table>
     <div style="padding:12px 0;border-top:1px solid #F3F4F6">
       <p style="font-size:13px;font-weight:600;color:#374151;margin:0 0 6px">Message</p>
-      <p style="font-size:14px;color:#1F2937;line-height:1.6;margin:0;white-space:pre-wrap">${b.message}</p>
+      <p style="font-size:14px;color:#1F2937;line-height:1.6;margin:0;white-space:pre-wrap">${escapeHtml(b.message)}</p>
     </div>
     <p style="font-size:11px;color:#9CA3AF;margin:12px 0;padding-top:12px;border-top:1px solid #F3F4F6">
-      GDPR consent recorded: ${b.consentAt}
+      GDPR consent recorded: ${escapeHtml(b.consentAt)}
     </p>
   </div>
-  <div class="foot">GreeceClean partner enquiry — reply directly to ${b.email}</div>
+  <div class="foot">GreeceClean partner enquiry — reply directly to ${escapeHtml(b.email)}</div>
 </div>
 </body>
 </html>`
@@ -90,16 +116,26 @@ export async function POST(req: NextRequest) {
   }
 
   // Honeypot — treat as success without sending
-  if (body.company) {
+  if (text(body.company, 120)) {
     return NextResponse.json({ ok: true })
   }
 
+  const cleaned = {
+    name: text(body.name, MAX.name),
+    org: text(body.org, MAX.org),
+    role: text(body.role, MAX.role),
+    email: text(body.email, MAX.email),
+    interest: text(body.interest, MAX.interest),
+    region: text(body.region, MAX.region),
+    message: text(body.message, MAX.message),
+  }
+
   // Validate required fields
-  const { name, org, email, interest, message, consent } = body
-  if (!name?.trim() || !org?.trim() || !interest?.trim() || !message?.trim()) {
+  const { consent } = body
+  if (!cleaned.name || !cleaned.org || !cleaned.interest || !cleaned.message) {
     return NextResponse.json({ error: 'missing_fields' }, { status: 422 })
   }
-  if (!email?.trim() || !EMAIL_RE.test(email.trim())) {
+  if (!cleaned.email || !EMAIL_RE.test(cleaned.email)) {
     return NextResponse.json({ error: 'invalid_email' }, { status: 422 })
   }
   if (!consent) {
@@ -111,15 +147,15 @@ export async function POST(req: NextRequest) {
   try {
     await sendEmail({
       to: PARTNERS_EMAIL,
-      subject: `Partner enquiry: ${name?.trim()} — ${org?.trim()}`,
+      subject: subjectSafe(`Partner enquiry: ${cleaned.name} — ${cleaned.org}`),
       html: buildHtml({
-        name: name!.trim(),
-        org: org!.trim(),
-        role: body.role?.trim() ?? '',
-        email: email!.trim(),
-        interest: interest!.trim(),
-        region: body.region?.trim() ?? '',
-        message: message!.trim(),
+        name: cleaned.name,
+        org: cleaned.org,
+        role: cleaned.role,
+        email: cleaned.email,
+        interest: cleaned.interest,
+        region: cleaned.region,
+        message: cleaned.message,
         consentAt,
       }),
     })

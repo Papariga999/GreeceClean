@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useState } from 'react'
 import type { Dictionary } from '@/lib/i18n/types'
 
@@ -116,8 +117,8 @@ export default function PartnerForm({ t }: { t: Dictionary['partners'] }) {
         <h3 className="text-2xl font-extrabold text-primary mb-2">{t.formSuccessTitle}</h3>
         <p className="text-gray-600 text-sm leading-relaxed max-w-xs mx-auto mb-7">{t.formSuccessBody}</p>
         <div className="flex gap-3 justify-center flex-wrap">
-          <a href="/map" className="btn-primary text-sm px-6 py-2.5 rounded-2xl">{t.formSuccessBackMap}</a>
-          <a href="/" className="bg-white border border-primary-200 text-primary-700 font-semibold text-sm px-6 py-2.5 rounded-2xl hover:bg-primary-50 transition-colors">{t.formSuccessExplore}</a>
+          <Link href="/map" className="btn-primary text-sm px-6 py-2.5 rounded-2xl">{t.formSuccessBackMap}</Link>
+          <Link href="/" className="bg-white border border-primary-200 text-primary-700 font-semibold text-sm px-6 py-2.5 rounded-2xl hover:bg-primary-50 transition-colors">{t.formSuccessExplore}</Link>
         </div>
       </div>
     )
@@ -223,7 +224,7 @@ export default function PartnerForm({ t }: { t: Dictionary['partners'] }) {
             className="w-4 h-4 mt-0.5 accent-primary shrink-0 cursor-pointer" />
           <span>
             {t.formConsent}{' '}
-            <a href="/privacy" className="text-primary font-semibold underline">{t.formConsentLink}</a>
+            <Link href="/privacy" className="text-primary font-semibold underline">{t.formConsentLink}</Link>
           </span>
         </label>
         <ErrMsg msg={touched ? errs.consent : undefined} />

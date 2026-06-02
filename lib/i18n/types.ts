@@ -174,18 +174,14 @@ export type Dictionary = {
     mvMission: string
     mvVisionLabel: string
     mvVision: string
-    tractionEyebrow: string
-    tractionHeading: string
-    tractionSub: string
-    tractionMetrics: Array<{ label: string }>
-    tractionMetricNote: string
-    tractionBaLabel: string
-    tractionBaSub: string
-    tractionBaBefore: string
-    tractionBaAfter: string
-    tractionBaPairs: Array<{ caption: string }>
-    tractionPartnersLabel: string
-    tractionPartnersNote: string
+    claims: {
+      eyebrow: string
+      heading: string
+      sub: string
+      items: Array<{ title: string; desc: string }>
+      partnersLabel: string
+      partnersNote: string
+    }
     whyEyebrow: string
     whyHeading: string
     whySub: string
@@ -238,5 +234,22 @@ export type Dictionary = {
     banner: { title: string; sub: string; cta: string }
     reportCta: string
     impactCta: { title: string; sub: string; cta: string }
+    regionLayer: {
+      heroEyebrow: string
+      heroTitle: string
+      heroSub: string
+      reportCta: string
+      partnerCta: string
+      qrLabel: string
+      qrTitle: string
+      qrSub: string
+      sponsorLabel: string
+      sponsorNote: string
+      stepsTitle: string
+      steps: Array<{ title: string; desc: string }>
+      partnerNudgeTitle: string
+      partnerNudgeSub: string
+      partnerNudgeCta: string
+    }
   }
 }

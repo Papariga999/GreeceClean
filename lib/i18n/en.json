@@ -239,23 +239,21 @@
     "mvMission": "To give everyone in Greece the simplest possible way to report an environmental problem — and to make it visible whether it gets fixed.",
     "mvVisionLabel": "Our vision",
     "mvVision": "A Greece where neglect can't hide — where municipalities act because inaction is no longer invisible, and clean public space is the norm, not the exception.",
-    "tractionEyebrow": "Impact & progress",
-    "tractionHeading": "Transparency from day one",
-    "tractionSub": "GreeceClean is launching now. These are the metrics every partner will see — public and honest, with nothing dressed up.",
-    "tractionMetrics": [
-      { "label": "Reports filed" }, { "label": "Cases resolved" }, { "label": "Resolution rate" }, { "label": "Municipalities active" }
-    ],
-    "tractionMetricNote": "Live at launch",
-    "tractionBaLabel": "What a resolved report looks like",
-    "tractionBaSub": "Illustrative example: one location before and after a citizen report.",
-    "tractionBaBefore": "Before — reported",
-    "tractionBaAfter": "After — cleared",
-    "tractionBaPairs": [
-      { "caption": "Example location" },
-      { "caption": "Example location" }
-    ],
-    "tractionPartnersLabel": "Our partners",
-    "tractionPartnersNote": "This is where our partners will appear. We don't show logos that aren't real.",
+    "claims": {
+      "eyebrow": "Why worth supporting",
+      "heading": "Why GreeceClean is worth supporting",
+      "sub": "Six reasons, short and concrete — the core argument for support.",
+      "items": [
+        { "title": "A real problem, sanctioned by the EU.", "desc": "Not theoretical: Greece pays millions in EU fines over waste. The problem is measurable and urgent." },
+        { "title": "We close the missing gap.", "desc": "Municipalities often don’t know where the waste is. We connect the report to visible action — the missing piece." },
+        { "title": "Few resources, big impact.", "desc": "Digital infrastructure that scales nationwide without proportional cost. Every euro of support is multiplied." },
+        { "title": "Independent, transparent, GDPR-compliant.", "desc": "Open results, clear use of funds, anonymous reporting, GDPR-compliant. No dependence on any single interest." },
+        { "title": "Data with public value.", "desc": "Aggregated, anonymised waste data — useful for policy, research, and recycling/EPR goals." },
+        { "title": "The right moment.", "desc": "EU pressure, recycling targets and the tourist season converge now. Support today has the greatest impact." }
+      ],
+      "partnersLabel": "Our partners",
+      "partnersNote": "This is where our partners will appear once confirmed. We do not show logos that are not real."
+    },
     "whyEyebrow": "Why partner with us",
     "whyHeading": "Different value for every partner",
     "whySub": "The same transparent infrastructure underneath — shaped around your goals.",
@@ -351,6 +349,27 @@
       "title": "This dashboard is made possible by our partners.",
       "sub": "Want your region covered too? Let's make it happen together.",
       "cta": "Become a partner →"
+    },
+    "regionLayer": {
+      "heroEyebrow": "Regional layer",
+      "heroTitle": "A cleaner destination, one QR away.",
+      "heroSub": "A co-branded reporting landing point for hotels, destinations and local partners. Guests can report problems on the spot while the region gets a visible, accountable clean-up layer.",
+      "reportCta": "Report a problem",
+      "partnerCta": "Partner with GreeceClean",
+      "qrLabel": "Guest QR",
+      "qrTitle": "Scan at reception, beach bars or trailheads",
+      "qrSub": "This placeholder will be replaced by a real, destination-specific QR code before launch.",
+      "sponsorLabel": "Sponsor slot",
+      "sponsorNote": "Reserved for a real destination or hotel partner logo only.",
+      "stepsTitle": "How a regional layer works",
+      "steps": [
+        { "title": "Guests scan", "desc": "The QR opens a local reporting page in EL, EN and DE." },
+        { "title": "Reports route correctly", "desc": "GreeceClean forwards verified reports to the responsible municipality." },
+        { "title": "Impact stays visible", "desc": "The region can show aggregated, anonymised progress without controlling the data." }
+      ],
+      "partnerNudgeTitle": "Want this for your destination?",
+      "partnerNudgeSub": "We can create a regional layer for islands, resorts, hotels and municipalities without mixing sponsor data with citizen reports.",
+      "partnerNudgeCta": "Start a partnership"
     }
   }
 }
