@@ -4,7 +4,7 @@
   "landing": {
     "heroTitle": "Keep Greece",
     "heroHighlight": "Clean",
-    "heroDesc": "Photograph illegal dumps and litter. We automatically report them to the responsible municipality.",
+    "heroDesc": "Photograph an illegal dump or litter and we forward it to the responsible municipality. Under a minute, no account.",
     "ctaPrimary": "📷 Make a Report",
     "ctaSecondary": "🗺️ View the Map",
     "whatToReport": "What can be reported",
@@ -25,7 +25,7 @@
     "howSteps": [
       { "step": "01", "title": "Photograph", "desc": "Take a photo of the problem using the app." },
       { "step": "02", "title": "Submit Report", "desc": "Location is recorded automatically and the report is sent." },
-      { "step": "03", "title": "Track Progress", "desc": "You receive a tracking link to follow the progress." }
+      { "step": "03", "title": "Track Progress", "desc": "You get a link to follow what happens next." }
     ],
     "statsReports": "Reports",
     "statsCleaned": "Cleaned Up",

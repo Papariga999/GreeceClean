@@ -4,7 +4,7 @@
   "landing": {
     "heroTitle": "Halte Griechenland",
     "heroHighlight": "Sauber",
-    "heroDesc": "Fotografiere illegale Mülldeponien und Abfälle. Wir melden sie automatisch an die zuständige Gemeinde.",
+    "heroDesc": "Fotografiere eine illegale Müllkippe oder Abfall und wir leiten die Meldung an die zuständige Gemeinde weiter. Unter einer Minute, ohne Konto.",
     "ctaPrimary": "📷 Jetzt melden",
     "ctaSecondary": "🗺️ Karte ansehen",
     "whatToReport": "Was kann gemeldet werden",
@@ -25,7 +25,7 @@
     "howSteps": [
       { "step": "01", "title": "Fotografieren", "desc": "Mache ein Foto des Problems mit der App." },
       { "step": "02", "title": "Melden", "desc": "Standort wird automatisch erfasst und die Meldung übermittelt." },
-      { "step": "03", "title": "Verfolgen", "desc": "Du erhältst einen Tracking-Link, um den Fortschritt zu verfolgen." }
+      { "step": "03", "title": "Verfolgen", "desc": "Du bekommst einen Link, um zu verfolgen, was als Nächstes passiert." }
     ],
     "statsReports": "Meldungen",
     "statsCleaned": "Bereinigt",
