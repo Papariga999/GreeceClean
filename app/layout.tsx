@@ -5,14 +5,14 @@ import { getLocale } from '@/lib/i18n'
 import { ogLocale } from '@/lib/seo'
 
 const cormorant = Cormorant_Garamond({
-  subsets: ['greek', 'latin'],
+  subsets: ['latin', 'latin-ext'],
   weight: ['300', '400', '500', '600', '700'],
   variable: '--font-display',
   display: 'swap',
 })
 
 const dmMono = DM_Mono({
-  subsets: ['latin'],
+  subsets: ['latin', 'latin-ext'],
   weight: ['300', '400', '500'],
   variable: '--font-mono',
   display: 'swap',
