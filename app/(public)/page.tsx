@@ -4,7 +4,7 @@ import { supabaseAdmin, isSupabaseConfigured } from '@/lib/supabase'
 import { SEED_REPORTS } from '@/lib/seed-data'
 import { getLocale, getDictionary } from '@/lib/i18n'
 import { getSeverityTier } from '@/lib/elapsed'
-import Logo from '@/components/Logo'
+import { Logo } from '@/components/Logo'
 import { publicPageMetadata } from '@/lib/seo'
 import { localizedHref } from '@/lib/i18n/routing'
 
@@ -235,10 +235,7 @@ export default async function LandingPage() {
         <div className="max-w-4xl mx-auto text-center">
           <div className="flex flex-col items-center gap-2 mb-8">
             <div className="flex items-center gap-3">
-              <Logo variant="white" size={44} priority />
-              <span className="text-3xl font-extrabold text-white tracking-tight">
-                Greece<span className="text-action-300">Clean</span>
-              </span>
+              <Logo on="blue" mark={28} />
             </div>
             <p className="text-sm text-primary-200 font-medium">{l.footerTagline}</p>
           </div>
