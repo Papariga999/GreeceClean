@@ -20,7 +20,7 @@ export default async function Footer({ locale: explicitLocale }: { locale?: Loca
       <div className="max-w-4xl mx-auto px-4 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-600">
         <div className="flex items-center gap-2.5 text-center sm:text-left">
           <BrandMark size={20} variant="color" />
-          <p>© {new Date().getFullYear()} GreeceClean — {l.tagline}</p>
+          <p>© {new Date().getFullYear()} Katharos — {l.tagline}</p>
         </div>
         <nav className="flex items-center gap-5">
           <Link href={localizedHref(locale, '/partners')} className="hover:text-gray-900 transition-colors">{partnersLink}</Link>
