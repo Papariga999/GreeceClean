@@ -110,8 +110,8 @@ const PRIORITY_STYLE: Record<Priority, { bg: string; text: string; border: strin
   normal: { bg: '#D1FAE5', text: '#065F46', border: '#6EE7B7' },
 }
 
-const PRIMARY = '#0D6FDB'
-const ACTION  = '#39B24A'
+const PRIMARY = '#006994'
+const ACTION  = '#6B7C3A'
 const TEXT    = '#1f2937'
 const MUTED   = '#6b7280'
 const BORDER  = '#e5e7eb'

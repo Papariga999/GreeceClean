@@ -4,8 +4,10 @@ import { useState, useRef, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import exifr from 'exifr'
 import type { Dictionary, Locale } from '@/lib/i18n/types'
+import { localizedHref } from '@/lib/i18n/routing'
 import { CATEGORY_META } from '@/lib/categories'
 import ShareSheet from './reports/ShareSheet'
+import { useLocale } from './LocaleProvider'
 
 type FormTranslations = Dictionary['form']
 type CopyTranslations = Dictionary['copy']
@@ -63,13 +65,25 @@ function clearDraft() {
 }
 
 // ── Lazy Leaflet ──────────────────────────────────────────────────────────────
+function LocationPickerLoading() {
+  const { t } = useLocale()
+
+  return (
+    <div
+      className="w-full rounded-2xl border border-gray-200 bg-gray-100 flex items-center justify-center"
+      style={{ height: 280 }}
+      role="status"
+      aria-live="polite"
+      aria-label={t.map.loading}
+    >
+      <span className="text-gray-400 animate-spin" aria-hidden="true">⏳</span>
+    </div>
+  )
+}
+
 const LocationPickerDynamic = dynamic(() => import('./LocationPicker'), {
   ssr: false,
-  loading: () => (
-    <div className="w-full rounded-2xl border border-gray-200 bg-gray-100 flex items-center justify-center" style={{ height: 280 }}>
-      <span className="text-gray-400 animate-spin">⏳</span>
-    </div>
-  ),
+  loading: () => <LocationPickerLoading />,
 })
 
 // ── Photo helpers ─────────────────────────────────────────────────────────────
@@ -112,23 +126,27 @@ function StepDots({ current, t }: { current: Step; t: FormTranslations }) {
     t.submit.split(' ')[0],
   ]
   return (
-    <div className="flex items-center justify-center gap-2 mb-8">
-      {STEPS.map((s, i) => (
-        <div key={s} className="flex items-center gap-2">
-          <div
-            className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-colors duration-200 ${
-              i < idx ? 'bg-action text-white' : i === idx ? 'bg-primary text-white' : 'bg-gray-200 text-gray-400'
-            }`}
-            title={labels[i]}
-          >
-            {i < idx ? '✓' : i + 1}
+    <>
+      <p className="sr-only" aria-live="polite">{labels[idx]}</p>
+      <div className="flex items-center justify-center gap-2 mb-8" role="list" aria-label={labels[idx]}>
+        {STEPS.map((s, i) => (
+          <div key={s} className="flex items-center gap-2" role="listitem" aria-current={i === idx ? 'step' : undefined}>
+            <div
+              className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-colors duration-200 ${
+                i < idx ? 'bg-action text-white' : i === idx ? 'bg-primary text-white' : 'bg-gray-200 text-gray-400'
+              }`}
+              title={labels[i]}
+              aria-label={labels[i]}
+            >
+              {i < idx ? '✓' : i + 1}
+            </div>
+            {i < STEPS.length - 1 && (
+              <div className={`w-8 h-0.5 transition-colors duration-200 ${i < idx ? 'bg-action' : 'bg-gray-200'}`} aria-hidden="true" />
+            )}
           </div>
-          {i < STEPS.length - 1 && (
-            <div className={`w-8 h-0.5 transition-colors duration-200 ${i < idx ? 'bg-action' : 'bg-gray-200'}`} />
-          )}
-        </div>
-      ))}
-    </div>
+        ))}
+      </div>
+    </>
   )
 }
 
@@ -621,7 +639,7 @@ export default function ReportForm({
 
             {/* Map nearby tile */}
             <a
-              href="/map"
+              href={localizedHref(locale, '/map')}
               className="card flex items-center gap-3 p-4 no-underline hover:bg-gray-50 active:bg-gray-100 transition-colors border-gray-100"
             >
               <span className="text-2xl leading-none">📍</span>
@@ -653,7 +671,7 @@ export default function ReportForm({
             {/* Partner nudge — clearly separated, one per page */}
             {partnerCta && (
               <a
-                href="/partners"
+                href={localizedHref(locale, '/partners')}
                 className="block text-center text-xs text-gray-400 hover:text-primary transition-colors pt-1"
               >
                 {partnerCta}

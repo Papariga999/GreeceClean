@@ -5,6 +5,9 @@ import { supabaseAdmin, isSupabaseConfigured } from '@/lib/supabase'
 import { getLocale } from '@/lib/i18n'
 import { getSeverityTier } from '@/lib/elapsed'
 import CategoryBadge from '@/components/CategoryBadge'
+import JsonLd from '@/components/JsonLd'
+import { absoluteUrl, breadcrumbJsonLd, localeAlternates, ogLocale } from '@/lib/seo'
+import { localizedHref } from '@/lib/i18n/routing'
 
 // Severity dot colours
 const SEV_PILL: Record<string, { bg: string; text: string }> = {
@@ -16,6 +19,10 @@ const SEV_PILL: Record<string, { bg: string; text: string }> = {
 
 function daysOpen(iso: string) {
   return Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000)
+}
+
+function currentTimeMs() {
+  return Date.now()
 }
 
 type MuniRow = {
@@ -83,9 +90,25 @@ async function getData(id: string): Promise<{ muni: MuniRow; reports: ReportRow[
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params
-  const data = await getData(id)
-  if (!data) return { title: 'Δήμος – GreeceClean' }
-  return { title: `${data.muni.name_el} – GreeceClean` }
+  const [data, locale] = await Promise.all([getData(id), getLocale()])
+  const path = `/scorecard/${id}`
+  if (!data) {
+    return {
+      title: 'Municipality - GreeceClean',
+      alternates: localeAlternates(locale, path),
+    }
+  }
+  const title = `${data.muni.name_el} - GreeceClean`
+  return {
+    title,
+    alternates: localeAlternates(locale, path),
+    openGraph: {
+      title,
+      url: absoluteUrl(localizedHref(locale, path)),
+      locale: ogLocale(locale),
+      type: 'website',
+    },
+  }
 }
 
 export default async function ScorecardPage({ params }: { params: Promise<{ id: string }> }) {
@@ -102,7 +125,7 @@ export default async function ScorecardPage({ params }: { params: Promise<{ id: 
   const avgDays    = forwarded.length > 0
     ? Math.round(forwarded.reduce((sum, r) => {
         const start = new Date(r.created_at).getTime()
-        const end   = r.notified_at ? new Date(r.notified_at).getTime() : Date.now()
+        const end   = r.notified_at ? new Date(r.notified_at).getTime() : currentTimeMs()
         return sum + (end - start) / 86_400_000
       }, 0) / forwarded.length)
     : null
@@ -114,15 +137,21 @@ export default async function ScorecardPage({ params }: { params: Promise<{ id: 
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
+      <JsonLd
+        data={breadcrumbJsonLd(locale, [
+          { name: 'GreeceClean', path: '/' },
+          { name: muni.name_el, path: `/scorecard/${muni.id}` },
+        ])}
+      />
       <div className="max-w-lg mx-auto space-y-4">
-        <Link href="/" className="text-sm text-primary font-medium flex items-center gap-1">
+        <Link href={localizedHref(locale, '/')} className="text-sm text-primary font-medium flex items-center gap-1">
           ‹ GreeceClean
         </Link>
 
         {/* Municipality header */}
         <div
           className="rounded-2xl p-5 text-white flex items-center justify-between gap-4"
-          style={{ background: 'linear-gradient(140deg, #0D6FDB, #0B57AD)' }}
+          style={{ background: 'linear-gradient(140deg, #006994, #005A80)' }}
         >
           <div>
             <p className="text-sm opacity-80 mb-0.5">🏛️ Δήμος</p>
@@ -144,10 +173,10 @@ export default async function ScorecardPage({ params }: { params: Promise<{ id: 
         {/* Stats row */}
         <div className="grid grid-cols-4 gap-2">
           {[
-            { v: `${rate}%`,  label: 'Λύθηκαν',       color: '#39B24A' },
+            { v: `${rate}%`,  label: 'Λύθηκαν',       color: '#6B7C3A' },
             { v: avgDays != null ? `${avgDays}η` : '—', label: '⌀ αντίδραση', color: '#EA580C' },
             { v: open,        label: 'Ανοιχτές',       color: '#DC2626' },
-            { v: resolved,    label: 'Καθαρίστηκαν',  color: '#39B24A' },
+            { v: resolved,    label: 'Καθαρίστηκαν',  color: '#6B7C3A' },
           ].map(s => (
             <div key={s.label} className="card text-center p-3">
               <p className="text-xl font-extrabold leading-none" style={{ color: s.color }}>{s.v}</p>
@@ -177,7 +206,7 @@ export default async function ScorecardPage({ params }: { params: Promise<{ id: 
               return (
                 <Link
                   key={r.public_token}
-                  href={`/r/${r.public_token}`}
+                  href={localizedHref(locale, `/r/${r.public_token}`)}
                   className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 transition-colors no-underline"
                 >
                   <CategoryBadge categoryId={r.category} label="" size="sm" />

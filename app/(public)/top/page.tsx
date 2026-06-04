@@ -5,12 +5,22 @@ import { SEED_REPORTS } from '@/lib/seed-data'
 import { getLocale, getDictionary } from '@/lib/i18n'
 import { getSeverityTier } from '@/lib/elapsed'
 import CategoryBadge from '@/components/CategoryBadge'
+import JsonLd from '@/components/JsonLd'
+import { datasetJsonLd, publicPageMetadata } from '@/lib/seo'
+import { localizedHref } from '@/lib/i18n/routing'
 
 export const dynamic = 'force-dynamic'
 
-export const metadata: Metadata = {
+const metadata: Metadata = {
   title: 'Πιο Επείγοντα – GreeceClean',
   description: 'Οι αναφορές που οι πολίτες θέλουν πιο πολύ να λυθούν.',
+}
+
+void metadata
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale()
+  return publicPageMetadata(locale, getDictionary(locale), 'top', '/top')
 }
 
 const SEV_PILL: Record<string, { bg: string; text: string }> = {
@@ -57,6 +67,7 @@ export default async function TopPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <JsonLd data={datasetJsonLd(locale, '/top', t)} />
       <div className="max-w-lg mx-auto px-4 py-8">
 
         {/* Header */}
@@ -65,7 +76,7 @@ export default async function TopPage() {
             <h1 className="text-2xl font-extrabold text-primary">{l.topVotedTitle}</h1>
             <p className="text-sm text-gray-500 mt-0.5">{l.topVotedSubtitle}</p>
           </div>
-          <Link href="/" className="shrink-0 mt-1 text-sm font-bold text-primary bg-primary-50 px-3 py-1.5 rounded-xl hover:bg-primary-100 transition-colors">
+          <Link href={localizedHref(locale, '/')} className="shrink-0 mt-1 text-sm font-bold text-primary bg-primary-50 px-3 py-1.5 rounded-xl hover:bg-primary-100 transition-colors">
             🌿
           </Link>
         </div>
@@ -73,16 +84,16 @@ export default async function TopPage() {
         {/* Filter tabs — static UI, backend filtering deferred */}
         <div className="flex gap-2 mb-5 overflow-x-auto pb-1">
           {[
-            { label: locale === 'el' ? 'Πανελλαδικά' : locale === 'de' ? 'Griechenlandweit' : 'All Greece', active: true },
-            { label: locale === 'el' ? 'Ο δήμος μου' : locale === 'de' ? 'Meine Gemeinde' : 'My municipality', active: false },
+            { label: l.topFilterAll, active: true },
+            { label: l.topFilterMine, active: false },
           ].map(tab => (
             <span
               key={tab.label}
               className="shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-colors"
               style={{
-                background: tab.active ? '#0D6FDB' : '#fff',
+                background: tab.active ? '#006994' : '#fff',
                 color:      tab.active ? '#fff' : '#4B5563',
-                border:     `1px solid ${tab.active ? '#0D6FDB' : '#E5E7EB'}`,
+                border:     `1px solid ${tab.active ? '#006994' : '#E5E7EB'}`,
               }}
             >
               {tab.label}
@@ -94,7 +105,7 @@ export default async function TopPage() {
         {rows.length === 0 ? (
           <div className="card text-center py-12">
             <p className="text-4xl mb-3">🗺️</p>
-            <p className="font-bold text-primary">Καμία ανοιχτή αναφορά</p>
+            <p className="font-bold text-primary">{l.topEmpty}</p>
           </div>
         ) : (
           <div className="card p-0 overflow-hidden divide-y divide-gray-100">
@@ -107,13 +118,13 @@ export default async function TopPage() {
               return (
                 <Link
                   key={r.public_token}
-                  href={`/r/${r.public_token}`}
+                  href={localizedHref(locale, `/r/${r.public_token}`)}
                   className="flex items-center gap-3 px-4 py-3.5 hover:bg-gray-50 transition-colors no-underline"
                 >
                   {/* Rank */}
                   <span
                     className="w-6 text-center text-sm font-extrabold shrink-0"
-                    style={{ color: i < 3 ? '#0D6FDB' : '#9CA3AF' }}
+                    style={{ color: i < 3 ? '#006994' : '#9CA3AF' }}
                   >
                     {i + 1}
                   </span>
@@ -151,9 +162,7 @@ export default async function TopPage() {
         )}
 
         <p className="text-xs text-gray-400 text-center mt-6">
-          {locale === 'el' ? 'Ψηφισμένα από πολίτες · ανοιχτά εδώ και καιρό'
-           : locale === 'de' ? 'Von Bürgern gewählt · seit langem offen'
-           : 'Voted by citizens · open for a long time'}
+          {l.topFootnote}
         </p>
       </div>
     </div>

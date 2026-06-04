@@ -2,11 +2,20 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { getLocale, getDictionary } from '@/lib/i18n'
 import PartnerForm from '@/components/PartnerForm'
+import { publicPageMetadata } from '@/lib/seo'
+import { localizedHref } from '@/lib/i18n/routing'
 
 
-export const metadata: Metadata = {
+const metadata: Metadata = {
   title: 'Partners & Sponsors – GreeceClean',
   description: 'Partner with GreeceClean to support environmental accountability in Greece.',
+}
+
+void metadata
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale()
+  return publicPageMetadata(locale, getDictionary(locale), 'partners', '/partners')
 }
 
 function SectionHead({
@@ -77,7 +86,7 @@ export default async function PartnersPage() {
       <section className="relative overflow-hidden text-white">
         <div
           className="absolute inset-0"
-          style={{ background: 'repeating-linear-gradient(135deg, #0B5BB3 0 16px, #0D6FDB 16px 32px)' }}
+          style={{ background: 'repeating-linear-gradient(135deg, #004A6A 0 16px, #006994 16px 32px)' }}
         />
         <div className="absolute inset-0" style={{ background: 'linear-gradient(150deg, rgba(11,53,99,0.78), rgba(11,87,173,0.90))' }} />
         <div className="relative max-w-3xl mx-auto px-5 py-28 text-center">
@@ -128,7 +137,7 @@ export default async function PartnersPage() {
       </section>
 
       {/* ── 4 · MISSION & VISION ──────────────────────────────────────────────── */}
-      <section className="py-20 px-5" style={{ background: 'linear-gradient(155deg, #0D6FDB, #0B3F7E)' }}>
+      <section className="py-20 px-5" style={{ background: 'linear-gradient(155deg, #006994, #004A6A)' }}>
         <div className="max-w-5xl mx-auto">
           <p className="text-center text-xs font-semibold uppercase tracking-widest text-action-300 mb-8">{t.mvEyebrow}</p>
           <div className="grid sm:grid-cols-2 gap-7">
@@ -191,7 +200,7 @@ export default async function PartnersPage() {
                   ))}
                 </ul>
                 <Link
-                  href={i === 2 ? '/region' : '#contact'}
+                  href={i === 2 ? localizedHref(locale, '/region') : '#contact'}
                   className="self-start text-sm font-bold text-primary hover:text-primary-600 transition-colors inline-flex items-center gap-1"
                 >
                   {i === 2 ? t.whyRegionLink : t.whyCta} <span aria-hidden="true">→</span>

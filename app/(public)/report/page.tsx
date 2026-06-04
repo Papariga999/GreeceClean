@@ -1,10 +1,18 @@
 import type { Metadata } from 'next'
 import ReportForm from '@/components/ReportForm'
 import { getLocale, getDictionary } from '@/lib/i18n'
+import { publicPageMetadata } from '@/lib/seo'
 
-export const metadata: Metadata = {
+const metadata: Metadata = {
   title: 'Νέα Αναφορά – GreeceClean',
   description: 'Υποβάλετε αναφορά για παράνομη χωματερή ή σκουπίδια στον δήμο σας.',
+}
+
+void metadata
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale()
+  return publicPageMetadata(locale, getDictionary(locale), 'report', '/report')
 }
 
 export default async function ReportPage() {

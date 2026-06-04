@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { margin: 0; font-family: var(--font-sans); background: #fff; }
+  .wrap { padding: 24px 28px; display: flex; flex-direction: column; gap: 18px; }
+  .label { font-size: 13px; font-weight: 600; color: var(--fg1); margin-bottom: 8px; }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .pri { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 600; padding: 3px 11px; border-radius: 9999px; }
+  .beacon { position: relative; width: 8px; height: 8px; }
+  .beacon .ping { position: absolute; inset: 0; border-radius: 9999px; background: #f87171; opacity: .75; animation: ping 1s cubic-bezier(0,0,.2,1) infinite; }
+  .beacon .dot { position: absolute; inset: 0; border-radius: 9999px; background: #ef4444; }
+  @keyframes ping { 75%,100% { transform: scale(2); opacity: 0; } }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div>
+      <div class="label">Priority Badges (admin)</div>
+      <div class="row">
+        <span class="pri" style="background:#FEE2E2;color:#B91C1C"><span class="beacon"><span class="ping"></span><span class="dot"></span></span>Επείγον</span>
+        <span class="pri" style="background:#FEF9C3;color:#A16207">Μέτρια</span>
+        <span class="pri" style="background:#F3F4F6;color:#6B7280">Κανονική</span>
+      </div>
+    </div>
+    <div>
+      <div class="label">Status Pills</div>
+      <div class="row">
+        <span class="pri" style="background:#FEF9C3;color:#854D0E">Σε αναμονή</span>
+        <span class="pri" style="background:#DBEAFE;color:#1E40AF">Υπό εξέταση</span>
+        <span class="pri" style="background:#F3E8FF;color:#6B21A8">Προωθήθηκε</span>
+        <span class="pri" style="background:#DCFCE7;color:#166534">Επιλύθηκε</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -6,6 +6,7 @@ import 'leaflet/dist/leaflet.css'
 import type { SeedReport } from '@/lib/seed-data'
 import { useLocale } from './LocaleProvider'
 import { getElapsed, getSeverityTier, formatDuration } from '@/lib/elapsed'
+import { localizedHref } from '@/lib/i18n/routing'
 
 function escHtml(s: string): string {
   return s
@@ -28,11 +29,37 @@ function formatDate(iso: string | null | undefined, locale: string): string {
 type StatusKey = 'pending' | 'in_review' | 'forwarded' | 'resolved' | 'rejected'
 
 const STATUS_STYLE: Record<StatusKey, { bg: string; color: string }> = {
-  pending:   { bg: '#f3f4f6', color: '#6b7280' },
-  in_review: { bg: '#fffbeb', color: '#b45309' },
-  forwarded: { bg: '#eff6ff', color: '#1d4ed8' },
-  resolved:  { bg: '#f0fdf4', color: '#15803d' },
-  rejected:  { bg: '#fef2f2', color: '#b91c1c' },
+  pending:   { bg: '#F4EFD8', color: '#6E5A12' },
+  in_review: { bg: '#D9E8EF', color: '#004A6A' },
+  forwarded: { bg: '#E7E3F0', color: '#4B3F73' },
+  resolved:  { bg: '#E3EAD2', color: '#495427' },
+  rejected:  { bg: '#F2DDD6', color: '#8A3B23' },
+}
+
+// Severity colour ramp by days elapsed
+const SEVERITY_COLOR: Record<string, string> = {
+  fresh:   '#5A6830',
+  waiting: '#C9A96E',
+  overdue: '#C57A3C',
+  ignored: '#9A3517',
+}
+
+function pinColor(days: number): string {
+  if (days < 7)  return '#5A6830'
+  if (days < 30) return '#C9A96E'
+  if (days < 60) return '#C57A3C'
+  return '#9A3517'
+}
+
+function pinSvg(fill: string, active = false): string {
+  const w = active ? 34 : 28
+  const h = active ? 46 : 38
+  return `<svg width="${w}" height="${h}" viewBox="0 0 44 60" fill="none"
+     style="filter:drop-shadow(0 0 1.4px rgba(255,255,255,.95)) drop-shadow(0 3px 4px rgba(0,0,0,.30))">
+  <path d="M22 2 C11 2 2 11 2 22 C2 36 22 58 22 58 C22 58 42 36 42 22 C42 11 33 2 22 2Z" fill="${fill}"/>
+  <path d="M22 9 C22 9 13 17 13 24 C13 29 17 33 22 33 C27 33 31 29 31 24 C31 17 22 9 22 9Z" fill="rgba(255,255,255,0.92)"/>
+  <circle cx="22" cy="24" r="2.4" fill="${fill}"/>
+</svg>`
 }
 
 const GREECE_CENTER: [number, number] = [39.0742, 21.8243]
@@ -55,21 +82,6 @@ export default function MapClient({ reports }: { reports: SeedReport[] }) {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     }).addTo(map)
 
-    // Brand severity pins — one PNG per tier, shape = pin-"G" teardrop
-    const SEVERITY_PIN: Record<string, string> = {
-      fresh:   '/brand/pins/pin-fresh.png',
-      waiting: '/brand/pins/pin-recent.png',
-      overdue: '/brand/pins/pin-aging.png',
-      ignored: '/brand/pins/pin-ignored.png',
-    }
-    // Keep hex colours for inline popup HTML (elapsed block)
-    const SEVERITY_COLOR: Record<string, string> = {
-      fresh:   '#1FA64B',
-      waiting: '#F2B70C',
-      overdue: '#F4761B',
-      ignored: '#E23B3B',
-    }
-
     reports.forEach((r) => {
       const municipalityName = r.municipality?.name_el ?? t.map.unknownMunicipality
       const categoryLabel    = t.tracking.categories[r.category as keyof typeof t.tracking.categories] ?? r.category
@@ -77,12 +89,14 @@ export default function MapClient({ reports }: { reports: SeedReport[] }) {
       const statusLabel      = t.map.statuses[statusKey] ?? r.status
       const statusStyle      = STATUS_STYLE[statusKey] ?? STATUS_STYLE.pending
       const date             = formatDate(r.created_at, locale)
+      const reportHref       = localizedHref(locale, `/r/${r.public_token}`)
 
       // Elapsed / severity
-      const elapsed    = getElapsed(r)
-      const primaryDays = elapsed.daysSinceNotified ?? elapsed.daysSinceReported
-      const tier       = getSeverityTier(primaryDays)
-      const markerColor = SEVERITY_COLOR[tier]
+      const elapsed      = getElapsed(r)
+      const primaryDays  = elapsed.daysSinceNotified ?? elapsed.daysSinceReported
+      const tier         = getSeverityTier(primaryDays)
+      const markerColor  = SEVERITY_COLOR[tier]
+      const fill         = pinColor(primaryDays)
 
       // Elapsed block HTML for popup
       const el = t.elapsed
@@ -125,10 +139,10 @@ export default function MapClient({ reports }: { reports: SeedReport[] }) {
             ${reportedLine}
             <p style="font-size:11px;color:#4b5563;margin:0 0 10px;font-weight:500">${escHtml(categoryLabel)} · ${escHtml(date)}</p>
             <a
-              href="/r/${escHtml(r.public_token)}"
+              href="${escHtml(reportHref)}"
               style="
                 display:block;text-align:center;text-decoration:none;
-                background:#0D6FDB;color:#ffffff;
+                background:#006994;color:#ffffff;
                 padding:9px 12px;border-radius:8px;
                 font-size:12px;font-weight:600;letter-spacing:0.2px
               "
@@ -137,12 +151,12 @@ export default function MapClient({ reports }: { reports: SeedReport[] }) {
         </div>
       `
 
-      const icon = L.icon({
-        iconUrl:     SEVERITY_PIN[tier],
-        iconSize:    [30, 41],
-        iconAnchor:  [15, 41],
-        popupAnchor: [0, -38],
-        className:   'gc-pin',
+      const icon = L.divIcon({
+        html:        pinSvg(fill),
+        className:   'kt-pin',
+        iconSize:    [28, 38],
+        iconAnchor:  [14, 38],
+        popupAnchor: [0, -32],
       })
 
       L.marker([r.lat, r.lng], { icon })
@@ -154,12 +168,12 @@ export default function MapClient({ reports }: { reports: SeedReport[] }) {
     return () => { map.remove(); mapRef.current = null }
   }, [reports, t, locale])
 
-  // Severity legend data (colours match pin PNGs from README)
+  // Severity legend (colours match new Katharos palette)
   const LEGEND = [
-    { color: '#1FA64B', label: t.elapsed.tierFresh   + ' < 7d' },
-    { color: '#F2B70C', label: t.elapsed.tierWaiting + ' < 30d' },
-    { color: '#F4761B', label: t.elapsed.tierOverdue + ' < 60d' },
-    { color: '#E23B3B', label: t.elapsed.tierIgnored + ' 60d+' },
+    { color: '#5A6830', label: t.elapsed.tierFresh   + ' < 7d' },
+    { color: '#C9A96E', label: t.elapsed.tierWaiting + ' < 30d' },
+    { color: '#C57A3C', label: t.elapsed.tierOverdue + ' < 60d' },
+    { color: '#9A3517', label: t.elapsed.tierIgnored + ' 60d+' },
   ]
 
   return (
@@ -168,7 +182,7 @@ export default function MapClient({ reports }: { reports: SeedReport[] }) {
       {/* Severity legend — bottom-left overlay */}
       <div
         className="absolute bottom-8 left-2 z-[400] rounded-xl shadow-md"
-        style={{ background: 'rgba(255,255,255,0.95)', padding: '8px 10px', minWidth: 110 }}
+        style={{ background: 'rgba(245,242,237,0.97)', padding: '8px 10px', minWidth: 110 }}
       >
         {LEGEND.map(l => (
           <div key={l.color} className="flex items-center gap-2 mb-1 last:mb-0">

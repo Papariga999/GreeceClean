@@ -4,6 +4,8 @@ import { normalizeGreekName, reverseGeocode } from '@/lib/geocoding'
 import { checkRateLimit, getClientIp } from '@/lib/rateLimit'
 import { supabaseAdmin, isSupabaseConfigured } from '@/lib/supabase'
 import { VALID_CATEGORIES } from '@/lib/categories'
+import { DEFAULT_LOCALE, isLocale, type Locale } from '@/lib/i18n/types'
+import { localizedHref } from '@/lib/i18n/routing'
 
 const MAX_BYTES = 500 * 1024 // 500 KB per image
 const STORAGE_BUCKET = 'reports'
@@ -38,6 +40,10 @@ function originOf(req: NextRequest): string {
   const proto = req.headers.get('x-forwarded-proto') ?? 'http'
   if (forwarded) return `${proto}://${forwarded}`
   return req.nextUrl.origin
+}
+
+function trackingUrl(req: NextRequest, token: string, locale: Locale): string {
+  return `${originOf(req)}${localizedHref(locale, `/r/${token}`)}`
 }
 
 async function resolveMunicipalityId(name: string): Promise<string | null> {
@@ -98,12 +104,14 @@ export async function POST(req: NextRequest) {
   }
 
   // ── Honeypot ───────────────────────────────────────────────────────────────
+  const requestedLocale = formData.get('locale')?.toString()
+  const locale = isLocale(requestedLocale) ? requestedLocale : DEFAULT_LOCALE
   const honeypot = formData.get('hp_field')?.toString() ?? ''
   if (honeypot.trim() !== '') {
     const fakeToken = crypto.randomUUID().replace(/-/g, '').slice(0, 12)
     return NextResponse.json({
       token: fakeToken,
-      trackingUrl: `${originOf(req)}/r/${fakeToken}`,
+      trackingUrl: trackingUrl(req, fakeToken, locale),
     })
   }
 
@@ -178,7 +186,7 @@ export async function POST(req: NextRequest) {
     console.info(`[stub] report ${publicToken} | ${municipalityName} | ${category} | ${compressedImages.length} image(s)`)
     return NextResponse.json({
       token: publicToken,
-      trackingUrl: `${originOf(req)}/r/${publicToken}`,
+      trackingUrl: trackingUrl(req, publicToken, locale),
       _stub: true,
     })
   }
@@ -238,6 +246,6 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({
     token:       publicToken,
-    trackingUrl: `${originOf(req)}/r/${publicToken}`,
+    trackingUrl: trackingUrl(req, publicToken, locale),
   })
 }

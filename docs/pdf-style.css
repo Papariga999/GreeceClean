@@ -16,21 +16,21 @@ body {
   justify-content: center;
   min-height: 90vh;
   padding: 40px 0;
-  border-bottom: 4px solid #0D6FDB;
+  border-bottom: 4px solid #006994;
   margin-bottom: 40px;
   page-break-after: always;
 }
 .cover-logo  { font-size: 52pt; margin-bottom: 16px; }
-.cover-title { font-size: 28pt; font-weight: 800; color: #0D6FDB; margin: 0 0 8px; line-height: 1.2; }
-.cover-sub   { font-size: 14pt; color: #39B24A; font-weight: 600; margin: 0 0 32px; }
+.cover-title { font-size: 28pt; font-weight: 800; color: #006994; margin: 0 0 8px; line-height: 1.2; }
+.cover-sub   { font-size: 14pt; color: #6B7C3A; font-weight: 600; margin: 0 0 32px; }
 .cover-meta  { font-size: 10pt; color: #6b7280; border-top: 1px solid #e5e7eb; padding-top: 16px; line-height: 2; }
 
 /* ─── Headings ────────────────────────────────────────────────────────── */
 h1 {
   font-size: 18pt;
   font-weight: 800;
-  color: #0D6FDB;
-  border-bottom: 3px solid #0D6FDB;
+  color: #006994;
+  border-bottom: 3px solid #006994;
   padding-bottom: 8px;
   margin-top: 0;
   margin-bottom: 20px;
@@ -74,7 +74,7 @@ ul, ol { margin: 0 0 12px; padding-left: 22px; }
 li { margin-bottom: 4px; }
 
 blockquote {
-  border-left: 4px solid #39B24A;
+  border-left: 4px solid #6B7C3A;
   background: #f0f5e8;
   margin: 12px 0;
   padding: 10px 16px;
@@ -126,7 +126,7 @@ table {
   page-break-inside: avoid;
 }
 thead tr {
-  background: #0D6FDB;
+  background: #006994;
   color: #ffffff;
 }
 thead th {
@@ -158,7 +158,7 @@ hr {
 
 /* ─── Section label badges ────────────────────────────────────────────── */
 strong em {
-  background: #0D6FDB;
+  background: #006994;
   color: white;
   padding: 2px 7px;
   border-radius: 4px;
@@ -176,4 +176,4 @@ strong em {
   border-bottom: 1px dotted #d1d5db;
   font-size: 10pt;
 }
-.toc a { color: #0D6FDB; text-decoration: none; }
+.toc a { color: #006994; text-decoration: none; }

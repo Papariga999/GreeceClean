@@ -18,6 +18,8 @@ export default defineConfig([
       'out/**',
       'build/**',
       'dist/**',
+      'public/accountability/**',
+      'Redesign/**',
       'next-env.d.ts',
       'tsconfig.tsbuildinfo',
     ],

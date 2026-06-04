@@ -1,4 +1,36 @@
 {
+  "a11y": {
+    "skipToContent": "Skip to content",
+    "languageSwitcher": "Language"
+  },
+
+  "meta": {
+    "home": {
+      "title": "GreeceClean - Report Waste in Greece",
+      "description": "Report illegal dumps, roadside litter and pollution to the right municipality. Help keep Greece clean."
+    },
+    "report": {
+      "title": "Report Waste - GreeceClean",
+      "description": "Submit a verified environmental report with photos and location so the responsible municipality can act."
+    },
+    "map": {
+      "title": "Public Report Map - GreeceClean",
+      "description": "Explore approved waste and pollution reports across Greece on the public GreeceClean map."
+    },
+    "partners": {
+      "title": "Partners & Sponsors - GreeceClean",
+      "description": "Partner with GreeceClean to support transparent environmental reporting and cleanup accountability in Greece."
+    },
+    "top": {
+      "title": "Most Voted Reports - GreeceClean",
+      "description": "See the open environmental reports citizens most want municipalities to resolve."
+    },
+    "region": {
+      "title": "Regional Cleanup Layer - GreeceClean",
+      "description": "A co-branded reporting layer for destinations, tourism partners and local cleanup accountability."
+    }
+  },
+
   "nav": { "home": "Home", "map": "Map", "report": "Report" },
 
   "landing": {
@@ -40,6 +72,10 @@
     "topVotedTitle": "🔥 Most Voted",
     "topVotedSubtitle": "The reports citizens most want resolved",
     "topVotedSeeAll": "See all →",
+    "topFilterAll": "All Greece",
+    "topFilterMine": "My municipality",
+    "topEmpty": "No open reports",
+    "topFootnote": "Voted by citizens · open for a long time",
     "footerTagline": "For a clean Greece 🌿"
   },
 
@@ -181,6 +217,9 @@
   },
 
   "map": {
+    "loading": "Loading map…",
+    "loadInteractive": "Load interactive map",
+    "loadHint": "Approved reports will appear as pins with status and timing.",
     "unknownMunicipality": "Unknown Municipality",
     "viewReport": "View report →",
     "statuses": {

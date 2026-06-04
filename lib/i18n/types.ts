@@ -3,7 +3,25 @@ export type Locale = 'el' | 'en' | 'de'
 export const LOCALES: Locale[] = ['el', 'en', 'de']
 export const DEFAULT_LOCALE: Locale = 'el'
 
+export function isLocale(value: unknown): value is Locale {
+  return typeof value === 'string' && (LOCALES as string[]).includes(value)
+}
+
 export type Dictionary = {
+  a11y: {
+    skipToContent: string
+    languageSwitcher: string
+  }
+
+  meta: {
+    home: { title: string; description: string }
+    report: { title: string; description: string }
+    map: { title: string; description: string }
+    partners: { title: string; description: string }
+    top: { title: string; description: string }
+    region: { title: string; description: string }
+  }
+
   nav: { home: string; map: string; report: string }
 
   landing: {
@@ -22,6 +40,10 @@ export type Dictionary = {
     topVotedTitle: string
     topVotedSubtitle: string
     topVotedSeeAll: string
+    topFilterAll: string
+    topFilterMine: string
+    topEmpty: string
+    topFootnote: string
     impactTitle: string
     impactSubtitle: string
     championsTitle: string
@@ -130,6 +152,9 @@ export type Dictionary = {
   }
 
   map: {
+    loading: string
+    loadInteractive: string
+    loadHint: string
     unknownMunicipality: string
     viewReport: string
     statuses: { pending: string; in_review: string; forwarded: string; resolved: string; rejected: string }

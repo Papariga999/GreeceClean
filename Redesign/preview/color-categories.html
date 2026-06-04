@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { margin: 0; font-family: var(--font-sans); background: #fff; }
+  .wrap { padding: 24px 28px; }
+  .label { font-size: 13px; font-weight: 600; color: var(--fg1); margin-bottom: 4px; }
+  .sub { font-size: 12px; color: var(--fg3); margin-bottom: 16px; }
+  .grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
+  .cat { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 10px 4px; border-radius: 14px; }
+  .circ { width: 38px; height: 38px; border-radius: 9999px; display: flex; align-items: center; justify-content: center; font-size: 19px; }
+  .cn { font-size: 10px; color: var(--gray-700); font-weight: 600; text-align: center; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="label">Category Palette — pastel, one tint family each</div>
+    <div class="sub">-50 tile bg · -100 icon circle · canonical emoji. 11 report types + Other.</div>
+    <div class="grid" id="grid"></div>
+  </div>
+  <script>
+    const cats = [
+      ['🗑️','Dump','#FEF2F2','#FEE2E2'],['🏗️','Rubble','#FAFAF9','#F5F5F4'],['🚮','Litter','#EFF6FF','#DBEAFE'],
+      ['🧴','Plastics','#F0FDFA','#CCFBF1'],['🛞','Tyres','#F8FAFC','#F1F5F9'],['🔌','Appliances','#FEFCE8','#FEF9C3'],
+      ['🚗','Vehicle','#FAF5FF','#F3E8FF'],['🌿','Green','#FFF7ED','#FFEDD5'],['🛋️','Bulky','#FFFBEB','#FEF3C7'],
+      ['🌊','Coastal','#ECFEFF','#CFFAFE'],['☣️','Sewage','#FFF1F2','#FFE4E6'],['❓','Other','#F9FAFB','#F3F4F6']
+    ];
+    document.getElementById('grid').innerHTML = cats.map(([e,n,bg,circ]) =>
+      `<div class="cat" style="background:${bg}"><div class="circ" style="background:${circ}">${e}</div><div class="cn">${n}</div></div>`
+    ).join('');
+  </script>
+</body>
+</html>

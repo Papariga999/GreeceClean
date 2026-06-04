@@ -65,9 +65,9 @@ function buildHtml(b: Required<Omit<Body, 'consent' | 'company'>> & { consentAt:
 
   return `<!DOCTYPE html>
 <html>
-<head><meta charset="utf-8"><style>body{font-family:Inter,ui-sans-serif,sans-serif;background:#F2F7FB;margin:0;padding:24px}
-.wrap{max-width:560px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden;border:1px solid #E0EAF4}
-.head{background:#0D6FDB;color:#fff;padding:24px 28px}.head h1{margin:0;font-size:20px;font-weight:800}
+<head><meta charset="utf-8"><style>body{font-family:ui-monospace,Menlo,monospace;background:#F5F2ED;margin:0;padding:24px}
+.wrap{max-width:560px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden;border:1px solid #E8E3DA}
+.head{background:#006994;color:#fff;padding:24px 28px}.head h1{margin:0;font-size:20px;font-weight:800}
 .head p{margin:4px 0 0;font-size:13px;color:#A6C7F7}
 table{width:100%;border-collapse:collapse;margin:16px 0}
 tr:nth-child(even) td{background:#fff}

@@ -10,10 +10,10 @@ export const contentType = 'image/png'
 
 // Severity pill colours — mirrors tailwind tokens / elapsed.ts
 const SEV = (days: number) => {
-  if (days < 7)  return { bg: '#DCFCE7', text: '#15803D', label: 'φρέσκο' }
-  if (days < 30) return { bg: '#FEF3C7', text: '#D97706', label: 'προσοχή' }
-  if (days < 60) return { bg: '#FFEDD5', text: '#EA580C', label: 'κλιμακώνεται' }
-  return { bg: '#FEE2E2', text: '#DC2626', label: 'αγνοείται' }
+  if (days < 7)  return { bg: '#E3EAD2', text: '#495427', label: 'φρέσκο' }
+  if (days < 30) return { bg: '#F8F3EA', text: '#8A6B30', label: 'προσοχή' }
+  if (days < 60) return { bg: '#F8EEE3', text: '#7A4510', label: 'κλιμακώνεται' }
+  return { bg: '#F5E0D8', text: '#6B1F0A', label: 'αγνοείται' }
 }
 
 async function getReport(token: string) {
@@ -61,13 +61,11 @@ export default async function ReportOGImage({ params }: { params: Promise<{ toke
         {/* Left — photo or solid brand colour */}
         <div style={{
           width: 480, height: '100%', flexShrink: 0,
-          background: photoSrc ? 'transparent' : '#0B57AD',
+          background: photoSrc ? 'transparent' : '#005A80',
           display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden',
         }}>
           {photoSrc
-            // eslint-disable-next-line @next/next/no-img-element
             ? <img src={photoSrc} width={480} height={630} alt="" style={{ objectFit: 'cover', width: '100%', height: '100%' }} />
-            // eslint-disable-next-line @next/next/no-img-element
             : <img src={symbolSrc} width={160} alt="GreeceClean" />}
         </div>
 
@@ -79,9 +77,8 @@ export default async function ReportOGImage({ params }: { params: Promise<{ toke
         }}>
           {/* Brand header */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={symbolSrc} width={36} alt="" style={{ filter: 'invert(30%) sepia(80%) saturate(600%) hue-rotate(190deg)' }} />
-            <span style={{ fontSize: 22, fontWeight: 800, color: '#0D6FDB' }}>GreeceClean</span>
+            <span style={{ fontSize: 22, fontWeight: 800, color: '#006994' }}>GreeceClean</span>
           </div>
 
           {/* Core info */}
@@ -105,13 +102,13 @@ export default async function ReportOGImage({ params }: { params: Promise<{ toke
 
             {/* Vote count */}
             <div style={{ fontSize: 20, color: '#4B5563', fontWeight: 500 }}>
-              <span style={{ fontWeight: 800, color: '#0D6FDB' }}>{total}</span> άτομα θέλουν να καθαριστεί αυτό
+              <span style={{ fontWeight: 800, color: '#006994' }}>{total}</span> άτομα θέλουν να καθαριστεί αυτό
             </div>
           </div>
 
           {/* Footer CTA */}
           <div style={{
-            background: '#0D6FDB', color: '#fff',
+            background: '#006994', color: '#fff',
             borderRadius: 16, padding: '18px 28px',
             fontSize: 18, fontWeight: 700, textAlign: 'center',
           }}>

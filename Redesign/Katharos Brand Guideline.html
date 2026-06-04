@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Katharos — Brand Guideline</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&display=swap&subset=greek,latin" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --aegean:#006994; --aegean-dark:#004A6A; --sky:#0090C4;
+    --olive:#6B7C3A; --olive-dark:#5A6830; --sand:#C9A96E;
+    --marble:#F5F2ED; --marble-dark:#E8E3DA; --ink:#1A1A2E; --ink-700:#23233c;
+    --white:#FAFAF8;
+    --serif:'Cormorant Garamond',Georgia,serif;
+    --mono:'DM Mono',ui-monospace,Menlo,monospace;
+    --hair:rgba(255,255,255,0.08); --hair-2:rgba(255,255,255,0.14);
+  }
+  html{scroll-behavior:smooth;}
+  body{background:var(--ink);color:var(--white);font-family:var(--mono);font-weight:400;
+    -webkit-font-smoothing:antialiased;line-height:1.6;overflow-x:hidden;}
+
+  /* shared */
+  .wrap{max-width:980px;margin:0 auto;padding:0 28px;}
+  .eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:0.34em;text-transform:uppercase;color:var(--sand);}
+  .serif{font-family:var(--serif);font-weight:300;}
+  .sec{padding:84px 0;border-top:1px solid var(--hair);position:relative;}
+  .sec-head{display:flex;align-items:baseline;gap:18px;margin-bottom:44px;flex-wrap:wrap;}
+  .sec-head h2{font-family:var(--serif);font-weight:300;font-size:clamp(30px,5vw,44px);letter-spacing:0.02em;line-height:1;}
+  .sec-head .num{font-family:var(--mono);font-size:11px;letter-spacing:0.3em;color:rgba(255,255,255,0.35);}
+  .lead{font-family:var(--serif);font-weight:300;font-size:clamp(19px,2.4vw,24px);line-height:1.5;color:rgba(255,255,255,0.82);max-width:660px;}
+  .muted{color:rgba(255,255,255,0.5);}
+  .mono-note{font-size:12px;color:rgba(255,255,255,0.5);line-height:1.7;}
+
+  /* hero */
+  .hero{position:relative;padding:96px 28px 76px;text-align:center;overflow:hidden;}
+  .hero::before{content:'';position:absolute;top:-180px;left:50%;transform:translateX(-50%);
+    width:760px;height:760px;background:radial-gradient(ellipse,rgba(0,105,148,0.40) 0%,transparent 68%);pointer-events:none;}
+  .hero::after{content:'';position:absolute;bottom:-40px;right:-60px;width:380px;height:380px;
+    background:radial-gradient(ellipse,rgba(107,124,58,0.18) 0%,transparent 70%);pointer-events:none;}
+  .hero-inner{position:relative;}
+  .mark-hero{width:128px;height:128px;margin:0 auto 30px;animation:float 5s ease-in-out infinite;}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+  .wordmark{font-family:var(--serif);font-weight:300;font-size:clamp(52px,13vw,88px);letter-spacing:0.17em;line-height:1;}
+  .wordmark .a{color:var(--sky);}
+  .sub{font-size:11px;letter-spacing:0.36em;text-transform:uppercase;color:rgba(255,255,255,0.42);margin-top:14px;}
+  .tag{margin-top:10px;font-size:12px;letter-spacing:0.30em;text-transform:uppercase;color:var(--sand);}
+  .hero-lead{margin:40px auto 0;max-width:560px;font-family:var(--serif);font-weight:300;font-size:22px;line-height:1.5;color:rgba(255,255,255,0.78);}
+  .scroll-cue{margin-top:54px;font-size:10px;letter-spacing:0.3em;text-transform:uppercase;color:rgba(255,255,255,0.3);}
+
+  /* logo system */
+  .variants{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+  .variant{border:1px solid var(--hair);border-radius:14px;padding:34px 18px;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:16px;min-height:170px;}
+  .variant .name{font-family:var(--serif);font-weight:300;font-size:24px;letter-spacing:0.15em;}
+  .variant .vlabel{font-family:var(--mono);font-size:9px;letter-spacing:0.26em;text-transform:uppercase;opacity:0.55;}
+  .v-light{background:var(--marble);color:var(--ink);} .v-light .vlabel{color:var(--olive-dark);opacity:.7;}
+  .v-aegean{background:var(--aegean);color:#fff;border-color:transparent;}
+  .v-ink{background:#13131f;color:var(--white);}
+  .v-contour{background:rgba(255,255,255,0.03);color:var(--white);}
+  .logo-detail{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px;}
+  .panel{border:1px solid var(--hair);border-radius:14px;padding:26px;background:rgba(255,255,255,0.02);}
+  .panel h4{font-family:var(--mono);font-weight:500;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--sky);margin-bottom:14px;}
+  .clearspace{position:relative;display:inline-block;padding:26px;border:1px dashed var(--hair-2);border-radius:10px;}
+  .pins-row{display:flex;align-items:flex-end;gap:22px;flex-wrap:wrap;}
+  .pin-item{text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px;}
+  .pin-item .pl{font-size:9px;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.5);}
+
+  /* color */
+  .pal{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+  .swatch{border-radius:12px;overflow:hidden;border:1px solid var(--hair);}
+  .swatch .chip{height:104px;display:flex;align-items:flex-end;padding:12px;}
+  .swatch .meta{padding:12px 14px;background:rgba(255,255,255,0.02);}
+  .swatch .nm{font-family:var(--serif);font-size:19px;font-weight:400;}
+  .swatch .hx{font-size:11px;letter-spacing:0.08em;color:rgba(255,255,255,0.5);margin-top:2px;}
+  .ramp{display:flex;margin-top:8px;border-radius:8px;overflow:hidden;border:1px solid var(--hair);}
+  .ramp span{flex:1;height:30px;}
+  .ramp-label{font-size:10px;color:rgba(255,255,255,0.4);margin:14px 0 4px;letter-spacing:0.12em;text-transform:uppercase;}
+
+  /* type */
+  .type-spec{border:1px solid var(--hair);border-radius:14px;padding:30px;margin-bottom:16px;background:rgba(255,255,255,0.02);}
+  .type-spec .tmeta{font-family:var(--mono);font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--sand);margin-bottom:18px;}
+  .scale-row{display:flex;align-items:baseline;gap:18px;padding:14px 0;border-bottom:1px solid var(--hair);}
+  .scale-row:last-child{border-bottom:none;}
+  .scale-row .sz{font-family:var(--mono);font-size:10px;color:rgba(255,255,255,0.4);width:96px;flex-shrink:0;letter-spacing:0.1em;}
+  .specimen-serif{font-family:var(--serif);font-weight:300;}
+  .glyphs{font-family:var(--serif);font-weight:300;font-size:30px;letter-spacing:0.04em;line-height:1.5;color:rgba(255,255,255,0.85);}
+  .glyphs-mono{font-family:var(--mono);font-size:15px;letter-spacing:0.04em;line-height:1.7;color:rgba(255,255,255,0.7);}
+
+  /* slogans */
+  .slogans{display:grid;gap:14px;}
+  .slogan{border:1px solid var(--hair);border-radius:12px;padding:26px 30px;background:rgba(255,255,255,0.03);position:relative;overflow:hidden;}
+  .slogan::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;}
+  .slogan.b::before{background:var(--sky);} .slogan.g::before{background:var(--olive);} .slogan.s::before{background:var(--sand);}
+  .slogan .stag{font-size:9px;letter-spacing:0.3em;text-transform:uppercase;margin-bottom:12px;}
+  .slogan.b .stag{color:var(--sky);} .slogan.g .stag{color:#9aab5e;} .slogan.s .stag{color:var(--sand);}
+  .slogan .smain{font-family:var(--serif);font-weight:400;font-size:25px;line-height:1.3;margin-bottom:8px;}
+  .slogan .ssub{font-size:11px;color:rgba(255,255,255,0.5);line-height:1.6;}
+  .voice{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px;}
+  .voice .vc{border:1px solid var(--hair);border-radius:12px;padding:22px;}
+  .voice .vc h4{font-family:var(--serif);font-weight:400;font-size:19px;margin-bottom:8px;}
+  .voice .vc.no h4{color:#c98a78;} .voice .vc.yes h4{color:#9aab5e;}
+  .voice .vc p{font-size:12px;color:rgba(255,255,255,0.55);line-height:1.7;}
+
+  /* components on light */
+  .light-panel{background:var(--marble);color:var(--ink);border-radius:16px;padding:38px;}
+  .light-panel .lp-eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:0.3em;text-transform:uppercase;color:var(--sand-700,#8a6b30);}
+  .light-panel h3{font-family:var(--serif);font-weight:600;font-size:26px;color:var(--aegean);margin:6px 0 4px;}
+  .btn{font-family:var(--mono);font-size:13px;letter-spacing:0.04em;font-weight:500;padding:11px 22px;border-radius:12px;border:none;cursor:pointer;transition:background .2s,border-color .2s;}
+  .btn-primary{background:var(--aegean);color:#fff;} .btn-primary:hover{background:var(--aegean-dark);}
+  .btn-action{background:var(--olive);color:#fff;} .btn-action:hover{background:var(--olive-dark);}
+  .btn-ghost{background:transparent;color:var(--aegean);border:1px solid #56A0B7;} .btn-ghost:hover{background:#E6EFF3;}
+  .card-demo{background:#fff;border:1px solid var(--marble-dark);border-radius:12px;padding:22px;box-shadow:0 1px 2px rgba(26,26,46,0.05);}
+  .input-demo{width:100%;font-family:var(--mono);font-size:13px;padding:11px 14px;border:1px solid #D2CFC8;border-radius:12px;background:#fff;color:var(--ink);}
+  .input-demo::placeholder{color:#9C9A93;}
+  .badge{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11px;padding:5px 12px;border-radius:9999px;letter-spacing:0.04em;}
+
+  .footer{padding:40px 28px 60px;text-align:center;border-top:1px solid var(--hair);}
+  .footer .f1{font-family:var(--serif);font-weight:300;font-size:26px;letter-spacing:0.1em;}
+  .footer .f2{font-size:10px;letter-spacing:0.24em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-top:12px;}
+
+  @media(max-width:640px){
+    .variants,.pal,.logo-detail,.voice{grid-template-columns:1fr;}
+    .sec{padding:64px 0;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════ HERO ════════ -->
+<header class="hero">
+  <div class="hero-inner">
+    <div class="mark-hero">
+      <svg viewBox="0 0 120 120" fill="none" width="100%" height="100%">
+        <circle cx="60" cy="60" r="55" stroke="rgba(0,144,196,0.3)" stroke-width="1"/>
+        <path d="M18 72 Q30 60 42 72 Q54 84 66 72 Q78 60 90 72 Q100 81 102 75" stroke="#0090C4" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <path d="M22 80 Q34 68 46 80 Q58 92 70 80 Q82 68 94 80" stroke="rgba(0,144,196,0.45)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <path d="M60 20 C60 20 40 40 40 55 C40 66 49 74 60 74 C71 74 80 66 80 55 C80 40 60 20 60 20Z" fill="rgba(107,124,58,0.30)" stroke="#8A9A4D" stroke-width="1.6" stroke-linejoin="round"/>
+        <ellipse cx="54" cy="46" rx="3.6" ry="6.4" fill="rgba(255,255,255,0.16)" transform="rotate(-15 54 46)"/>
+        <circle cx="60" cy="55" r="3" fill="#0090C4"/>
+      </svg>
+    </div>
+    <div class="wordmark">K<span class="a">a</span>tharos</div>
+    <div class="sub">Greece Clean · καθαρός</div>
+    <div class="tag">Clean · Report · Change</div>
+    <p class="hero-lead">A cleaner Greece, made visible. Katharos turns a single photograph into civic action — quietly, beautifully, and with respect for the place it serves.</p>
+    <div class="scroll-cue">Brand Guideline · 2026 ↓</div>
+  </div>
+</header>
+
+<!-- ════════ ESSENCE ════════ -->
+<section class="sec">
+  <div class="wrap">
+    <div class="sec-head"><span class="num">01</span><h2>The name</h2></div>
+    <p class="lead"><span class="serif" style="color:var(--sky)">καθαρός</span> — <em>katharós</em> — is the Greek word for <em>pure, clean, clear</em>. It is the oldest possible promise to make about a landscape: that it can be returned to itself. The brand carries that promise lightly. Not a campaign against dirt, but an invitation toward clarity.</p>
+    <p class="mono-note" style="margin-top:28px;max-width:620px;">Where the old identity shouted in bright blue and green, Katharos speaks in a calmer register — Aegean water, olive groves, marble and sand. Civic technology that feels less like a complaint form and more like an act of care.</p>
+  </div>
+</section>
+
+<!-- ════════ LOGO ════════ -->
+<section class="sec">
+  <div class="wrap">
+    <div class="sec-head"><span class="num">02</span><h2>The mark</h2></div>
+    <p class="lead" style="margin-bottom:40px;">An olive leaf-droplet rising from Aegean waves, held in a thin circle. Leaf for nature, drop for water and place, the ring for wholeness. A single sky-blue point marks the spot.</p>
+    <div class="variants">
+      <div class="variant v-light">
+        <svg width="42" height="42" viewBox="0 0 120 120" fill="none"><path d="M60 20 C60 20 40 40 40 55 C40 66 49 74 60 74 C71 74 80 66 80 55 C80 40 60 20 60 20Z" fill="rgba(107,124,58,0.22)" stroke="#6B7C3A" stroke-width="2"/><path d="M18 72 Q30 60 42 72 Q54 84 66 72 Q78 60 90 72" stroke="#006994" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="60" cy="55" r="3.5" fill="#0090C4"/></svg>
+        <span class="name" style="color:#1A1A2E">K<span style="color:#0090C4">a</span>tharos</span>
+        <span class="vlabel">Light · Print</span>
+      </div>
+      <div class="variant v-aegean">
+        <svg width="42" height="42" viewBox="0 0 120 120" fill="none"><path d="M60 20 C60 20 40 40 40 55 C40 66 49 74 60 74 C71 74 80 66 80 55 C80 40 60 20 60 20Z" fill="rgba(255,255,255,0.2)" stroke="#fff" stroke-width="2"/><path d="M18 72 Q30 60 42 72 Q54 84 66 72 Q78 60 90 72" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="60" cy="55" r="3.5" fill="#fff"/></svg>
+        <span class="name">Katharos</span>
+        <span class="vlabel" style="color:rgba(255,255,255,0.6)">Aegean</span>
+      </div>
+      <div class="variant v-ink">
+        <svg width="42" height="42" viewBox="0 0 120 120" fill="none"><path d="M60 20 C60 20 40 40 40 55 C40 66 49 74 60 74 C71 74 80 66 80 55 C80 40 60 20 60 20Z" fill="rgba(107,124,58,0.3)" stroke="#8A9A4D" stroke-width="2"/><path d="M18 72 Q30 60 42 72 Q54 84 66 72 Q78 60 90 72" stroke="#0090C4" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="60" cy="55" r="3.5" fill="#0090C4"/></svg>
+        <span class="name">K<span style="color:#0090C4">a</span>tharos</span>
+        <span class="vlabel">Dark · App</span>
+      </div>
+      <div class="variant v-contour">
+        <svg width="42" height="42" viewBox="0 0 120 120" fill="none"><circle cx="60" cy="60" r="50" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/><path d="M60 25 C60 25 42 45 42 58 C42 70 50 77 60 77 C70 77 78 70 78 58 C78 45 60 25 60 25Z" fill="none" stroke="#fff" stroke-width="2"/><path d="M30 78 Q45 65 60 78 Q75 65 90 78" stroke="rgba(255,255,255,0.55)" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+        <span class="name">Katharos</span>
+        <span class="vlabel">Contour</span>
+      </div>
+    </div>
+
+    <div class="logo-detail">
+      <div class="panel">
+        <h4>Clear space &amp; minimum size</h4>
+        <div class="clearspace">
+          <svg width="64" height="64" viewBox="0 0 120 120" fill="none"><circle cx="60" cy="60" r="55" stroke="rgba(0,144,196,0.28)" stroke-width="1"/><path d="M18 72 Q30 60 42 72 Q54 84 66 72 Q78 60 90 72 Q100 81 102 75" stroke="#0090C4" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M22 80 Q34 68 46 80 Q58 92 70 80 Q82 68 94 80" stroke="rgba(0,144,196,0.45)" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M60 20 C60 20 40 40 40 55 C40 66 49 74 60 74 C71 74 80 66 80 55 C80 40 60 20 60 20Z" fill="rgba(107,124,58,0.3)" stroke="#8A9A4D" stroke-width="1.6"/><circle cx="60" cy="55" r="3" fill="#0090C4"/></svg>
+        </div>
+        <p class="mono-note" style="margin-top:16px;">Keep clear space of at least half the emblem's height on every side. Minimum legible size: 24px (digital), 9mm (print). Never recolour the leaf away from olive or the dot away from sky.</p>
+      </div>
+      <div class="panel">
+        <h4>App icon &amp; map markers</h4>
+        <div style="display:flex;align-items:center;gap:22px;margin-bottom:18px;">
+          <div style="width:76px;height:76px;border-radius:18px;background:#1A1A2E;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 26px rgba(26,26,46,.4)">
+            <div style="position:absolute;top:-30%;left:50%;transform:translateX(-50%);width:120%;height:90%;background:radial-gradient(ellipse,rgba(0,144,196,.55) 0%,transparent 70%)"></div>
+            <svg width="48" height="48" viewBox="0 0 120 120" fill="none" style="position:relative"><circle cx="60" cy="60" r="55" stroke="rgba(255,255,255,0.3)" stroke-width="1"/><path d="M18 72 Q30 60 42 72 Q54 84 66 72 Q78 60 90 72 Q100 81 102 75" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M22 80 Q34 68 46 80 Q58 92 70 80 Q82 68 94 80" stroke="rgba(255,255,255,.45)" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M60 20 C60 20 40 40 40 55 C40 66 49 74 60 74 C71 74 80 66 80 55 C80 40 60 20 60 20Z" fill="rgba(255,255,255,0.22)" stroke="#fff" stroke-width="1.6"/><circle cx="60" cy="55" r="3" fill="#fff"/></svg>
+          </div>
+          <div class="pins-row" id="pins"></div>
+        </div>
+        <p class="mono-note">Map markers keep the leaf-drop DNA as a filled teardrop, tinted by how long a report has waited — olive (fresh) → sand → amber → terracotta (long ignored).</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ COLOR ════════ -->
+<section class="sec">
+  <div class="wrap">
+    <div class="sec-head"><span class="num">03</span><h2>Colour</h2></div>
+    <p class="lead" style="margin-bottom:38px;">Mediterranean and earthen. Aegean and Sky carry structure and identity; Olive carries nature and "done"; Sand is the metallic detail; Marble and Ink are the two grounds.</p>
+    <div class="pal">
+      <div class="swatch"><div class="chip" style="background:#006994"></div><div class="meta"><div class="nm">Aegean</div><div class="hx">#006994 · primary</div></div></div>
+      <div class="swatch"><div class="chip" style="background:#0090C4"></div><div class="meta"><div class="nm">Sky</div><div class="hx">#0090C4 · accent</div></div></div>
+      <div class="swatch"><div class="chip" style="background:#6B7C3A"></div><div class="meta"><div class="nm">Olive</div><div class="hx">#6B7C3A · action</div></div></div>
+      <div class="swatch"><div class="chip" style="background:#C9A96E"></div><div class="meta"><div class="nm">Sand</div><div class="hx">#C9A96E · detail</div></div></div>
+      <div class="swatch"><div class="chip" style="background:#F5F2ED"></div><div class="meta"><div class="nm" style="color:#1A1A2E">Marble</div><div class="hx" style="color:#6E6C66">#F5F2ED · light ground</div></div></div>
+      <div class="swatch"><div class="chip" style="background:#1A1A2E;border-bottom:1px solid var(--hair)"></div><div class="meta"><div class="nm">Ink</div><div class="hx">#1A1A2E · dark ground</div></div></div>
+    </div>
+    <div class="ramp-label">Aegean ramp · 50 → 900</div>
+    <div class="ramp"><span style="background:#E6EFF3"></span><span style="background:#C0DAE3"></span><span style="background:#8BBDCD"></span><span style="background:#56A0B7"></span><span style="background:#2285A4"></span><span style="background:#006994"></span><span style="background:#005A80"></span><span style="background:#004A6A"></span><span style="background:#003851"></span><span style="background:#002636"></span></div>
+    <div class="ramp-label">Olive ramp · 50 → 900</div>
+    <div class="ramp"><span style="background:#F0F2E9"></span><span style="background:#DCE1C8"></span><span style="background:#C0C99B"></span><span style="background:#A4B16E"></span><span style="background:#889A4D"></span><span style="background:#6B7C3A"></span><span style="background:#5A6830"></span><span style="background:#495427"></span><span style="background:#353D1C"></span><span style="background:#232911"></span></div>
+  </div>
+</section>
+
+<!-- ════════ TYPE ════════ -->
+<section class="sec">
+  <div class="wrap">
+    <div class="sec-head"><span class="num">04</span><h2>Typography</h2></div>
+    <div class="type-spec">
+      <div class="tmeta">Display &amp; headings — Cormorant Garamond · light / regular</div>
+      <div class="scale-row"><span class="sz">72 / 300</span><span class="specimen-serif" style="font-size:54px;letter-spacing:0.04em;line-height:1">Greece deserves to shine</span></div>
+      <div class="scale-row"><span class="sz">36 / 600</span><span class="specimen-serif" style="font-size:34px;font-weight:600;color:#7fc1da">Report what you see</span></div>
+      <div class="scale-row"><span class="sz">28 / 500</span><span class="specimen-serif" style="font-size:27px;font-weight:500">How Katharos works</span></div>
+      <div style="margin-top:20px;"><div class="glyphs">Α α Β β Γ γ Δ δ Ε ε Ζ ζ &nbsp; A a B b G g &nbsp; 1 2 3 4 5 6 7 8 9 0</div></div>
+    </div>
+    <div class="type-spec">
+      <div class="tmeta">UI · labels · body · numerals — DM Mono · 300 / 400 / 500</div>
+      <div class="scale-row"><span class="sz">14 / 400</span><span class="glyphs-mono" style="margin:0">Photograph the problem. We forward it to the responsible municipality in under a minute.</span></div>
+      <div class="scale-row"><span class="sz">10 / 400</span><span class="glyphs-mono" style="margin:0;letter-spacing:0.3em;text-transform:uppercase;color:var(--sand)">What can be reported</span></div>
+      <div style="margin-top:18px;"><div class="glyphs-mono">καθαρός · clean · report · change · 01 02 03 → ← ✓</div></div>
+    </div>
+    <p class="mono-note">Cormorant sets the voice — calm, classical, confident. DM Mono does the work — every label, number, button and paragraph. The pairing of a humanist serif against a technical monospace is the whole personality in two typefaces: <em>heritage meeting infrastructure</em>.</p>
+  </div>
+</section>
+
+<!-- ════════ VOICE / SLOGANS ════════ -->
+<section class="sec">
+  <div class="wrap">
+    <div class="sec-head"><span class="num">05</span><h2>Voice &amp; slogans</h2></div>
+    <div class="slogans">
+      <div class="slogan b"><div class="stag">Lead · International</div><div class="smain">Greece deserves to shine.</div><div class="ssub">Strong, confident, emotional. For social, App Store titles, the hero.</div></div>
+      <div class="slogan g"><div class="stag">Community · Deutsch</div><div class="smain">Gemeinsam sauber. Gemeinsam Griechenland.</div><div class="ssub">Foregrounds the collective — ideal for campaigns and onboarding.</div></div>
+      <div class="slogan s"><div class="stag">Short · App badge</div><div class="smain">Katharos — Clean. Report. Change.</div><div class="ssub">Three clear actions. Works as a subtitle or lockup tagline.</div></div>
+    </div>
+    <div class="voice">
+      <div class="vc yes"><h4>We sound like</h4><p>Calm, warm, certain. The citizen is a capable participant, not a "user". Imperatives are invitations: <em>Photograph. Submit. Track.</em> Sentence case; wide-tracked uppercase only for small labels. Greek is canonical.</p></div>
+      <div class="vc no"><h4>We avoid</h4><p>Alarm, blame, bureaucracy, exclamation pile-ups, emoji as decoration. We never insult a municipality — accountability copy is pointed but factual: <em>which places act, and which don't yet.</em></p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ COMPONENTS ════════ -->
+<section class="sec">
+  <div class="wrap">
+    <div class="sec-head"><span class="num">06</span><h2>In use</h2></div>
+    <p class="lead" style="margin-bottom:32px;">On product surfaces the system lives on Marble and white — refined radii (10–12px), hairline borders, DM Mono controls, Cormorant titles.</p>
+    <div class="light-panel">
+      <div class="lp-eyebrow">Report a problem</div>
+      <h3>Keep this coastline clean</h3>
+      <p style="font-family:var(--mono);font-size:13px;color:#4C4B47;line-height:1.7;max-width:560px;margin-bottom:22px;">Three steps · less than a minute. No account required.</p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:24px;">
+        <button class="btn btn-primary">Make a report</button>
+        <button class="btn btn-action">View the map →</button>
+        <button class="btn btn-ghost">Track progress</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div class="card-demo">
+          <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#8a6b30;margin-bottom:8px;">Report · #ab12cd</div>
+          <div style="font-family:var(--serif);font-size:21px;font-weight:500;color:#006994;margin-bottom:10px;">Coastal pollution</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <span class="badge" style="background:#D9E8EF;color:#004A6A;">In review</span>
+            <span class="badge" style="background:#F4ECDB;color:#8a6b30;">12 days open</span>
+          </div>
+        </div>
+        <div class="card-demo">
+          <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#8a6b30;margin-bottom:8px;">Your email</div>
+          <input class="input-demo" placeholder="name@example.gr" style="margin-bottom:10px;">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <span class="badge" style="background:#E3EAD2;color:#495427;">✓ Resolved</span>
+            <span class="badge" style="background:#F2DDD6;color:#8A3B23;">Rejected</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="f1">K<span style="color:var(--sky)">a</span>tharos</div>
+  <div class="f2">καθαρός · "pure, clean" · Brand Concept 2026</div>
+</footer>
+
+<script>
+  // render severity map pins
+  const SEV=[['fresh','#5A6830','< 7d'],['recent','#C9A96E','< 30d'],['aging','#C57A3C','< 60d'],['ignored','#9A3517','60d+']];
+  document.getElementById('pins').innerHTML = SEV.map(([k,fill,lbl])=>`
+    <div class="pin-item">
+      <svg width="26" height="35" viewBox="0 0 44 60" fill="none">
+        <path d="M22 2 C11 2 2 11 2 22 C2 36 22 58 22 58 C22 58 42 36 42 22 C42 11 33 2 22 2Z" fill="${fill}"/>
+        <path d="M22 9 C22 9 13 17 13 24 C13 29 17 33 22 33 C27 33 31 29 31 24 C31 17 22 9 22 9Z" fill="rgba(255,255,255,0.92)"/>
+        <circle cx="22" cy="24" r="2.4" fill="${fill}"/>
+      </svg>
+      <span class="pl">${lbl}</span>
+    </div>`).join('');
+</script>
+
+</body>
+</html>

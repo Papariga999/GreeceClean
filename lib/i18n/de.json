@@ -1,4 +1,36 @@
 {
+  "a11y": {
+    "skipToContent": "Zum Inhalt springen",
+    "languageSwitcher": "Sprache"
+  },
+
+  "meta": {
+    "home": {
+      "title": "GreeceClean - Müll in Griechenland melden",
+      "description": "Melden Sie illegale Deponien, Straßenmüll und Umweltverschmutzung an die zuständige Gemeinde."
+    },
+    "report": {
+      "title": "Müll melden - GreeceClean",
+      "description": "Reichen Sie eine Umweltmeldung mit Fotos und Standort ein, damit die zuständige Gemeinde handeln kann."
+    },
+    "map": {
+      "title": "Öffentliche Meldungskarte - GreeceClean",
+      "description": "Entdecken Sie geprüfte Müll- und Umweltmeldungen in Griechenland auf der öffentlichen GreeceClean-Karte."
+    },
+    "partners": {
+      "title": "Partner & Sponsoren - GreeceClean",
+      "description": "Unterstützen Sie GreeceClean für transparente Umweltmeldungen und kommunale Rechenschaft in Griechenland."
+    },
+    "top": {
+      "title": "Meistgewählte Meldungen - GreeceClean",
+      "description": "Sehen Sie die offenen Umweltmeldungen, deren Lösung Bürgerinnen und Bürger am stärksten wünschen."
+    },
+    "region": {
+      "title": "Regionale Cleanup-Ebene - GreeceClean",
+      "description": "Eine co-gebrandete Meldeseite für Destinationen, Tourismuspartner und lokale Cleanup-Rechenschaft."
+    }
+  },
+
   "nav": { "home": "Startseite", "map": "Karte", "report": "Melden" },
 
   "landing": {
@@ -40,6 +72,10 @@
     "topVotedTitle": "🔥 Meiste Stimmen",
     "topVotedSubtitle": "Die Meldungen, die Bürger am meisten gelöst sehen möchten",
     "topVotedSeeAll": "Alle anzeigen →",
+    "topFilterAll": "Griechenlandweit",
+    "topFilterMine": "Meine Gemeinde",
+    "topEmpty": "Keine offenen Meldungen",
+    "topFootnote": "Von Bürgern gewählt · seit langem offen",
     "footerTagline": "Für ein sauberes Griechenland 🌿"
   },
 
@@ -181,6 +217,9 @@
   },
 
   "map": {
+    "loading": "Karte wird geladen…",
+    "loadInteractive": "Interaktive Karte laden",
+    "loadHint": "Genehmigte Meldungen erscheinen als Pins mit Status und Zeitangaben.",
     "unknownMunicipality": "Unbekannte Gemeinde",
     "viewReport": "Meldung anzeigen →",
     "statuses": {

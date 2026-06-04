@@ -31,7 +31,7 @@ export default function TrackingActions({ url, shareText, strings: s }: Props) {
           className="flex-1 rounded-2xl py-3 px-4 text-sm font-bold transition-colors duration-150"
           style={{
             background:  cleaned ? '#DCFCE7' : '#fff',
-            border:      `1.5px solid ${cleaned ? '#39B24A' : '#E5E7EB'}`,
+            border:      `1.5px solid ${cleaned ? '#6B7C3A' : '#E5E7EB'}`,
             color:       cleaned ? '#15803D' : '#374151',
           }}
         >

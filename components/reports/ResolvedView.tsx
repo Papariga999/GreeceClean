@@ -19,18 +19,23 @@ type Props = {
   strings: Strings
 }
 
+function seededRatio(id: number, salt: number): number {
+  const value = Math.sin(id * 12.9898 + salt * 78.233) * 43758.5453
+  return value - Math.floor(value)
+}
+
 // Confetti burst — client-only, runs once on mount
 function Confetti() {
-  const COLORS = ['#0D6FDB', '#39B24A', '#F59E0B', '#DC2626', '#1FA64B', '#7360F2']
+  const COLORS = ['#006994', '#6B7C3A', '#C9A96E', '#9A3517', '#C57A3C', '#7360F2']
   const bits = Array.from({ length: 40 }, (_, i) => ({
     id: i,
-    left: 30 + Math.random() * 40,
-    delay: Math.random() * 0.3,
-    dur: 1.1 + Math.random() * 0.7,
-    rot: Math.random() * 720 - 360,
-    dx: Math.random() * 140 - 70,
-    dy: 220 + Math.random() * 380,
-    size: 6 + Math.random() * 6,
+    left: 30 + seededRatio(i, 1) * 40,
+    delay: seededRatio(i, 2) * 0.3,
+    dur: 1.1 + seededRatio(i, 3) * 0.7,
+    rot: seededRatio(i, 4) * 720 - 360,
+    dx: seededRatio(i, 5) * 140 - 70,
+    dy: 220 + seededRatio(i, 6) * 380,
+    size: 6 + seededRatio(i, 7) * 6,
     color: COLORS[i % COLORS.length],
   }))
 
@@ -83,10 +88,10 @@ export default function ResolvedView({ url, shareText, total, strings: s }: Prop
       {/* Community credit card */}
       <div
         className="rounded-2xl p-4 text-center text-sm leading-relaxed"
-        style={{ background: '#F2F5E8', color: '#405515' }}
+        style={{ background: '#E3EAD2', color: '#495427' }}
       >
         {before}
-        <strong style={{ color: '#0D6FDB' }}>{total}</strong>
+        <strong style={{ color: '#006994' }}>{total}</strong>
         {after}
       </div>
 

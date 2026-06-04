@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { supabaseAdmin, isSupabaseConfigured } from '@/lib/supabase'
 import { requireAdminSession } from '@/lib/adminPageAuth'
 import MunicipalityEmailList, { type MunicipalityRow } from '@/components/MunicipalityEmailList'
@@ -58,12 +59,12 @@ export default async function MunicipalitiesAdminPage() {
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <a
+            <Link
               href="/admin/dashboard"
               className="text-sm text-gray-500 bg-white px-3 py-1 rounded-full border hover:bg-gray-50"
             >
               ← Dashboard
-            </a>
+            </Link>
             <form action="/api/admin/logout" method="POST">
               <button
                 type="submit"

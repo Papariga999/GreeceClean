@@ -1,0 +1,332 @@
+/* ============================================================================
+   Katharos — Design Tokens
+   καθαρός · "pure, clean" · Civic technology for a cleaner Greece.
+   Brand concept 2026: an editorial, quietly-confident identity built on a
+   leaf-droplet-over-waves emblem, a Cormorant Garamond / DM Mono type pairing,
+   and a warm Mediterranean palette — Aegean #006994, Sky #0090C4, Olive #6B7C3A,
+   Marble #F5F2ED, Sand #C9A96E, Ink #1A1A2E.
+   (Supersedes the GreeceClean identity: bright Aegean-blue #0D6FDB + Eco-green
+   #39B24A, Inter, pin-as-"G". Backup in backup_v1_greececlean/.)
+   ============================================================================ */
+
+/* Cormorant Garamond — display / wordmark / headings (light, wide-tracked).
+   DM Mono — UI, labels, body, meta, numerals. Greek + Latin subsets. */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap&subset=greek,latin');
+
+:root {
+  /* ── Brand: Primary (Aegean) ───────────────────────────────────────────── */
+  --primary:      #006994;   /* DEFAULT — Aegean. Structure, headings, primary actions */
+  --primary-50:   #E6EFF3;
+  --primary-100:  #C0DAE3;
+  --primary-200:  #8BBDCD;
+  --primary-300:  #56A0B7;
+  --primary-400:  #2285A4;
+  --primary-500:  #006994;
+  --primary-600:  #005A80;   /* hover */
+  --primary-700:  #004A6A;
+  --primary-800:  #003851;
+  --primary-900:  #002636;
+
+  /* ── Sky (bright Aegean accent — links on dark, highlights, the "a", dots) ── */
+  --sky:      #0090C4;
+  --sky-50:   #E6F4FA;
+  --sky-100:  #C0E4F1;
+  --sky-200:  #87CDE6;
+  --sky-300:  #4FB6DB;
+  --sky-400:  #1F9FCF;
+  --sky-500:  #0090C4;
+  --sky-600:  #0079A4;
+  --sky-700:  #006184;
+
+  /* ── Brand: Action / Eco (Olive) ───────────────────────────────────────── */
+  --action:      #6B7C3A;    /* DEFAULT — Olive. Confirm, resolved, eco/nature, secondary CTA */
+  --action-50:   #F0F2E9;
+  --action-100:  #DCE1C8;
+  --action-200:  #C0C99B;
+  --action-300:  #A4B16E;    /* light highlight on dark */
+  --action-400:  #889A4D;
+  --action-500:  #6B7C3A;
+  --action-600:  #5A6830;    /* hover */
+  --action-700:  #495427;
+  --action-800:  #353D1C;
+  --action-900:  #232911;
+
+  /* ── Sand (warm metallic accent — eyebrows, dividers, premium detail) ───── */
+  --sand:      #C9A96E;
+  --sand-50:   #F8F3EA;
+  --sand-100:  #EFE3CC;
+  --sand-200:  #E0C9A0;
+  --sand-300:  #D1B681;
+  --sand-600:  #A8843F;
+  --sand-700:  #8A6B30;
+
+  /* ── Surfaces: Marble (warm light) · Ink (deep dark) · warm white ──────── */
+  --marble:      #F5F2ED;   /* the light brand surface — warm limestone */
+  --marble-dark: #E8E3DA;   /* hairline borders / muted fills on marble */
+  --ink:         #1A1A2E;   /* deep ink — dark sections, footer, hero, brand canvas */
+  --ink-700:     #2A2A42;   /* raised panels on ink */
+  --warm-white:  #FAFAF8;
+
+  /* Named brand tones kept for back-compat (now mapped onto the new palette) */
+  --sea-mist:    #EAF1F4;   /* light Aegean wash (alt to marble for cool sections) */
+  --deep-aegean: #004A6A;   /* dense header/footer fills, deep contrast */
+  --ink-navy:    #1A1A2E;   /* alias → ink */
+
+  /* ── Neutrals (kept for dense UI / admin; warmed page background) ──────── */
+  --gray-50:   #F9FAFB;
+  --gray-100:  #F0EFEC;   /* hairline borders, track fills (slightly warm) */
+  --gray-200:  #E4E2DD;
+  --gray-300:  #D2CFC8;   /* input borders */
+  --gray-400:  #9C9A93;   /* tertiary text, captions */
+  --gray-500:  #6E6C66;   /* secondary text */
+  --gray-600:  #4C4B47;   /* body text muted */
+  --gray-700:  #383734;
+  --gray-800:  #232220;
+  --gray-900:  #161514;   /* near-black foreground */
+  --white:     #FFFFFF;
+
+  /* ── Semantic foreground / background ──────────────────────────────────── */
+  --bg:        var(--marble);
+  --surface:   var(--white);
+  --fg1:       var(--ink);        /* primary text */
+  --fg2:       var(--gray-600);   /* secondary text */
+  --fg3:       var(--gray-400);   /* tertiary / captions */
+  --border:    var(--marble-dark);
+  --border-input: var(--gray-300);
+
+  /* ── Status colors (report lifecycle + admin — functional, not brand) ───── */
+  --status-pending-bg:   #F4EFD8;  --status-pending-fg:   #6E5A12;  /* warm amber */
+  --status-review-bg:    #D9E8EF;  --status-review-fg:    #004A6A;  /* aegean */
+  --status-forwarded-bg: #E7E3F0;  --status-forwarded-fg: #4B3F73;  /* muted violet */
+  --status-resolved-bg:  #E3EAD2;  --status-resolved-fg:  #495427;  /* olive */
+  --status-rejected-bg:  #F2DDD6;  --status-rejected-fg:  #8A3B23;  /* terracotta */
+
+  /* Priority */
+  --priority-urgent-bg:  #F2DDD6;  --priority-urgent-fg:  #9A3517;
+  --priority-medium-bg:  #F4EFD8;  --priority-medium-fg:  #7A5E12;
+  --priority-normal-bg:  #F0EFEC;  --priority-normal-fg:  #6E6C66;
+
+  /* Map pin status (Leaflet popups — lighter tints) */
+  --pin-pending:   #6E6C66;  --pin-pending-bg:   #F0EFEC;
+  --pin-review:    #8A6B30;  --pin-review-bg:    #F8F3EA;
+  --pin-forwarded: #0079A4;  --pin-forwarded-bg: #E6F4FA;
+  --pin-resolved:  #5A6830;  --pin-resolved-bg:  #F0F2E9;
+
+  /* WhatsApp / Viber share brands (unchanged — external) */
+  --whatsapp: #25D366;
+  --viber: #7360F2;
+
+  /* ── Severity scale ("how long ignored") — earthy 4-stop ramp ──────────── */
+  --sev-fresh:    #5A6830;  --sev-fresh-bg:    #E3EAD2;  /* < 7 days  — φρέσκο (olive) */
+  --sev-watch:    #C9A96E;  --sev-watch-bg:    #F4ECDB;  /* < 30 days — προσοχή (sand) */
+  --sev-escalate: #C57A3C;  --sev-escalate-bg: #F3E2D1;  /* < 60 days — κλιμακώνεται */
+  --sev-ignored:  #9A3517;  --sev-ignored-bg:  #F2DDD6;  /* > 60 days — αγνοείται */
+
+  /* ── Typography ────────────────────────────────────────────────────────── */
+  --font-display: 'Cormorant Garamond', 'Hoefler Text', Georgia, 'Times New Roman', serif;
+  --font-serif:   var(--font-display);
+  --font-mono:    'DM Mono', ui-monospace, 'SFMono-Regular', 'Menlo', monospace;
+  --font-sans:    var(--font-mono);   /* the brand has no sans — UI/body is DM Mono */
+
+  /* Type scale */
+  --text-hero:       4.5rem;   /* 72px — wordmark / brand hero (Cormorant 300) */
+  --text-hero-sm:    2.75rem;  /* 44px — hero mobile */
+  --text-h1:         2.25rem;  /* 36px — page / section titles (serif) */
+  --text-h2:         1.75rem;  /* 28px — sub-section / form step titles (serif) */
+  --text-h3:         1.3125rem;/* 21px — card titles (serif) */
+  --text-lg:         1.125rem; /* 18px — lead / hero subcopy */
+  --text-base:       1rem;     /* 16px */
+  --text-sm:         0.875rem; /* 14px — most UI text (mono) */
+  --text-xs:         0.75rem;  /* 12px — captions, meta, badges (mono) */
+  --text-2xs:        0.625rem; /* 10px — eyebrows, tags (mono, wide-tracked) */
+
+  --weight-light:    300;   /* Cormorant display, DM Mono light */
+  --weight-normal:   400;
+  --weight-medium:   500;
+  --weight-semibold: 600;   /* Cormorant headings */
+  --weight-bold:     700;   /* Cormorant max */
+  --weight-extrabold:700;   /* alias (no 800 in this system) */
+
+  /* Tracking — wide tracking is a brand signature */
+  --track-wordmark:  0.18em;
+  --track-eyebrow:   0.32em;
+  --track-mono:      0.04em;
+
+  /* ── Radii — tighter & more refined than the old pillowy 1.5rem ────────── */
+  --radius-sm:   0.5rem;    /* 8px */
+  --radius:      0.625rem;  /* 10px — DEFAULT */
+  --radius-lg:   0.75rem;   /* 12px — cards */
+  --radius-xl:   0.875rem;  /* 14px */
+  --radius-2xl:  0.75rem;   /* 12px — redefined: cards/buttons/inputs (was 1.5rem) */
+  --radius-full: 9999px;    /* pills, dots, the emblem ring */
+
+  /* ── Shadows — restrained, editorial ───────────────────────────────────── */
+  --shadow-sm:  0 1px 2px 0 rgb(26 26 46 / 0.05);
+  --shadow-md:  0 4px 14px -4px rgb(26 26 46 / 0.12);
+  --shadow-lg:  0 14px 34px -10px rgb(26 26 46 / 0.18);
+  --shadow-xl:  0 26px 50px -12px rgb(26 26 46 / 0.28);
+  --glow-aegean: 0 0 60px -10px rgb(0 105 148 / 0.45);   /* radial bloom on ink */
+
+  /* ── Motion ────────────────────────────────────────────────────────────── */
+  --duration-fast: 150ms;
+  --duration-base: 250ms;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ── Layout ────────────────────────────────────────────────────────────── */
+  --container-form:  32rem;
+  --container-prose: 56rem;
+  --container-wide:  80rem;
+}
+
+/* ============================================================================
+   SEMANTIC ELEMENT STYLES — apply .gc-* / .kt-* classes or use as reference
+   (the .gc-* names are kept for back-compat with existing markup)
+   ============================================================================ */
+
+.gc-body, .kt-body {
+  font-family: var(--font-mono);
+  background: var(--bg);
+  color: var(--fg1);
+  font-weight: var(--weight-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Display / wordmark ────────────────────────────────────────────────── */
+.kt-wordmark {
+  font-family: var(--font-display);
+  font-weight: var(--weight-light);
+  letter-spacing: var(--track-wordmark);
+  line-height: 1;
+}
+
+.gc-hero-title, .kt-display {
+  font-family: var(--font-display);
+  font-size: var(--text-hero);
+  font-weight: var(--weight-light);
+  line-height: 1.02;
+  letter-spacing: 0.02em;
+  color: var(--fg1);
+}
+
+h1, .gc-h1 {
+  font-family: var(--font-display);
+  font-size: var(--text-h1);
+  font-weight: var(--weight-semibold);
+  color: var(--primary);
+  line-height: 1.12;
+  letter-spacing: 0.01em;
+}
+
+h2, .gc-h2 {
+  font-family: var(--font-display);
+  font-size: var(--text-h2);
+  font-weight: var(--weight-semibold);
+  color: var(--primary);
+  line-height: 1.18;
+}
+
+h3, .gc-h3 {
+  font-family: var(--font-display);
+  font-size: var(--text-h3);
+  font-weight: var(--weight-medium);
+  color: var(--fg1);
+  line-height: 1.25;
+}
+
+p, .gc-p {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--fg2);
+  line-height: 1.7;
+  font-weight: var(--weight-normal);
+}
+
+.gc-small  { font-family: var(--font-mono); font-size: var(--text-sm); color: var(--fg2); }
+.gc-caption { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--fg3); }
+.gc-eyebrow, .kt-eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  font-weight: var(--weight-normal);
+  color: var(--sand-700);
+  text-transform: uppercase;
+  letter-spacing: var(--track-eyebrow);
+}
+.gc-mono { font-family: var(--font-mono); }
+
+/* ── Buttons — editorial: mono label, subtle tracking, refined radius ───── */
+.btn-primary {
+  font-family: var(--font-mono);
+  background: var(--primary);
+  color: var(--warm-white);
+  font-weight: var(--weight-medium);
+  font-size: var(--text-sm);
+  letter-spacing: var(--track-mono);
+  padding: 0.7rem 1.4rem;
+  border-radius: var(--radius-lg);
+  border: none;
+  cursor: pointer;
+  transition: background-color var(--duration-base) var(--ease);
+}
+.btn-primary:hover { background: var(--primary-600); }
+.btn-primary:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--primary-200); }
+
+.btn-action {
+  font-family: var(--font-mono);
+  background: var(--action);
+  color: var(--warm-white);
+  font-weight: var(--weight-medium);
+  font-size: var(--text-sm);
+  letter-spacing: var(--track-mono);
+  padding: 0.7rem 1.4rem;
+  border-radius: var(--radius-lg);
+  border: none;
+  cursor: pointer;
+  transition: background-color var(--duration-base) var(--ease);
+}
+.btn-action:hover { background: var(--action-600); }
+.btn-action:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--action-200); }
+
+/* Ghost / outline — editorial hairline button */
+.btn-ghost {
+  font-family: var(--font-mono);
+  background: transparent;
+  color: var(--primary);
+  font-weight: var(--weight-medium);
+  font-size: var(--text-sm);
+  letter-spacing: var(--track-mono);
+  padding: 0.7rem 1.4rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--primary-300);
+  cursor: pointer;
+  transition: all var(--duration-base) var(--ease);
+}
+.btn-ghost:hover { background: var(--primary-50); border-color: var(--primary); }
+
+/* ── Card ──────────────────────────────────────────────────────────────── */
+.card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  padding: 1.5rem;
+}
+
+/* ── Input ─────────────────────────────────────────────────────────────── */
+.gc-input {
+  width: 100%;
+  font-family: var(--font-mono);
+  background: var(--surface);
+  border: 1px solid var(--border-input);
+  border-radius: var(--radius-lg);
+  padding: 0.7rem 1rem;
+  font-size: var(--text-sm);
+  color: var(--fg1);
+  transition: box-shadow var(--duration-base) var(--ease), border-color var(--duration-base) var(--ease);
+}
+.gc-input::placeholder { color: var(--fg3); }
+.gc-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px var(--primary-100);
+}

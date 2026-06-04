@@ -4,8 +4,8 @@
   "description": "Report illegal dumps and environmental violations in Greece",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0D6FDB",
-  "theme_color": "#0D6FDB",
+  "background_color": "#1A1A2E",
+  "theme_color": "#006994",
   "orientation": "portrait",
   "categories": ["utilities", "social"],
   "icons": [

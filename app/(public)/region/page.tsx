@@ -1,10 +1,19 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { getDictionary, getLocale } from '@/lib/i18n'
+import { publicPageMetadata } from '@/lib/seo'
+import { localizedHref } from '@/lib/i18n/routing'
 
-export const metadata: Metadata = {
+const metadata: Metadata = {
   title: 'Regional Layer - GreeceClean',
   description: 'A regional GreeceClean landing point for tourism partners and destinations.',
+}
+
+void metadata
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale()
+  return publicPageMetadata(locale, getDictionary(locale), 'region', '/region')
 }
 
 function PlaceholderPanel({ label, className = '' }: { label: string; className?: string }) {
@@ -12,7 +21,7 @@ function PlaceholderPanel({ label, className = '' }: { label: string; className?
     <div
       className={`relative overflow-hidden border border-primary-100 ${className}`}
       style={{
-        background: 'repeating-linear-gradient(135deg, #E7F0F9 0 13px, #F2F7FB 13px 26px)',
+        background: 'repeating-linear-gradient(135deg, #E8E3DA 0 13px, #F5F2ED 13px 26px)',
       }}
     >
       <div className="absolute inset-0 bg-white/10" />
@@ -42,7 +51,7 @@ export default async function RegionPage() {
         <div
           className="absolute inset-0"
           style={{
-            background: 'repeating-linear-gradient(135deg, #0B5BB3 0 18px, #0D6FDB 18px 36px)',
+            background: 'repeating-linear-gradient(135deg, #004A6A 0 18px, #006994 18px 36px)',
           }}
         />
         <div className="absolute inset-0 bg-gradient-to-br from-primary-900/80 via-primary-700/80 to-primary/70" />
@@ -52,10 +61,10 @@ export default async function RegionPage() {
             <h1 className="text-4xl md:text-6xl font-extrabold leading-tight tracking-tight mb-5">{t.heroTitle}</h1>
             <p className="text-lg text-primary-100 leading-relaxed max-w-xl mb-8">{t.heroSub}</p>
             <div className="flex flex-wrap gap-3">
-              <Link href="/report" className="btn-action text-base px-7 py-3.5 shadow-lg">
+              <Link href={localizedHref(locale, '/report')} className="btn-action text-base px-7 py-3.5 shadow-lg">
                 {t.reportCta}
               </Link>
-              <Link href="/partners#contact" className="bg-white/10 hover:bg-white/20 border border-white/35 text-white font-semibold px-7 py-3.5 rounded-2xl transition-colors text-base">
+              <Link href={localizedHref(locale, '/partners#contact')} className="bg-white/10 hover:bg-white/20 border border-white/35 text-white font-semibold px-7 py-3.5 rounded-2xl transition-colors text-base">
                 {t.partnerCta}
               </Link>
             </div>
@@ -108,7 +117,7 @@ export default async function RegionPage() {
         <div className="max-w-3xl mx-auto text-center">
           <p className="text-2xl md:text-3xl font-extrabold leading-tight">{t.partnerNudgeTitle}</p>
           <p className="text-primary-200 mt-4 leading-relaxed">{t.partnerNudgeSub}</p>
-          <Link href="/partners#contact" className="btn-action inline-flex mt-7">
+          <Link href={localizedHref(locale, '/partners#contact')} className="btn-action inline-flex mt-7">
             {t.partnerNudgeCta}
           </Link>
         </div>

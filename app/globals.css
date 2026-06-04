@@ -3,12 +3,36 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --primary: #006994;  --primary-600: #005A80;  --primary-700: #004A6A;
+    --sky: #0090C4;
+    --action: #6B7C3A;   --action-600: #5A6830;
+    --sand: #C9A96E;
+    --marble: #F5F2ED;   --marble-dark: #E8E3DA;
+    --ink: #1A1A2E;
+    --bg: var(--marble);
+  }
+
   html {
     @apply scroll-smooth;
   }
 
   body {
-    @apply bg-gray-50 text-gray-900 antialiased;
+    background-color: var(--marble);
+    @apply text-gray-900 antialiased;
+    font-family: var(--font-mono), ui-monospace, Menlo, monospace;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display), Georgia, serif;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+  }
+
+  .wordmark, .display {
+    font-family: var(--font-display), Georgia, serif;
+    font-weight: 300;
+    letter-spacing: 0.16em;
   }
 }
 
@@ -18,14 +42,24 @@
   }
 
   .btn-action {
-    @apply bg-action text-white font-semibold px-6 py-3 rounded-2xl hover:bg-action-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-action-300;
+    @apply bg-action-700 text-white font-semibold px-6 py-3 rounded-2xl hover:bg-action-800 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-action-300;
   }
 
   .card {
     @apply bg-white rounded-2xl shadow-sm border border-gray-100 p-6;
   }
 
+  .kt-pin {
+    background: transparent;
+    border: none;
+  }
+
   .gc-pin {
     filter: drop-shadow(0 0 1.5px #fff) drop-shadow(0 2px 3px rgba(0, 0, 0, 0.35));
+  }
+
+  .gc-pin-touch {
+    padding: 10px;
+    box-sizing: content-box;
   }
 }

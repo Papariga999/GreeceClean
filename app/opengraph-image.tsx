@@ -14,7 +14,7 @@ export default function OGImage() {
     (
       <div
         style={{
-          background: '#0D6FDB',
+          background: '#006994',
           width: '100%',
           height: '100%',
           display: 'flex',
@@ -22,7 +22,6 @@ export default function OGImage() {
           justifyContent: 'center',
         }}
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={lockupSrc} width={820} alt="GreeceClean" />
       </div>
     ),

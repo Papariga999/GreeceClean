@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Katharos — App Icon</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { margin: 0; font-family: 'DM Mono', ui-monospace, Menlo, monospace; background: #fff; color: #102A43; }
+  .wrap { padding: 26px 30px; }
+  .head { display: flex; align-items: baseline; gap: 12px; margin: 0 0 4px; flex-wrap: wrap; }
+  .head h1 { font-size: 18px; font-weight: 800; color: #006994; margin: 0; letter-spacing: -0.01em; white-space: nowrap; }
+  .head .sub { font-size: 12px; color: #9CA3AF; }
+  .row { display: flex; align-items: flex-end; gap: 30px; flex-wrap: wrap; margin-top: 22px; }
+  .col { display: flex; flex-direction: column; align-items: center; gap: 9px; }
+  .cap { font-size: 11px; color: #9CA3AF; font-weight: 500; }
+  .cap b { color: #4B5563; font-weight: 600; }
+  /* masked adaptive-icon demos: blue square + white mark, OS mask via clip-path */
+  .ada { background: linear-gradient(160deg,#006994,#005A80); display: flex; align-items: center; justify-content: center; }
+  .ada img { width: 56%; height: auto; }
+  .m-circle  { clip-path: circle(50% at 50% 50%); }
+  .m-squircle { border-radius: 28%; }
+  .m-round   { border-radius: 16%; }
+  .m-rect    { border-radius: 0; }
+  .divider { height: 1px; background: #F3F4F6; margin: 26px 0; }
+  table { border-collapse: collapse; font-size: 12.5px; width: 100%; max-width: 560px; }
+  th, td { text-align: left; padding: 7px 12px; border-bottom: 1px solid #F3F4F6; }
+  th { color: #fff; background: #102A43; font-weight: 600; font-size: 11px; }
+  td.path { font-family: ui-monospace, Menlo, monospace; color: #005A80; font-size: 11.5px; }
+  td.dim { color: #9CA3AF; font-variant-numeric: tabular-nums; }
+  .note { font-size: 12px; color: #6B7280; line-height: 1.6; max-width: 620px; margin-top: 14px; }
+  .note code { font-family: ui-monospace, Menlo, monospace; background: #F5F2ED; padding: 1px 5px; border-radius: 5px; color: #005A80; }
+  .chip { display:inline-block; font-size:11px; font-weight:600; color:#6B7C3A; background:#F0F2E9; border-radius:999px; padding:3px 10px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <h1>App Icon</h1>
+    <span class="sub">pin-as-“G” · white mark on Aegean Blue · ready for iOS &amp; Android</span>
+  </div>
+  <span class="chip">Developer-ready · handoff/brand/android/</span>
+
+  <div class="row">
+    <div class="col">
+      <img src="app-icon.png" width="120" height="120" style="display:block; box-shadow:0 8px 22px rgba(13,111,219,.35); border-radius:22%;" alt="Katharos app icon">
+      <span class="cap"><b>Master</b> · rounded</span>
+    </div>
+    <div class="col">
+      <img src="ic_launcher-playstore.png" width="120" height="120" style="display:block; border-radius:22%;" alt="Play Store icon">
+      <span class="cap"><b>Play Store</b> · 512×512</span>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <div class="head"><h1 style="font-size:14px;">Adaptive masks</h1><span class="sub">one foreground + background, masked by the OS</span></div>
+  <div class="row">
+    <div class="col"><div class="ada m-circle" style="width:84px;height:84px;"><img src="logo-symbol-white.png"></div><span class="cap">Circle</span></div>
+    <div class="col"><div class="ada m-squircle" style="width:84px;height:84px;"><img src="logo-symbol-white.png"></div><span class="cap">Squircle</span></div>
+    <div class="col"><div class="ada m-round" style="width:84px;height:84px;"><img src="logo-symbol-white.png"></div><span class="cap">Rounded</span></div>
+    <div class="col"><div class="ada m-rect" style="width:84px;height:84px;"><img src="logo-symbol-white.png"></div><span class="cap">Full-bleed</span></div>
+  </div>
+
+  <div class="divider"></div>
+  <div class="head"><h1 style="font-size:14px;">Android exports</h1><span class="sub">drop into <code style="font-family:ui-monospace,Menlo,monospace;">app/src/main/res/</code></span></div>
+  <table>
+    <tr><th>Asset</th><th>Size</th><th>Path (handoff/brand/android/)</th></tr>
+    <tr><td>Play Store icon</td><td class="dim">512²</td><td class="path">ic_launcher-playstore.png</td></tr>
+    <tr><td>Adaptive foreground</td><td class="dim">432²</td><td class="path">mipmap-anydpi-v26/ic_launcher_foreground.png</td></tr>
+    <tr><td>Adaptive background</td><td class="dim">432²</td><td class="path">mipmap-anydpi-v26/ic_launcher_background.png</td></tr>
+    <tr><td>Adaptive config</td><td class="dim">xml</td><td class="path">mipmap-anydpi-v26/ic_launcher.xml</td></tr>
+    <tr><td>Launcher · mdpi → xxxhdpi</td><td class="dim">48–192</td><td class="path">mipmap-*/ic_launcher.png</td></tr>
+  </table>
+
+  <div class="note">
+    Background fill <code>#006994</code> · mark centred inside the 66dp safe zone so no mask shape clips it.
+    A <code>&lt;monochrome&gt;</code> layer is wired for Android 13+ themed icons. Full setup notes in
+    <code>handoff/brand/android/README.md</code>.
+  </div>
+</div>
+</body>
+</html>

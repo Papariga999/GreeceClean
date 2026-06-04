@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { margin: 0; font-family: var(--font-sans); background: #fff; }
+  .wrap { padding: 24px 28px; display: flex; flex-direction: column; gap: 16px; }
+  .grp { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .lab { font-size: 11px; color: var(--fg3); width: 70px; }
+  .ghost { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: #fff; }
+  .onblue { background: var(--primary); padding: 10px 12px; border-radius: 14px; display: flex; gap: 10px; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="grp"><span class="lab">Primary</span>
+      <button class="btn-primary">Submit Report</button>
+      <button class="btn-primary" style="background:var(--primary-600)">Hover</button>
+    </div>
+    <div class="grp"><span class="lab">Action</span>
+      <button class="btn-action">📷 Make a Report</button>
+      <button class="btn-action" style="background:var(--action-600)">Hover</button>
+      <button class="btn-action" style="opacity:0.4">Disabled</button>
+    </div>
+    <div class="onblue"><span class="lab" style="color:rgba(255,255,255,0.7)">Ghost</span>
+      <button class="btn-primary ghost">🗺️ View the Map</button>
+    </div>
+  </div>
+</body>
+</html>

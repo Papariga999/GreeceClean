@@ -148,8 +148,8 @@ export default function VoteButtons({ token, initialVotes, initialConfirmations,
           label={s.important}
           sub={s.importantSub}
           icon="👍"
-          accent="#0D6FDB"
-          accentBg="#EAF2FC"
+          accent="#006994"
+          accentBg="#E6EFF3"
           onClick={() => handle('vote')}
         />
         <SingleVoteBtn

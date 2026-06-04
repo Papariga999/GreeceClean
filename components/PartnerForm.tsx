@@ -3,6 +3,8 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import type { Dictionary } from '@/lib/i18n/types'
+import { localizedHref } from '@/lib/i18n/routing'
+import { useLocale } from './LocaleProvider'
 
 type Status = 'idle' | 'submitting' | 'success' | 'error'
 
@@ -45,6 +47,7 @@ function Label({ htmlFor, text, optional }: { htmlFor: string; text: string; opt
 
 export default function PartnerForm({ t }: { t: Dictionary['partners'] }) {
 
+  const { locale } = useLocale()
   const [status, setStatus] = useState<Status>('idle')
   const [vals, setVals] = useState<FormVals>(INITIAL)
   const [errs, setErrs] = useState<Errs>({})
@@ -117,8 +120,8 @@ export default function PartnerForm({ t }: { t: Dictionary['partners'] }) {
         <h3 className="text-2xl font-extrabold text-primary mb-2">{t.formSuccessTitle}</h3>
         <p className="text-gray-600 text-sm leading-relaxed max-w-xs mx-auto mb-7">{t.formSuccessBody}</p>
         <div className="flex gap-3 justify-center flex-wrap">
-          <Link href="/map" className="btn-primary text-sm px-6 py-2.5 rounded-2xl">{t.formSuccessBackMap}</Link>
-          <Link href="/" className="bg-white border border-primary-200 text-primary-700 font-semibold text-sm px-6 py-2.5 rounded-2xl hover:bg-primary-50 transition-colors">{t.formSuccessExplore}</Link>
+          <Link href={localizedHref(locale, '/map')} className="btn-primary text-sm px-6 py-2.5 rounded-2xl">{t.formSuccessBackMap}</Link>
+          <Link href={localizedHref(locale, '/')} className="bg-white border border-primary-200 text-primary-700 font-semibold text-sm px-6 py-2.5 rounded-2xl hover:bg-primary-50 transition-colors">{t.formSuccessExplore}</Link>
         </div>
       </div>
     )
@@ -224,7 +227,7 @@ export default function PartnerForm({ t }: { t: Dictionary['partners'] }) {
             className="w-4 h-4 mt-0.5 accent-primary shrink-0 cursor-pointer" />
           <span>
             {t.formConsent}{' '}
-            <Link href="/privacy" className="text-primary font-semibold underline">{t.formConsentLink}</Link>
+            <Link href={localizedHref(locale, '/privacy')} className="text-primary font-semibold underline">{t.formConsentLink}</Link>
           </span>
         </label>
         <ErrMsg msg={touched ? errs.consent : undefined} />

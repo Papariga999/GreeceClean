@@ -79,7 +79,7 @@ export default function ShareSheet({ open, onClose, url, shareText, strings: s }
     },
     {
       label: copied ? s.copied : s.copy,
-      bg: copied ? '#39B24A' : '#6B7280',
+      bg: copied ? '#6B7C3A' : '#6B7280',
       content: <span className="text-white text-xl leading-none">{copied ? '✓' : '🔗'}</span>,
       onClick: copy,
     },

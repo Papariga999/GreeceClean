@@ -9,6 +9,9 @@ import VoteButtons from '@/components/reports/VoteButtons'
 import TrackingActions from '@/components/reports/TrackingActions'
 import ResolvedView from '@/components/reports/ResolvedView'
 import ReportLocationMap from '@/components/reports/ReportLocationMap'
+import JsonLd from '@/components/JsonLd'
+import { absoluteUrl, breadcrumbJsonLd, localeAlternates, ogLocale } from '@/lib/seo'
+import { localizedHref } from '@/lib/i18n/routing'
 
 type Report = {
   public_token: string
@@ -78,10 +81,6 @@ async function getNearby(current: Report): Promise<NearbyReport[]> {
     .slice(0, 2)
 }
 
-function appUrl() {
-  return process.env.NEXT_PUBLIC_APP_URL ?? 'https://greececlean.gr'
-}
-
 export async function generateMetadata({
   params,
 }: {
@@ -92,23 +91,28 @@ export async function generateMetadata({
   const t = getDictionary(locale)
 
   if (!report) {
-    return { title: `${t.tracking.notFoundTitle} – GreeceClean` }
+    return {
+      title: `${t.tracking.notFoundTitle} – GreeceClean`,
+      alternates: localeAlternates(locale, `/r/${token}`),
+    }
   }
 
   const category = t.tracking.categories[report.category] ?? report.category
   const place    = report.municipality?.name_el ?? 'GreeceClean'
   const title    = `${category} – ${place}`
   const desc     = report.description ?? `${t.tracking.pageTitle} | GreeceClean`
-  const url      = `${appUrl()}/r/${token}`
+  const path     = `/r/${token}`
+  const url      = absoluteUrl(localizedHref(locale, path))
 
   return {
     title: `${title} | GreeceClean`,
     description: desc,
+    alternates: localeAlternates(locale, path),
     openGraph: {
       title,
       description: desc,
       url,
-      locale: locale === 'el' ? 'el_GR' : locale === 'de' ? 'de_DE' : 'en_GB',
+      locale: ogLocale(locale),
       type: 'website',
       ...(report.image_url && {
         images: [{ url: report.image_url, width: 1200, height: 630, alt: title }],
@@ -159,7 +163,7 @@ export default async function TrackingPage({
     )
   }
 
-  const trackingUrl = `${appUrl()}/r/${report.public_token}`
+  const trackingUrl = absoluteUrl(localizedHref(locale, `/r/${report.public_token}`))
   // Plain text for share sheet (URL appended per-platform inside ShareSheet)
   const shareText   = tr.whatsappTemplate.replace('{url}', '').replace(/\s+$/, '')
   const isRejected   = report.status === 'rejected'
@@ -201,6 +205,12 @@ export default async function TrackingPage({
 
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-4">
+      <JsonLd
+        data={breadcrumbJsonLd(locale, [
+          { name: 'GreeceClean', path: '/' },
+          { name: tr.pageTitle, path: `/r/${report.public_token}` },
+        ])}
+      />
       <div className="max-w-lg mx-auto space-y-5">
         <h1 className="text-2xl font-bold text-primary">{tr.pageTitle}</h1>
 
@@ -248,7 +258,7 @@ export default async function TrackingPage({
                 <dt className="font-medium shrink-0">{tr.labelMunicipality}</dt>
                 <dd>
                   {report.municipality_id ? (
-                    <a href={`/scorecard/${report.municipality_id}`} className="text-primary hover:underline font-medium">
+                    <a href={localizedHref(locale, `/scorecard/${report.municipality_id}`)} className="text-primary hover:underline font-medium">
                       {report.municipality.name_el} ›
                     </a>
                   ) : report.municipality.name_el}
@@ -379,7 +389,7 @@ export default async function TrackingPage({
                 return (
                   <a
                     key={r.public_token}
-                    href={`/r/${r.public_token}`}
+                    href={localizedHref(locale, `/r/${r.public_token}`)}
                     className="card flex flex-col gap-2 p-3 hover:bg-gray-50 active:bg-gray-100 transition-colors no-underline"
                   >
                     <div className="flex items-center justify-between">

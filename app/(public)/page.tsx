@@ -5,11 +5,16 @@ import { SEED_REPORTS } from '@/lib/seed-data'
 import { getLocale, getDictionary } from '@/lib/i18n'
 import { getSeverityTier } from '@/lib/elapsed'
 import Logo from '@/components/Logo'
+import { publicPageMetadata } from '@/lib/seo'
+import { localizedHref } from '@/lib/i18n/routing'
 
 export const dynamic = 'force-dynamic'
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale()
+  const dict = getDictionary(locale)
+  if (dict.meta.home.title) return publicPageMetadata(locale, dict, 'home', '/')
+
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://greececlean.gr'
 
   if (locale === 'de') return {
@@ -165,10 +170,10 @@ function StatCard({ value, label }: { value: string | number; label: string }) {
 }
 
 const SEV_PILL: Record<string, { bg: string; text: string }> = {
-  fresh:   { bg: '#DCFCE7', text: '#15803D' },
-  waiting: { bg: '#FEF3C7', text: '#D97706' },
-  overdue: { bg: '#FFEDD5', text: '#EA580C' },
-  ignored: { bg: '#FEE2E2', text: '#DC2626' },
+  fresh:   { bg: '#DCFCE7', text: '#166534' },
+  waiting: { bg: '#FEF3C7', text: '#92400E' },
+  overdue: { bg: '#FFEDD5', text: '#9A3412' },
+  ignored: { bg: '#FEE2E2', text: '#991B1B' },
 }
 
 function daysOpen(createdAt: string) {
@@ -198,11 +203,11 @@ function MunicipalityRow({
       </div>
       <div className="shrink-0 text-right">
         {showRate ? (
-          <span className="text-sm font-bold text-action">{pct}%</span>
+          <span className="text-sm font-bold text-action-700">{pct}%</span>
         ) : (
-          <span className="text-sm font-bold text-orange-500">{stat.unresolved}</span>
+          <span className="text-sm font-bold text-orange-800">{stat.unresolved}</span>
         )}
-        <p className="text-xs text-gray-400">
+        <p className="text-xs text-gray-600">
           {showRate ? `${stat.resolved}/${stat.total}` : unresolvedLabel}
         </p>
       </div>
@@ -235,7 +240,7 @@ export default async function LandingPage() {
                 Greece<span className="text-action-300">Clean</span>
               </span>
             </div>
-            <p className="text-sm text-primary-200 font-medium">Helping keep Greece clean 🌿</p>
+            <p className="text-sm text-primary-200 font-medium">{l.footerTagline}</p>
           </div>
           <h1 className="text-4xl md:text-6xl font-extrabold mb-4 leading-tight">
             {l.heroTitle} <span className="text-action-300">{l.heroHighlight}</span>
@@ -244,10 +249,10 @@ export default async function LandingPage() {
             {l.heroDesc}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/report" className="btn-action text-center text-base px-8 py-3.5 shadow-lg">
+            <Link href={localizedHref(locale, '/report')} className="btn-action text-center text-base px-8 py-3.5 shadow-lg">
               {l.ctaPrimary}
             </Link>
-            <Link href="/map" className="btn-primary bg-white/10 hover:bg-white/20 border border-white/30 text-center text-base px-8 py-3.5">
+            <Link href={localizedHref(locale, '/map')} className="btn-primary bg-white/10 hover:bg-white/20 border border-white/30 text-center text-base px-8 py-3.5">
               {l.ctaSecondary}
             </Link>
           </div>
@@ -264,7 +269,7 @@ export default async function LandingPage() {
             {l.reportTypes.map(({ icon, label }) => (
               <Link
                 key={label}
-                href="/report"
+                href={localizedHref(locale, '/report')}
                 className="flex flex-col items-center gap-1.5 p-3 rounded-2xl hover:bg-gray-50 transition-colors group"
               >
                 <span className="text-3xl leading-none group-hover:scale-110 transition-transform">{icon}</span>
@@ -282,7 +287,7 @@ export default async function LandingPage() {
           <div className="grid md:grid-cols-3 gap-8">
             {l.howSteps.map(({ step, title, desc }) => (
               <div key={step} className="card text-center">
-                <div className="text-4xl font-extrabold text-action mb-3">{step}</div>
+                <div className="text-4xl font-extrabold text-action-700 mb-3">{step}</div>
                 <h3 className="text-xl font-semibold text-primary mb-2">{title}</h3>
                 <p className="text-gray-600 text-sm">{desc}</p>
               </div>
@@ -300,7 +305,7 @@ export default async function LandingPage() {
                 <h2 className="text-2xl font-bold text-primary">{l.topVotedTitle}</h2>
                 <p className="text-sm text-gray-500 mt-0.5">{l.topVotedSubtitle}</p>
               </div>
-              <Link href="/top" className="text-sm font-bold text-action hover:underline shrink-0">
+              <Link href={localizedHref(locale, '/top')} className="text-sm font-bold text-action-700 hover:underline shrink-0">
                 {l.topVotedSeeAll}
               </Link>
             </div>
@@ -313,18 +318,18 @@ export default async function LandingPage() {
                 return (
                   <Link
                     key={r.public_token}
-                    href={`/r/${r.public_token}`}
+                    href={localizedHref(locale, `/r/${r.public_token}`)}
                     className="flex items-center gap-3 px-5 py-3.5 hover:bg-gray-50 transition-colors no-underline"
                   >
                     <span className="text-sm font-extrabold w-5 text-center shrink-0"
-                      style={{ color: i < 3 ? '#0D6FDB' : '#9CA3AF' }}>
+                      style={{ color: i < 3 ? '#006994' : '#9CA3AF' }}>
                       {i + 1}
                     </span>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-gray-900 truncate">
                         {t.tracking.categories[r.category] ?? r.category}
                       </p>
-                      <p className="text-xs text-gray-400 mt-0.5 truncate">
+                      <p className="text-xs text-gray-600 mt-0.5 truncate">
                         {r.municipality?.name_el ?? '—'}
                       </p>
                     </div>
@@ -336,7 +341,7 @@ export default async function LandingPage() {
                     </span>
                     <div className="shrink-0 text-center bg-primary-50 rounded-xl px-3 py-1.5">
                       <p className="text-sm font-extrabold text-primary leading-none">{total}</p>
-                      <p className="text-[10px] text-gray-400 mt-0.5">👍</p>
+                      <p className="text-[10px] text-gray-600 mt-0.5">👍</p>
                     </div>
                   </Link>
                 )
@@ -367,7 +372,7 @@ export default async function LandingPage() {
               {champions.length > 0 && (
                 <div className="card">
                   <h3 className="font-bold text-primary mb-1">{l.championsTitle}</h3>
-                  <p className="text-xs text-gray-400 mb-5">{l.championsSubtitle}</p>
+                  <p className="text-xs text-gray-600 mb-5">{l.championsSubtitle}</p>
                   <div className="space-y-4">
                     {champions.map((s) => (
                       <MunicipalityRow key={s.name} stat={s} showRate unresolvedLabel={l.unresolvedLabel} />
@@ -378,7 +383,7 @@ export default async function LandingPage() {
               {needsWork.length > 0 && (
                 <div className="card">
                   <h3 className="font-bold text-primary mb-1">{l.needsWorkTitle}</h3>
-                  <p className="text-xs text-gray-400 mb-5">{l.needsWorkSubtitle}</p>
+                  <p className="text-xs text-gray-600 mb-5">{l.needsWorkSubtitle}</p>
                   <div className="space-y-4">
                     {needsWork.map((s) => (
                       <MunicipalityRow key={s.name} stat={s} showRate={false} unresolvedLabel={l.unresolvedLabel} />
@@ -396,8 +401,8 @@ export default async function LandingPage() {
         <section className="py-10 px-4 bg-sea-mist border-t border-primary-100">
           <div className="max-w-2xl mx-auto text-center">
             <p className="text-sm font-bold text-gray-800 mb-1">{t.partners.impactCta.title}</p>
-            <p className="text-xs text-gray-500 mb-4">{t.partners.impactCta.sub}</p>
-            <Link href="/partners" className="inline-flex items-center gap-1 text-sm font-bold text-primary hover:text-primary-600 transition-colors">
+            <p className="text-xs text-gray-600 mb-4">{t.partners.impactCta.sub}</p>
+            <Link href={localizedHref(locale, '/partners')} className="inline-flex items-center gap-1 text-sm font-bold text-primary hover:text-primary-600 transition-colors">
               {t.partners.impactCta.cta}
             </Link>
           </div>
@@ -407,10 +412,10 @@ export default async function LandingPage() {
       {/* Footer */}
       <footer className="mt-auto py-8 px-4 bg-primary text-white text-center">
         <p className="text-sm font-medium">GreeceClean 2026</p>
-        <p className="text-xs text-primary-200 mt-1">{l.footerTagline}</p>
-        <div className="flex justify-center gap-6 mt-4 text-xs text-primary-300">
-          <Link href="/report" className="hover:text-white transition-colors">{t.nav.report}</Link>
-          <Link href="/map" className="hover:text-white transition-colors">{t.nav.map}</Link>
+        <p className="text-xs text-white mt-1">{l.footerTagline}</p>
+        <div className="flex justify-center gap-6 mt-4 text-xs text-white">
+          <Link href={localizedHref(locale, '/report')} className="hover:text-white transition-colors">{t.nav.report}</Link>
+          <Link href={localizedHref(locale, '/map')} className="hover:text-white transition-colors">{t.nav.map}</Link>
         </div>
       </footer>
     </div>

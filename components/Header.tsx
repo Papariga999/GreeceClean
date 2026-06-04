@@ -4,23 +4,23 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { useLocale } from './LocaleProvider'
 import LanguageSwitcher from './LanguageSwitcher'
-import Logo from './Logo'
+import { Logo } from './Logo'
+import { localizedHref } from '@/lib/i18n/routing'
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
-  const { t } = useLocale()
+  const { locale, t } = useLocale()
 
   const nav = [
-    { href: '/', label: t.nav.home },
-    { href: '/map', label: t.nav.map },
+    { href: localizedHref(locale, '/'), label: t.nav.home },
+    { href: localizedHref(locale, '/map'), label: t.nav.map },
   ]
 
   return (
     <header className="bg-primary text-white shadow-md">
       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
-        <Link href="/" className="flex items-center gap-2 font-bold text-xl tracking-tight shrink-0">
-          <Logo variant="white" size={26} priority />
-          <span>Greece<span className="text-action-300">Clean</span></span>
+        <Link href={localizedHref(locale, '/')} className="shrink-0">
+          <Logo on="blue" mark={22} />
         </Link>
 
         {/* Desktop nav */}
@@ -35,7 +35,7 @@ export default function Header() {
             </Link>
           ))}
           <Link
-            href="/report"
+            href={localizedHref(locale, '/report')}
             className="bg-action text-white px-4 py-2 rounded-2xl hover:bg-action-600 transition-colors duration-150"
           >
             {t.nav.report}
@@ -72,7 +72,7 @@ export default function Header() {
             </Link>
           ))}
           <Link
-            href="/report"
+            href={localizedHref(locale, '/report')}
             className="bg-action text-white px-4 py-2 rounded-2xl text-center hover:bg-action-600 transition-colors"
             onClick={() => setMenuOpen(false)}
           >
